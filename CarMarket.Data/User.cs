@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace CarMarket.Data
+﻿namespace CarMarket.Data
 {
     public class User
     {

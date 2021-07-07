@@ -5,11 +5,31 @@ namespace CarMarket.BusinessLogic
 {
     public class UserService : IUserService
     {
-        private IUserRepository _userRepository;
+        private readonly IUserRepository _userRepository;
 
         public UserService(IUserRepository userRepository)
         {
             _userRepository = userRepository;
+        }
+
+        public void AddPermission(params Permission[] permissions)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddPermission(Permission permission)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ChangePermission(Permission repcaceablePermission, Permission substitutePermission)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Create(Core.User user)
+        {
+            throw new NotImplementedException();
         }
 
         public Core.User Get(int id)
