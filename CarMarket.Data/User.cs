@@ -1,4 +1,4 @@
-﻿using DataAnnotationsExtensions;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace CarMarket.Data
 {
@@ -7,7 +7,7 @@ namespace CarMarket.Data
         public long Id { get; set; }
         public string FullName { get; set; }
         
-        [Email]
+        [EmailAddress]
         public string Email { get; set; }
         public string Password { get; set; }
     }
