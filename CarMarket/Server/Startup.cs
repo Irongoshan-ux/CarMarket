@@ -1,3 +1,6 @@
+using CarMarket.BusinessLogic;
+using CarMarket.Core;
+using CarMarket.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -29,6 +32,9 @@ namespace CarMarket.Server
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CarMarket", Version = "v1" });
             });
+
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IUserService, UserService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
