@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace CarMarket.Core
 {
-    public class User
+    public enum Permission
     {
-        public string UserName { get; set; }
-        public Permission[] Permissions { get; set; }
+        Create,
+        Edit,
+        Delete
     }
 }
