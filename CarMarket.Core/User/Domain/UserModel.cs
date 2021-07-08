@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
-namespace CarMarket.Models.User
+namespace CarMarket.Core.User.Domain
 {
     public class UserModel
     {
@@ -9,16 +8,13 @@ namespace CarMarket.Models.User
         {
             FirstName = firstName;
             LastName = lastName;
-            Email = email;
             Permissions = permissions;
+            Email = email;
             Password = password;
         }
 
-        public long Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-
-        [EmailAddress]
         public string Email { get; set; }
         public List<Permission> Permissions { get; set; }
         public string Password { get; set; }

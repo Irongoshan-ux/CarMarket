@@ -1,12 +1,12 @@
-﻿using CarMarket.Core.User;
+﻿using CarMarket.Core.User.Domain;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace CarMarket.Data.User
+namespace CarMarket.Data.User.Domain
 {
-    public class UserModel
+    public class UserEntity
     {
-        public UserModel(string firstName, string lastName, List<Permission> permissions, string email, string password)
+        public UserEntity(string firstName, string lastName, List<Permission> permissions, string email, string password)
         {
             FirstName = firstName;
             LastName = lastName;

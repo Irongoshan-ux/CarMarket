@@ -1,4 +1,4 @@
-﻿namespace CarMarket.Models.User
+﻿namespace CarMarket.Core.User.Domain
 {
     public enum Permission
     {
