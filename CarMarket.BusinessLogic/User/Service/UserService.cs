@@ -3,7 +3,7 @@ using CarMarket.Core.User.Repository;
 using CarMarket.Core.User.Service;
 using System;
 
-namespace CarMarket.BusinessLogic.User
+namespace CarMarket.BusinessLogic.User.Service
 {
     public class UserService : IUserService
     {
@@ -29,17 +29,17 @@ namespace CarMarket.BusinessLogic.User
             throw new NotImplementedException();
         }
 
-        public void Create(Core.User.Domain.UserModel user)
+        public void Create(UserModel user)
         {
             throw new NotImplementedException();
         }
 
-        public Core.User.Domain.UserModel Get(int id)
+        public UserModel Get(int id)
         {
             throw new NotImplementedException();
         }
 
-        public Core.User.Domain.UserModel GetAll()
+        public UserModel GetAll()
         {
             throw new NotImplementedException();
         }

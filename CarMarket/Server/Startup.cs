@@ -1,4 +1,4 @@
-using CarMarket.BusinessLogic.User;
+using CarMarket.BusinessLogic.User.Service;
 using CarMarket.Core.User.Repository;
 using CarMarket.Core.User.Service;
 using CarMarket.Data;
