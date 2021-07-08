@@ -6,7 +6,7 @@ namespace CarMarket.Core.User.Service
     {
         public UserModel Get(int id);
         public UserModel GetAll();
-        public void Create(UserModel user);
+        public bool Create(UserModel user);
         public void AddPermission(params Permission[] permissions);
         public void AddPermission(Permission permission);
         public void ChangePermission(Permission repcaceablePermission, Permission substitutePermission);

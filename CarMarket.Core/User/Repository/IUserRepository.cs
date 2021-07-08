@@ -7,7 +7,7 @@ namespace CarMarket.Core.User.Repository
     {
         public UserModel FindById(int id);
         public UserModel FindByEmail(string email);
-        public void Save(UserModel user);
+        public bool Save(UserModel user);
         public List<UserModel> FindAll();
     }
 }

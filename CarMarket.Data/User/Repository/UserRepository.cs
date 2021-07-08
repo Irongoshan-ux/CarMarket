@@ -42,10 +42,10 @@ namespace CarMarket.Data.User.Repository
             return _userConverter.ToModel(userEntity);
         }
 
-        public void Save(UserModel userModel)
+        public bool Save(UserModel userModel)
         {
             var newUserEntity = _userConverter.ToEntity(userModel);
-            _context.AddAsync(newUserEntity);
+            return _context.AddAsync(newUserEntity).IsCompleted;
         }
     }
 }

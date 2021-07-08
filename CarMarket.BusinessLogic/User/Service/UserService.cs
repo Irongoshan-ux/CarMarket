@@ -29,9 +29,9 @@ namespace CarMarket.BusinessLogic.User.Service
             throw new NotImplementedException();
         }
 
-        public void Create(UserModel user)
+        public bool Create(UserModel userModel)
         {
-            throw new NotImplementedException();
+            return _userRepository.Save(userModel);
         }
 
         public UserModel Get(int id)

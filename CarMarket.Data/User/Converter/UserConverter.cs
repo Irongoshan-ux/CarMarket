@@ -1,6 +1,5 @@
 ﻿using CarMarket.Core.User.Domain;
 using CarMarket.Data.User.Domain;
-using System;
 
 namespace CarMarket.Data.User.Converter
 {
@@ -14,11 +13,6 @@ namespace CarMarket.Data.User.Converter
         public UserModel ToModel(UserEntity userModel)
         {
             return new UserModel(userModel.FirstName, userModel.LastName, userModel.Permissions, userModel.Email, userModel.Password);
-        }
-
-        internal UserModel ToModel(object model)
-        {
-            throw new NotImplementedException();
         }
     }
 }
