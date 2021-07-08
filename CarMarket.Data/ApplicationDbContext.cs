@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using CarMarket.Data.User;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CarMarket.Data
 {
     class ApplicationDbContext : DbContext
     {
-        public DbSet<User.User> Users { get; set; }
+        public DbSet<UserModel> Users { get; set; }
 
         public ApplicationDbContext()
         {
@@ -23,9 +24,9 @@ namespace CarMarket.Data
         }
     }
 
-    public class UserConfiguration : IEntityTypeConfiguration<User.User>
+    public class UserConfiguration : IEntityTypeConfiguration<UserModel>
     {
-        public void Configure(EntityTypeBuilder<User.User> builder)
+        public void Configure(EntityTypeBuilder<UserModel> builder)
         {
             builder.ToTable("Users").HasKey(p => p.Id);
         }

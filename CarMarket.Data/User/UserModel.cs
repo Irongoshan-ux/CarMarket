@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CarMarket.Data.User
 {
-    public class User
+    public class UserModel
     {
         public long Id { get; set; }
         public string FirstName { get; set; }
