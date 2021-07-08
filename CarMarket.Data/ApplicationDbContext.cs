@@ -5,7 +5,7 @@ namespace CarMarket.Data
 {
     class ApplicationDbContext : DbContext
     {
-        public DbSet<User> Users { get; set; }
+        public DbSet<User.User> Users { get; set; }
 
         public ApplicationDbContext()
         {
@@ -23,9 +23,9 @@ namespace CarMarket.Data
         }
     }
 
-    public class UserConfiguration : IEntityTypeConfiguration<User>
+    public class UserConfiguration : IEntityTypeConfiguration<User.User>
     {
-        public void Configure(EntityTypeBuilder<User> builder)
+        public void Configure(EntityTypeBuilder<User.User> builder)
         {
             builder.ToTable("Users").HasKey(p => p.Id);
         }

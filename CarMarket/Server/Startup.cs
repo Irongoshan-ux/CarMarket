@@ -1,6 +1,6 @@
-using CarMarket.BusinessLogic;
-using CarMarket.Core;
-using CarMarket.Data;
+using CarMarket.BusinessLogic.User;
+using CarMarket.Core.User;
+using CarMarket.Data.User;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;

@@ -1,4 +1,4 @@
-﻿namespace CarMarket.Core
+﻿namespace CarMarket.Core.User
 {
     public enum Permission
     {

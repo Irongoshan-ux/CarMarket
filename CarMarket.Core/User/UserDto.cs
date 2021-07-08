@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace CarMarket.Core
+namespace CarMarket.Core.User
 {
-    public class User
+    public class UserDto
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }

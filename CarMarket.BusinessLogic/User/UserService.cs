@@ -1,7 +1,7 @@
-﻿using System;
-using CarMarket.Core;
+﻿using CarMarket.Core.User;
+using System;
 
-namespace CarMarket.BusinessLogic
+namespace CarMarket.BusinessLogic.User
 {
     public class UserService : IUserService
     {
@@ -27,17 +27,17 @@ namespace CarMarket.BusinessLogic
             throw new NotImplementedException();
         }
 
-        public void Create(Core.User user)
+        public void Create(UserDto user)
         {
             throw new NotImplementedException();
         }
 
-        public Core.User Get(int id)
+        public UserDto Get(int id)
         {
             throw new NotImplementedException();
         }
 
-        public Core.User GetAll()
+        public UserDto GetAll()
         {
             throw new NotImplementedException();
         }
