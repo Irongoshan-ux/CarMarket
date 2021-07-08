@@ -1,5 +1,6 @@
 using CarMarket.BusinessLogic.User;
 using CarMarket.Core.User;
+using CarMarket.Data;
 using CarMarket.Data.User;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -32,6 +33,7 @@ namespace CarMarket.Server
 
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ApplicationDbContext>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

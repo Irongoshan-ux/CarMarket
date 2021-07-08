@@ -1,8 +1,7 @@
-﻿using CarMarket.Core.User;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace CarMarket.Data.User
+namespace CarMarket.Models.User
 {
     public class UserModel
     {
