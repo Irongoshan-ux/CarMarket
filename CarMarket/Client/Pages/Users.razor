@@ -1,0 +1,73 @@
+﻿@page "/admin/users"
+@using CarMarket.Core.User.Domain
+@inject HttpClient Http
+
+<h1>Users Controller</h1>
+
+<p>Add user</p>
+
+<input @bind="newUserFirstName" placeholder="Enter firstname" />
+<input @bind="newUserLastName" placeholder="Enter lastname" />
+<input @bind="newUserEmail" placeholder="Enter email" />
+
+<input @bind="newUserPassword" placeholder="Enter password" />
+<button @onclick="AddItem">Add</button>
+
+<p>All users</p>
+
+@if (users == null)
+{
+    <p><em>Loading users...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Firstname</th>
+                <th>Lastname</th>
+                <th>Permissions</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in users)
+            {
+                <tr>
+                    <td>@user.FirstName 1</td>
+                    <td>@user.LastName</td>
+                    <td>@user.Permissions</td>
+                    <td>@user.Email</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<UserModel> users;
+    private string newUserFirstName;
+    private string newUserLastName;
+    private string newUserEmail;
+    private string newUserName;
+    private string newUserPassword;
+    //private List<Permission> newUserPermissions;
+
+    private async Task AddItem()
+    {
+        var addItem = new UserModel
+        {
+            FirstName = newUserName,
+            LastName = newUserLastName,
+            Email = newUserEmail,
+            Permissions = new List<Permission>() { new Permission() { Id = 1, PermissionName = Permission.PermissionType.Create} },
+            Password = newUserPassword
+        };
+        await Http.PostAsJsonAsync("user", addItem);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        users = await Http.GetFromJsonAsync<List<UserModel>>("user");
+    }
+}

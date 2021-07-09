@@ -4,7 +4,12 @@ namespace CarMarket.Core.User.Domain
 {
     public class UserModel
     {
-        public UserModel(string firstName, string lastName, Permission permissions, string email, string password)
+        public UserModel()
+        {
+
+        }
+
+        public UserModel(string firstName, string lastName, List<Permission> permissions, string email, string password)
         {
             FirstName = firstName;
             LastName = lastName;
@@ -16,7 +21,7 @@ namespace CarMarket.Core.User.Domain
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
-        public Permission Permissions { get; set; }
+        public List<Permission> Permissions { get; set; }
         public string Password { get; set; }
     }
 }

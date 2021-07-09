@@ -1,8 +1,8 @@
 ﻿using CarMarket.Core.User.Domain;
 using CarMarket.Core.User.Service;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 
 namespace CarMarket.Server.Controllers
 {
@@ -17,6 +17,12 @@ namespace CarMarket.Server.Controllers
         {
             _userService = userService;
             _logger = logger;
+        }
+
+        [HttpGet]
+        public IEnumerable<UserModel> GetAll()
+        {
+            return _userService.GetAll();
         }
 
         [HttpPost]

@@ -1,4 +1,5 @@
-﻿using CarMarket.Data.User.Domain;
+﻿using CarMarket.Core.User.Domain;
+using CarMarket.Data.User.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -29,6 +30,14 @@ namespace CarMarket.Data
         public void Configure(EntityTypeBuilder<UserEntity> builder)
         {
             builder.ToTable("Users").HasKey(p => p.Id);
+        }
+    }
+
+    public class PermissonConfiguration : IEntityTypeConfiguration<Permission>
+    {
+        public void Configure(EntityTypeBuilder<Permission> builder)
+        {
+            builder.ToTable("Permissions").HasKey(p => p.Id);
         }
     }
 }

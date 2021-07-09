@@ -2,6 +2,7 @@
 using CarMarket.Core.User.Repository;
 using CarMarket.Core.User.Service;
 using System;
+using System.Collections.Generic;
 
 namespace CarMarket.BusinessLogic.User.Service
 {
@@ -39,9 +40,9 @@ namespace CarMarket.BusinessLogic.User.Service
             throw new NotImplementedException();
         }
 
-        public UserModel GetAll()
+        public List<UserModel> GetAll()
         {
-            throw new NotImplementedException();
+            return _userRepository.FindAll();
         }
     }
 }

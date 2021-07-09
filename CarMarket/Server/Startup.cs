@@ -6,7 +6,6 @@ using CarMarket.Data.User.Converter;
 using CarMarket.Data.User.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -36,7 +35,7 @@ namespace CarMarket.Server
 
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<ApplicationDbContext>();
+            services.AddSingleton<ApplicationDbContext>();
             services.AddScoped<UserConverter>();
         }
 

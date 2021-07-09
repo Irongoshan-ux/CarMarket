@@ -6,20 +6,8 @@ namespace CarMarket.Data.User.Domain
 {
     public class UserEntity
     {
-        //TODO How to use List<Permission>
-
-        public UserEntity(string firstName, string lastName, Permission permissions, string email, string password)
+        public UserEntity(string firstName, string lastName, List<Permission> permissions, string email, string password)
         {
-            FirstName = firstName;
-            LastName = lastName;
-            Email = email;
-            Permissions = permissions;
-            Password = password;
-        }
-
-        public UserEntity(long id, string firstName, string lastName, Permission permissions, string email, string password)
-        {
-            Id = id;
             FirstName = firstName;
             LastName = lastName;
             Email = email;
@@ -38,7 +26,7 @@ namespace CarMarket.Data.User.Domain
 
         [EmailAddress]
         public string Email { get; set; }
-        public Permission Permissions { get; set; }
+        public List<Permission> Permissions { get; set; }
         public string Password { get; set; }
     }
 }
