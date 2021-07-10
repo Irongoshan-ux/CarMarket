@@ -49,21 +49,20 @@ else
     private string newUserFirstName;
     private string newUserLastName;
     private string newUserEmail;
-    private string newUserName;
     private string newUserPassword;
     //private List<Permission> newUserPermissions;
 
     private async Task AddItem()
     {
-        var addItem = new UserModel
+        var newUser = new UserModel
         {
-            FirstName = newUserName,
+            FirstName = newUserFirstName,
             LastName = newUserLastName,
             Email = newUserEmail,
             Permissions = new List<Permission>() { new Permission() { Id = 1, PermissionName = Permission.PermissionType.Create} },
             Password = newUserPassword
         };
-        await Http.PostAsJsonAsync("user", addItem);
+        await Http.PostAsJsonAsync("user", newUser);
     }
 
     protected override async Task OnInitializedAsync()

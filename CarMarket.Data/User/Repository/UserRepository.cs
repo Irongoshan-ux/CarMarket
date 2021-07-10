@@ -45,7 +45,7 @@ namespace CarMarket.Data.User.Repository
         public bool Save(UserModel userModel)
         {
             var newUserEntity = _userConverter.ToEntity(userModel);
-            var added = _context.AddAsync(newUserEntity).IsCompleted;
+            var added = _context.Users.AddAsync(newUserEntity).IsCompleted;
 
             if (added)
             {
