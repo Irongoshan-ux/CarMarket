@@ -1,6 +1,7 @@
 ﻿using CarMarket.Core.User.Domain;
 using CarMarket.Core.User.Repository;
 using CarMarket.Data.User.Converter;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -25,15 +26,23 @@ namespace CarMarket.Data.User.Repository
 
         public List<UserModel> FindAll()
         {
-            var userEntities = _context.Users.ToList();
-            var userModels = new List<UserModel>(userEntities.Count);
-
-            foreach (var userEntity in userEntities)
-            {
-                userModels.Add(_userConverter.ToModel(userEntity));
-            }
+            var userModels = _context.Users
+                .AsNoTracking()
+                .Select(x => _userConverter.ToModel(x))
+                .ToListAsync()
+                .GetAwaiter()
+                .GetResult();
 
             return userModels;
+
+            //var userModels = new List<UserModel>(userEntities.Count);
+
+            //foreach (var userEntity in userEntities)
+            //{
+            //    userModels.Add(_userConverter.ToModel(userEntity));
+            //}
+
+            //return userModels;
         }
 
         public UserModel FindByEmail(string email)

@@ -31,6 +31,7 @@ namespace CarMarket.Server.Controllers
             if (!_userService.Create(userModel))
                 return BadRequest(userModel + " is invalid");
 
+
             return Ok(userModel);
         }
     }
