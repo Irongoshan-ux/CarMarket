@@ -16,19 +16,38 @@ namespace CarMarket.BusinessLogic.User.Service
             _userRepository = userRepository;
         }
 
-        public async Task AddPermissionAsync(params Permission[] permissions)
+        public async Task AddPermissionAsync(long userId, params Permission[] permissions)
         {
-            throw new NotImplementedException();
+            var user = await GetAsync(userId);
+
+            foreach (var permission in permissions)
+            {
+                if (IsUserContainsPermission(user, permission))
+                    continue;
+
+                user.Permissions.Add(permission);
+            }
         }
 
-        public async Task AddPermissionAsync(Permission permission)
+        public async Task AddPermissionAsync(long userId, Permission permission)
         {
-            throw new NotImplementedException();
+            var user = await GetAsync(userId);
+
+            if (!IsUserContainsPermission(user, permission))
+            {
+                user.Permissions.Add(permission);
+            }
         }
 
-        public async Task ChangePermissionAsync(Permission repcaceablePermission, Permission substitutePermission)
+        public async Task ChangePermissionAsync(long userId, Permission replaceablePermission, Permission substitutePermission)
         {
-            throw new NotImplementedException();
+            var user = await GetAsync(userId);
+
+            if (IsUserContainsPermission(user, replaceablePermission))
+            {
+                user.Permissions.Remove(replaceablePermission);
+                user.Permissions.Add(substitutePermission);
+            }
         }
 
         public async Task<long> CreateAsync(UserModel userModel)
@@ -41,14 +60,28 @@ namespace CarMarket.BusinessLogic.User.Service
             return await _userRepository.SaveAsync(userModel);
         }
 
-        public async Task<UserModel> GetAsync(int id)
+        public async Task<UserModel> GetAsync(long userId)
         {
-            throw new NotImplementedException();
+            return await _userRepository.FindByIdAsync(userId);
         }
 
         public async Task<List<UserModel>> GetAllAsync()
         {
             return await _userRepository.FindAllAsync();
         }
+
+        public async Task DeleteAsync(long userId)
+        {
+            var userModel = await _userRepository.FindByIdAsync(userId);
+
+            if (userModel is null)
+            {
+                throw new ArgumentException(nameof(userModel) + " shouldn't be null");
+            }
+
+            await _userRepository.DeleteAsync(userModel);
+        }
+
+        private bool IsUserContainsPermission(UserModel user, Permission permission) => user.Permissions.Contains(permission);
     }
 }

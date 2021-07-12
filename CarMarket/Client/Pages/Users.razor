@@ -65,10 +65,15 @@ else
             Password = newUserPassword
         };
         await Http.PostAsJsonAsync("user", newUser);
-        await OnInitializedAsync();
+        await GetUserModelList();
     }
 
     protected override async Task OnInitializedAsync()
+    {
+        await GetUserModelList();
+    }
+
+    private async Task GetUserModelList()
     {
         users = await Http.GetFromJsonAsync<List<UserModel>>("user");
     }

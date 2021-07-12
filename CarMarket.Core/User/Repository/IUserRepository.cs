@@ -6,9 +6,9 @@ namespace CarMarket.Core.User.Repository
 {
     public interface IUserRepository
     {
-        Task<UserModel> FindByIdAsync(int id);
-        Task<UserModel> FindByEmailAsync(string email);
+        Task<UserModel> FindByIdAsync(long id);
         Task<long> SaveAsync(UserModel user);
         Task<List<UserModel>> FindAllAsync();
+        Task DeleteAsync(UserModel user);
     }
 }

@@ -19,7 +19,7 @@ namespace CarMarket.Data.User.Repository
             _userConverter = userConverter;
         }
 
-        public async Task<UserModel> FindByIdAsync(int id)
+        public async Task<UserModel> FindByIdAsync(long id)
         {
             var userEntity = await _context.Users.FindAsync(id);
             return _userConverter.ToModel(userEntity);
@@ -27,28 +27,12 @@ namespace CarMarket.Data.User.Repository
 
         public async Task<List<UserModel>> FindAllAsync()
         {
-            var userEntities = await _context.Users.AsNoTracking().ToListAsync();
-
-            var userModels = new List<UserModel>(userEntities.Count);
-
-            foreach (var userEntity in userEntities)
-            {
-                userModels.Add(_userConverter.ToModel(userEntity));
-            }
+            var userModels = await _context.Users
+                .AsNoTracking()
+                .Select(x => _userConverter.ToModel(x))
+                .ToListAsync();
 
             return userModels;
-
-            //var userModels = new List<UserModel>(userEntities.Count);
-
-
-
-            //return userModels;
-        }
-
-        public async Task<UserModel> FindByEmailAsync(string email)
-        {
-            var userEntity = await _context.Users.FindAsync(email);
-            return _userConverter.ToModel(userEntity);
         }
 
         public async Task<long> SaveAsync(UserModel userModel)
@@ -59,6 +43,14 @@ namespace CarMarket.Data.User.Repository
             await _context.SaveChangesAsync();
 
             return added.Entity.Id;
+        }
+
+        public async Task DeleteAsync(UserModel userModel)
+        {
+            var userEntity = _userConverter.ToEntity(userModel);
+
+            _context.Users.Remove(userEntity);
+            await _context.SaveChangesAsync();
         }
     }
 }
