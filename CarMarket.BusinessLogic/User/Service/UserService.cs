@@ -29,16 +29,6 @@ namespace CarMarket.BusinessLogic.User.Service
             }
         }
 
-        public async Task AddPermissionAsync(long userId, Permission permission)
-        {
-            var user = await GetAsync(userId);
-
-            if (!IsUserContainsPermission(user, permission))
-            {
-                user.Permissions.Add(permission);
-            }
-        }
-
         public async Task ChangePermissionAsync(long userId, Permission replaceablePermission, Permission substitutePermission)
         {
             var user = await GetAsync(userId);
