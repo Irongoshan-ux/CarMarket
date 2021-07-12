@@ -39,7 +39,7 @@ namespace CarMarket.Server
 
             services.AddDbContext<ApplicationDbContext>(builder =>
             {
-                builder.UseSqlServer(Configuration.GetConnectionString("CarsDb"));
+                builder.UseSqlServer(Configuration.GetConnectionString("CarMarketDb"));
             });
             
             services.AddScoped<UserConverter>();

@@ -21,18 +21,16 @@ namespace CarMarket.Data.User.Repository
 
         public async Task<UserModel> FindByIdAsync(int id)
         {
-            var userEntity = _context.Users.FindAsync(id).GetAwaiter().GetResult();
+            var userEntity = await _context.Users.FindAsync(id);
             return _userConverter.ToModel(userEntity);
         }
 
         public async Task<List<UserModel>> FindAllAsync()
         {
-            var userModels = _context.Users
+            var userModels = await _context.Users
                 .AsNoTracking()
                 .Select(x => _userConverter.ToModel(x))
-                .ToListAsync()
-                .GetAwaiter()
-                .GetResult();
+                .ToListAsync();
 
             return userModels;
 
@@ -48,7 +46,7 @@ namespace CarMarket.Data.User.Repository
 
         public async Task<UserModel> FindByEmailAsync(string email)
         {
-            var userEntity = _context.Users.FindAsync(email).GetAwaiter().GetResult();
+            var userEntity = await _context.Users.FindAsync(email);
             return _userConverter.ToModel(userEntity);
         }
 

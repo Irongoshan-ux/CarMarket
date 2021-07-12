@@ -3,6 +3,7 @@ using CarMarket.Core.User.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace CarMarket.Server.Controllers
 {
@@ -20,17 +21,20 @@ namespace CarMarket.Server.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<UserModel> GetAll()
+        public async Task<IEnumerable<UserModel>> GetAll()
         {
-            return _userService.GetAllAsync();
+            return await _userService.GetAllAsync();
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] UserModel userModel)
+        public async Task<IActionResult> Create([FromBody] UserModel userModel)
         {
-            if (!_userService.CreateAsync(userModel))
-                return BadRequest(userModel + " is invalid");
+            var userId = await _userService.CreateAsync(userModel);
 
+            if (userId == default)
+            {
+                return BadRequest(userModel + " is invalid");
+            }
 
             return Ok(userModel);
         }
