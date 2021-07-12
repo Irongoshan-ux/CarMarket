@@ -14,7 +14,6 @@
     <ProjectReference Include="..\..\CarMarket.Core\CarMarket.Core.csproj" />
     <ProjectReference Include="..\..\CarMarket.Data\CarMarket.Data.csproj" />
     <ProjectReference Include="..\Client\CarMarket.Client.csproj" />
-    <ProjectReference Include="..\Shared\CarMarket.Shared.csproj" />
   </ItemGroup>
 
 

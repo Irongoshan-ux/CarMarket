@@ -10,8 +10,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarMarket.Server", "CarMark
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarMarket.Client", "CarMarket\Client\CarMarket.Client.csproj", "{83FE5FE3-8205-40AC-9863-82EA4B2F5AC0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarMarket.Shared", "CarMarket\Shared\CarMarket.Shared.csproj", "{1DE39671-1177-4BDC-B5BF-DC6F770A8C82}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarMarket.BusinessLogic", "CarMarket.BusinessLogic\CarMarket.BusinessLogic.csproj", "{852192FA-A629-4628-88FD-CFE23CB9681A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarMarket.Data", "CarMarket.Data\CarMarket.Data.csproj", "{3DF5493F-F15F-43A3-BF06-6D0DF3FD75A8}"
@@ -32,10 +30,6 @@ Global
 		{83FE5FE3-8205-40AC-9863-82EA4B2F5AC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{83FE5FE3-8205-40AC-9863-82EA4B2F5AC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{83FE5FE3-8205-40AC-9863-82EA4B2F5AC0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1DE39671-1177-4BDC-B5BF-DC6F770A8C82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1DE39671-1177-4BDC-B5BF-DC6F770A8C82}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1DE39671-1177-4BDC-B5BF-DC6F770A8C82}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1DE39671-1177-4BDC-B5BF-DC6F770A8C82}.Release|Any CPU.Build.0 = Release|Any CPU
 		{852192FA-A629-4628-88FD-CFE23CB9681A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{852192FA-A629-4628-88FD-CFE23CB9681A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{852192FA-A629-4628-88FD-CFE23CB9681A}.Release|Any CPU.ActiveCfg = Release|Any CPU
