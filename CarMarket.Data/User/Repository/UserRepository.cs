@@ -27,19 +27,20 @@ namespace CarMarket.Data.User.Repository
 
         public async Task<List<UserModel>> FindAllAsync()
         {
-            var userModels = await _context.Users
-                .AsNoTracking()
-                .Select(x => _userConverter.ToModel(x))
-                .ToListAsync();
+            var userEntities = await _context.Users.AsNoTracking().ToListAsync();
+
+            var userModels = new List<UserModel>(userEntities.Count);
+
+            foreach (var userEntity in userEntities)
+            {
+                userModels.Add(_userConverter.ToModel(userEntity));
+            }
 
             return userModels;
 
             //var userModels = new List<UserModel>(userEntities.Count);
 
-            //foreach (var userEntity in userEntities)
-            //{
-            //    userModels.Add(_userConverter.ToModel(userEntity));
-            //}
+
 
             //return userModels;
         }

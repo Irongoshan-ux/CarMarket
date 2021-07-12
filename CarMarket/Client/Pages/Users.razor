@@ -9,7 +9,6 @@
 <input @bind="newUserFirstName" placeholder="Enter firstname" />
 <input @bind="newUserLastName" placeholder="Enter lastname" />
 <input @bind="newUserEmail" placeholder="Enter email" />
-
 <input @bind="newUserPassword" placeholder="Enter password" />
 <button @onclick="AddItem">Add</button>
 
@@ -24,27 +23,30 @@ else
     <table class="table">
         <thead>
             <tr>
+                <th>Id</th>
                 <th>Firstname</th>
                 <th>Lastname</th>
-                <th>Permissions</th>
                 <th>Email</th>
+                <th>Password</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var user in users)
             {
                 <tr>
-                    <td>@user.FirstName 1</td>
+                    <td>@user.Id</td>
+                    <td>@user.FirstName</td>
                     <td>@user.LastName</td>
-                    <td>@user.Permissions</td>
                     <td>@user.Email</td>
+                    <td>@user.Password</td>
                 </tr>
             }
-        </tbody>
+            </tbody>
     </table>
 }
 
 @code {
+    private string permissionResult = string.Empty;
     private List<UserModel> users;
     private string newUserFirstName;
     private string newUserLastName;
@@ -59,10 +61,11 @@ else
             FirstName = newUserFirstName,
             LastName = newUserLastName,
             Email = newUserEmail,
-            Permissions = new List<Permission>() { new Permission() { Id = 1, PermissionName = Permission.PermissionType.Create} },
+            Permissions = new List<Permission>() { new Permission() { PermissionName = Permission.PermissionType.Create} },
             Password = newUserPassword
         };
         await Http.PostAsJsonAsync("user", newUser);
+        await OnInitializedAsync();
     }
 
     protected override async Task OnInitializedAsync()

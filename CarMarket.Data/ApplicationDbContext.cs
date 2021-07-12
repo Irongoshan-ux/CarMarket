@@ -8,15 +8,19 @@ namespace CarMarket.Data
     public class ApplicationDbContext : DbContext
     {
         public DbSet<UserEntity> Users { get; set; }
+        public DbSet<Permission> Permissions { get; set; }
 
         public ApplicationDbContext()
         {
             Database.EnsureDeleted();
             Database.EnsureCreated();
+            System.Console.WriteLine("Can connect: " + Database.CanConnect());
         }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
+            //Database.EnsureDeleted();
+            Database.EnsureCreated();
         }
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -26,6 +30,7 @@ namespace CarMarket.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new UserConfiguration());
+            modelBuilder.ApplyConfiguration(new PermissonConfiguration());
         }
     }
 
