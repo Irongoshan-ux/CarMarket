@@ -4,6 +4,7 @@ using CarMarket.Data.User.Converter;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace CarMarket.Data.User.Repository
 {
@@ -18,13 +19,13 @@ namespace CarMarket.Data.User.Repository
             _userConverter = userConverter;
         }
 
-        public UserModel FindById(int id)
+        public async Task<UserModel> FindByIdAsync(int id)
         {
             var userEntity = _context.Users.FindAsync(id).GetAwaiter().GetResult();
             return _userConverter.ToModel(userEntity);
         }
 
-        public List<UserModel> FindAll()
+        public async Task<List<UserModel>> FindAllAsync()
         {
             var userModels = _context.Users
                 .AsNoTracking()
@@ -45,23 +46,20 @@ namespace CarMarket.Data.User.Repository
             //return userModels;
         }
 
-        public UserModel FindByEmail(string email)
+        public async Task<UserModel> FindByEmailAsync(string email)
         {
             var userEntity = _context.Users.FindAsync(email).GetAwaiter().GetResult();
             return _userConverter.ToModel(userEntity);
         }
 
-        public bool Save(UserModel userModel)
+        public async Task<long> SaveAsync(UserModel userModel)
         {
             var newUserEntity = _userConverter.ToEntity(userModel);
-            var added = _context.Users.AddAsync(newUserEntity).IsCompleted;
+            
+            var added = await _context.Users.AddAsync(newUserEntity);
+            await _context.SaveChangesAsync();
 
-            if (added)
-            {
-                _context.SaveChangesAsync();
-            }
-
-            return added;
+            return added.Entity.Id;
         }
     }
 }

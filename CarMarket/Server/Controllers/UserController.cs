@@ -22,13 +22,13 @@ namespace CarMarket.Server.Controllers
         [HttpGet]
         public IEnumerable<UserModel> GetAll()
         {
-            return _userService.GetAll();
+            return _userService.GetAllAsync();
         }
 
         [HttpPost]
         public IActionResult Create([FromBody] UserModel userModel)
         {
-            if (!_userService.Create(userModel))
+            if (!_userService.CreateAsync(userModel))
                 return BadRequest(userModel + " is invalid");
 
 

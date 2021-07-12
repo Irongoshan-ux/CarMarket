@@ -3,6 +3,7 @@ using CarMarket.Core.User.Repository;
 using CarMarket.Core.User.Service;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace CarMarket.BusinessLogic.User.Service
 {
@@ -15,34 +16,39 @@ namespace CarMarket.BusinessLogic.User.Service
             _userRepository = userRepository;
         }
 
-        public void AddPermission(params Permission[] permissions)
+        public async Task AddPermissionAsync(params Permission[] permissions)
         {
             throw new NotImplementedException();
         }
 
-        public void AddPermission(Permission permission)
+        public async Task AddPermissionAsync(Permission permission)
         {
             throw new NotImplementedException();
         }
 
-        public void ChangePermission(Permission repcaceablePermission, Permission substitutePermission)
+        public async Task ChangePermissionAsync(Permission repcaceablePermission, Permission substitutePermission)
         {
             throw new NotImplementedException();
         }
 
-        public bool Create(UserModel userModel)
+        public async Task<long> CreateAsync(UserModel userModel)
         {
-            return _userRepository.Save(userModel);
+            if (userModel is null)
+            {
+                throw new ArgumentNullException(nameof(userModel));
+            }
+
+            return await _userRepository.SaveAsync(userModel);
         }
 
-        public UserModel Get(int id)
+        public async Task<UserModel> GetAsync(int id)
         {
             throw new NotImplementedException();
         }
 
-        public List<UserModel> GetAll()
+        public async Task<List<UserModel>> GetAllAsync()
         {
-            return _userRepository.FindAll();
+            return await _userRepository.FindAllAsync();
         }
     }
 }

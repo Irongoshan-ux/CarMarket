@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using CarMarket.Core.User.Domain;
 
 namespace CarMarket.Core.User.Repository
 {
     public interface IUserRepository
     {
-        public UserModel FindById(int id);
-        public UserModel FindByEmail(string email);
-        public bool Save(UserModel user);
-        public List<UserModel> FindAll();
+        Task<UserModel> FindByIdAsync(int id);
+        Task<UserModel> FindByEmailAsync(string email);
+        Task<long> SaveAsync(UserModel user);
+        Task<List<UserModel>> FindAllAsync();
     }
 }
