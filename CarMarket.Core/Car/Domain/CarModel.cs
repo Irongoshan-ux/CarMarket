@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace CarMarket.Core.Car.Domain
+﻿namespace CarMarket.Core.Car.Domain
 {
     public class CarModel
     {
@@ -9,8 +7,9 @@ namespace CarMarket.Core.Car.Domain
 
         }
 
-        public CarModel(string name, string carType, string description, int price)
+        public CarModel(int id, string name, string carType, string description, int price)
         {
+            Id = id;
             Name = name;
             CarType = carType;
             Description = description;
