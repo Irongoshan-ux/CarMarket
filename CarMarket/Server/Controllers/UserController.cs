@@ -70,11 +70,11 @@ namespace CarMarket.Server.Controllers
             return Ok(userModel);
         }
 
-        [HttpPost]
-        [Route("authenticate")]
-        public async Task<IActionResult> Authenticate([FromBody] string email, [FromBody] string password)
-        {
-            return BadRequest("This method has no implementation");
+        //[HttpPost]
+        //[Route("authenticate")]
+        //public async Task<IActionResult> Authenticate([FromBody] string email, [FromBody] string password)
+        //{
+        //    return BadRequest("This method has no implementation");
 
             //IAuthContainerModel model = GetJWTContainerModel("Admin", "admin@gmail.com");
             //IAuthService authService = new JWTService(model.SecretKey);
@@ -104,7 +104,7 @@ namespace CarMarket.Server.Controllers
             //    LastName = user.LastName,
             //    Token = "fake-jwt-token"
             //});
-        }
+        //}
 
         private bool isLoggedIn()
         {

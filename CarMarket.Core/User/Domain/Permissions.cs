@@ -2,7 +2,8 @@
 {
     public class Permission
     {
-        public enum PermissionType{
+        public enum PermissionType
+        {
             Create,
             Edit,
             Delete

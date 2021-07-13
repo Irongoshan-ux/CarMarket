@@ -36,12 +36,12 @@ namespace CarMarket.Server
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CarMarket", Version = "v1" });
             });
 
-            services.AddSingleton<IUserRepository, UserRepository>();
-            services.AddSingleton<IUserService, UserService>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IUserService, UserService>();
             services.AddSingleton<UserConverter>();
-            services.AddScoped<IAuthService, JWTService>();
-            services.AddScoped<IAuthContainerModel, JWTContainerModel>();
-            services.AddScoped<System.Net.Http.HttpClient>();
+            //services.AddScoped<IAuthService, JWTService>();
+            //services.AddScoped<IAuthContainerModel, JWTContainerModel>();
+            //services.AddScoped<System.Net.Http.HttpClient>();
 
             services.AddDbContext<ApplicationDbContext>(builder =>
             {
