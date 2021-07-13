@@ -9,5 +9,6 @@ namespace CarMarket.Core.Car.Service
         Task<long> CreateAsync(CarModel userModel);
         Task<CarModel> GetAsync(long id);
         Task<List<CarModel>> GetAllAsync();
+        Task DeleteAsync(long carId);
     }
 }
