@@ -11,6 +11,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using CarMarket.BusinessLogic.User.Authentication.Models;
+using CarMarket.BusinessLogic.User.Authentication.Service;
 
 namespace CarMarket.Server
 {
@@ -34,15 +36,20 @@ namespace CarMarket.Server
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CarMarket", Version = "v1" });
             });
 
-            services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped<IUserService, UserService>();
+            services.AddSingleton<IUserRepository, UserRepository>();
+            services.AddSingleton<IUserService, UserService>();
+            services.AddSingleton<UserConverter>();
+            services.AddScoped<IAuthService, JWTService>();
+            services.AddScoped<IAuthContainerModel, JWTContainerModel>();
+            services.AddScoped<System.Net.Http.HttpClient>();
 
             services.AddDbContext<ApplicationDbContext>(builder =>
             {
                 builder.UseSqlServer(Configuration.GetConnectionString("CarMarketDb"));
             });
-            
-            services.AddScoped<UserConverter>();
+           
+
+            services.Configure<JWTContainerModel>(Configuration.GetSection("JWTSecretKey"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

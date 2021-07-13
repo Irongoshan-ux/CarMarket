@@ -19,6 +19,13 @@ namespace CarMarket.Data.User.Repository
             _userConverter = userConverter;
         }
 
+        public UserModel FindUserModel(string email, string password)
+        {
+            var userEntity = _context.Users.FirstOrDefault(x => (x.Email == email) && (x.Password == password));
+
+            return _userConverter.ToModel(userEntity);
+        }
+
         public async Task<UserModel> FindByIdAsync(long id)
         {
             var userEntity = await _context.Users.FindAsync(id);
@@ -51,6 +58,13 @@ namespace CarMarket.Data.User.Repository
 
             _context.Users.Remove(userEntity);
             await _context.SaveChangesAsync();
+        }
+
+        public UserModel FindByEmail(string email)
+        {
+            var userEntity = _context.Users.FirstOrDefault(x => x.Email == email);
+
+            return _userConverter.ToModel(userEntity);
         }
     }
 }

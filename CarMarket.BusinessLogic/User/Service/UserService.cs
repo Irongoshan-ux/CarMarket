@@ -16,6 +16,11 @@ namespace CarMarket.BusinessLogic.User.Service
             _userRepository = userRepository;
         }
 
+        public UserModel Authenticate(string email, string password)
+        {
+            return _userRepository.FindUserModel(email, password);
+        }
+
         public async Task AddPermissionAsync(long userId, params Permission[] permissions)
         {
             var user = await GetAsync(userId);
@@ -70,6 +75,11 @@ namespace CarMarket.BusinessLogic.User.Service
             }
 
             await _userRepository.DeleteAsync(userModel);
+        }
+
+        public UserModel GetByEmail(string email)
+        {
+            return _userRepository.FindByEmail(email);
         }
 
         private bool IsUserContainsPermission(UserModel user, Permission permission) => user.Permissions.Contains(permission);
