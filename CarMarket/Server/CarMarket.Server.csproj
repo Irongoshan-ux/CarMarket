@@ -5,6 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="5.0.7" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.4" />
   </ItemGroup>
@@ -14,7 +16,6 @@
     <ProjectReference Include="..\..\CarMarket.Core\CarMarket.Core.csproj" />
     <ProjectReference Include="..\..\CarMarket.Data\CarMarket.Data.csproj" />
     <ProjectReference Include="..\Client\CarMarket.Client.csproj" />
-    <ProjectReference Include="..\Shared\CarMarket.Shared.csproj" />
   </ItemGroup>
 
 

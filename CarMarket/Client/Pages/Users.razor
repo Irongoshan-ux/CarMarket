@@ -1,0 +1,83 @@
+﻿@page "/admin/users"
+@using CarMarket.Core.User.Domain
+@inject HttpClient Http
+
+<h1>Users Controller</h1>
+
+<p>Add user</p>
+
+<input @bind="newUserFirstName" placeholder="Enter firstname" />
+<input @bind="newUserLastName" placeholder="Enter lastname" />
+<input @bind="newUserEmail" placeholder="Enter email" />
+<input @bind="newUserPassword" placeholder="Enter password" />
+<button @onclick="AddUserAsync">Add</button>
+
+<p>All users</p>
+
+@if (users == null)
+{
+    <p><em>Loading users...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Firstname</th>
+                <th>Lastname</th>
+                <th>Email</th>
+                <th>Password</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in users)
+            {
+                <tr>
+                    <td>@user.Id</td>
+                    <td>@user.FirstName</td>
+                    <td>@user.LastName</td>
+                    <td>@user.Email</td>
+                    <td>@user.Password</td>
+                </tr>
+            }
+            </tbody>
+    </table>
+}
+
+@code {
+    private string permissionResult = string.Empty;
+    private List<UserModel> users;
+    private string newUserFirstName;
+    private string newUserLastName;
+    private string newUserEmail;
+    private string newUserPassword;
+    //private List<Permission> newUserPermissions; TODO: How to get list of permissions and select there?
+
+    private async Task AddUserAsync()
+    {
+        var newUser = new UserModel
+        {
+            FirstName = newUserFirstName,
+            LastName = newUserLastName,
+            Email = newUserEmail,
+            Permissions = new List<Permission>() { 
+                new Permission() { PermissionName = Permission.PermissionType.Create},
+                //new Permission() { PermissionName = Permission.PermissionType.Edit }
+            },
+            Password = newUserPassword
+        };
+        await Http.PostAsJsonAsync("user/create", newUser);
+        await GetUserModelList();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetUserModelList();
+    }
+
+    private async Task GetUserModelList()
+    {
+        users = await Http.GetFromJsonAsync<List<UserModel>>("user");
+    }
+}
