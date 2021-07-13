@@ -7,7 +7,7 @@ namespace CarMarket.Core.Car.Service
     public interface ICarService
     {
         Task<long> CreateAsync(CarModel userModel);
-        Task<CarModel> GetAsync(int id);
+        Task<CarModel> GetAsync(long id);
         Task<List<CarModel>> GetAllAsync();
     }
 }

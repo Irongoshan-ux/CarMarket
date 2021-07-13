@@ -1,13 +1,12 @@
-﻿namespace CarMarket.Core.Car.Domain
+﻿namespace CarMarket.Data.Car.Domain
 {
-    public class CarModel
+    public class CarEntity
     {
-        public CarModel()
+        public CarEntity()
         {
-
         }
 
-        public CarModel(long id, string name, string carType, string description, int price)
+        public CarEntity(long id, string name, string carType, string description, int price)
         {
             Id = id;
             Name = name;

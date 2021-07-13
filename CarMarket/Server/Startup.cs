@@ -13,6 +13,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using CarMarket.BusinessLogic.User.Authentication.Models;
 using CarMarket.BusinessLogic.User.Authentication.Service;
+using CarMarket.Data.Car.Repository;
+using CarMarket.Core.Car.Repository;
+using CarMarket.Core.Car.Service;
 
 namespace CarMarket.Server
 {
@@ -39,6 +42,11 @@ namespace CarMarket.Server
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserService, UserService>();
             services.AddSingleton<UserConverter>();
+
+            services.AddScoped<ICarRepository, CarRepository>();
+            services.AddScoped<ICarService, CarService>();
+            services.AddSingleton<UserConverter>();
+
             //services.AddScoped<IAuthService, JWTService>();
             //services.AddScoped<IAuthContainerModel, JWTContainerModel>();
             //services.AddScoped<System.Net.Http.HttpClient>();

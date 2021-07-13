@@ -7,7 +7,7 @@ namespace CarMarket.Data.User.Converter
     {
         public UserEntity ToEntity(UserModel userModel)
         {
-            return new UserEntity(userModel.Id,userModel.FirstName, userModel.LastName, userModel.Permissions, userModel.Email, userModel.Password);
+            return new UserEntity(userModel.Id, userModel.FirstName, userModel.LastName, userModel.Permissions, userModel.Email, userModel.Password);
         }
 
         public UserModel ToModel(UserEntity userEntity)

@@ -6,9 +6,11 @@ namespace CarMarket.Core.Car.Repository
 {
     public interface ICarRepository
     {
-        Task<CarModel> FindByIdAsync(int id);
-        Task<CarModel> FindByNameAsync(string email);
-        Task<long> SaveAsync(CarModel user);
+        Task<CarModel> FindByIdAsync(long id);
+        Task<IEnumerable<CarModel>> FindByNameAsync(string name);
+        CarModel FindByName(string name);
+        Task<long> SaveAsync(CarModel car);
         Task<List<CarModel>> FindAllAsync();
+        Task DeleteAsync(CarModel car);
     }
 }

@@ -6,7 +6,7 @@ namespace CarMarket.Data.User.Domain
 {
     public class UserEntity
     {
-        public UserEntity(long id,string firstName, string lastName, ICollection<Permission> permissions, string email, string password)
+        public UserEntity(long id, string firstName, string lastName, ICollection<Permission> permissions, string email, string password)
         {
             Id = id;
             FirstName = firstName;
