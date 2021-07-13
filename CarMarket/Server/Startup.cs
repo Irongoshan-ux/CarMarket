@@ -16,6 +16,7 @@ using CarMarket.BusinessLogic.User.Authentication.Service;
 using CarMarket.Data.Car.Repository;
 using CarMarket.Core.Car.Repository;
 using CarMarket.Core.Car.Service;
+using CarMarket.Data.Car.Converter;
 
 namespace CarMarket.Server
 {
@@ -45,7 +46,7 @@ namespace CarMarket.Server
 
             services.AddScoped<ICarRepository, CarRepository>();
             services.AddScoped<ICarService, CarService>();
-            services.AddSingleton<UserConverter>();
+            services.AddSingleton<CarConverter>();
 
             //services.AddScoped<IAuthService, JWTService>();
             //services.AddScoped<IAuthContainerModel, JWTContainerModel>();

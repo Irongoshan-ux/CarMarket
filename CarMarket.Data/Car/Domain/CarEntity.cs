@@ -1,4 +1,6 @@
-﻿namespace CarMarket.Data.Car.Domain
+﻿using CarMarket.Core.Car.Domain;
+
+namespace CarMarket.Data.Car.Domain
 {
     public class CarEntity
     {
@@ -6,7 +8,7 @@
         {
         }
 
-        public CarEntity(long id, string name, string carType, string description, int price)
+        public CarEntity(long id, string name, Type carType, string description, int price)
         {
             Id = id;
             Name = name;
@@ -17,7 +19,7 @@
 
         public long Id { get; set; }
         public string Name { get; set; }
-        public string CarType { get; set; }
+        public Type CarType { get; set; }
         public string Description { get; set; }
         public int Price { get; set; }
     }
