@@ -47,7 +47,7 @@ namespace CarMarket.Data.Car.Repository
 
         public async Task DeleteAsync(CarModel carModel)
         {
-            var carEntity = _carConverter.ToEntity(carModel);
+            var carEntity = _context.Cars.Where(x => x.Id == carModel.Id).FirstOrDefault(); // why not working??? _carConverter.ToEntity(carModel);
 
             _context.Cars.Remove(carEntity);
             await _context.SaveChangesAsync();
