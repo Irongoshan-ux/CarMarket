@@ -47,20 +47,20 @@ namespace CarMarket.Data.Car.Repository
 
         public async Task DeleteAsync(CarModel carModel)
         {
-            var carEntity = _context.Cars.Where(x => x.Id == carModel.Id).FirstOrDefault(); // why not working??? _carConverter.ToEntity(carModel);
+            var carEntity = await _context.Cars.Where(x => x.Id == carModel.Id).FirstOrDefaultAsync(); // why not working??? _carConverter.ToEntity(carModel);
 
             _context.Cars.Remove(carEntity);
             await _context.SaveChangesAsync();
         }
 
-        public CarModel FindByName(string name)
+        public async Task<CarModel> FindOneByNameAsync(string name)
         {
-            var carEntity = _context.Cars.FirstOrDefault(x => x.Name == name);
+            var carEntity = await _context.Cars.FirstOrDefaultAsync(x => x.Name == name);
 
             return _carConverter.ToModel(carEntity);
         }
 
-        public async Task<IEnumerable<CarModel>> FindByNameAsync(string name)
+        public async Task<IEnumerable<CarModel>> FindAllByNameAsync(string name)
         {
             var carEntity = await _context.Cars.Where(x => x.Name == name).ToListAsync();
 

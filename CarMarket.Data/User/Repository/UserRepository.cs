@@ -54,15 +54,15 @@ namespace CarMarket.Data.User.Repository
 
         public async Task DeleteAsync(UserModel userModel)
         {
-            var userEntity = _userConverter.ToEntity(userModel);
+            var userEntity = await _context.Users.Where(x => x.Id == userModel.Id).FirstOrDefaultAsync(); // why isn't working? _userConverter.ToEntity(userModel);
 
             _context.Users.Remove(userEntity);
             await _context.SaveChangesAsync();
         }
 
-        public UserModel FindByEmail(string email)
+        public async Task<UserModel> FindByEmailAsync(string email)
         {
-            var userEntity = _context.Users.FirstOrDefault(x => x.Email == email);
+            var userEntity = await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
 
             return _userConverter.ToModel(userEntity);
         }

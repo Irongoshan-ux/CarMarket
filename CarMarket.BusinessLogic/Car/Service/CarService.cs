@@ -48,14 +48,14 @@ namespace CarMarket.BusinessLogic.User.Service
             await _carRepository.DeleteAsync(carModel);
         }
 
-        public CarModel GetByName(string carName)
+        public async Task<CarModel> GetByName(string carName)
         {
-            return _carRepository.FindByName(carName);
+            return await _carRepository.FindOneByNameAsync(carName);
         }
 
         public async Task<IEnumerable<CarModel>> GetByNameAsync(string carName)
         {
-            return await _carRepository.FindByNameAsync(carName);
+            return await _carRepository.FindAllByNameAsync(carName);
         }
     }
 }
