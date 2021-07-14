@@ -12,10 +12,4 @@
         Minivan,
         Pickup
     }
-
-    public class Type
-    {
-        public int Id { get; set; }
-        public CarType CarTypeName { get; set; }
-    }
 }

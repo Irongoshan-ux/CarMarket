@@ -9,7 +9,7 @@
 <input @bind="newCarName" placeholder="Enter car name" />
 <input @bind="newCarDescription" placeholder="Enter description" />
 <input @bind="newCarPrice" placeholder="Enter price" />
-<input @bind="newCarTypeName" placeholder="Enter car type name" />
+<input @bind="newCarType" placeholder="Enter car type name" />
 <button @onclick="AddCarAsync">Add</button>
 
 <p>All cars</p>
@@ -36,7 +36,7 @@ else
                 <tr>
                     <td>@car.Id</td>
                     <td>@car.Name</td>
-                    <td></td>
+                    <td>@car.CarType</td>
                     <td>@car.Description</td>
                     <td>@car.Price</td>
                 </tr>
@@ -50,7 +50,7 @@ else
     private string newCarName;
     private string newCarDescription;
     private int newCarPrice;
-    private CarType newCarTypeName;
+    private CarType newCarType;
 
     private async Task AddCarAsync()
     {
@@ -59,10 +59,7 @@ else
             Name = newCarName,
             Description = newCarDescription,
             Price = newCarPrice,
-            CarType = new Core.Car.Domain.Type()
-            {
-                CarTypeName = newCarTypeName
-            }
+            CarType = newCarType
         };
         await Http.PostAsJsonAsync("car/create", newCar);
         await GetCarModelList();

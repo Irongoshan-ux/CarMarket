@@ -28,7 +28,7 @@ namespace CarMarket.Server.Controllers
             TokenClass tokenClass = new TokenClass();
             var user = _userService.GetByEmail(userModel.Email);
 
-            if(user is null)
+            if (user is null)
             {
                 tokenClass.TokenOrMessage = "Unauthorized user";
                 return Ok(tokenClass);
