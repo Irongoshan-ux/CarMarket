@@ -1,0 +1,77 @@
+﻿@page "/cars"
+@using CarMarket.Core.Car.Domain
+@inject HttpClient Http
+
+<h1>Cars Controller</h1>
+
+<p>Add car</p>
+
+<input @bind="newCarName" placeholder="Enter car name" />
+<input @bind="newCarDescription" placeholder="Enter description" />
+<input @bind="newCarPrice" placeholder="Enter price" />
+<input @bind="newCarType" placeholder="Enter car type name" />
+<button @onclick="AddCarAsync">Add</button>
+
+<p>All cars</p>
+
+@if (cars == null)
+{
+    <p><em>Loading cars...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>CarType</th>
+                <th>Description</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var car in cars)
+            {
+                <tr>
+                    <td>@car.Id</td>
+                    <td>@car.Name</td>
+                    <td>@car.CarType</td>
+                    <td>@car.Description</td>
+                    <td>@car.Price</td>
+                </tr>
+            }
+            </tbody>
+    </table>
+}
+
+@code {
+    private List<CarModel> cars;
+    private string newCarName;
+    private string newCarDescription;
+    private int newCarPrice;
+    private CarType newCarType;
+
+    private async Task AddCarAsync()
+    {
+        var newCar = new CarModel
+        {
+            Name = newCarName,
+            Description = newCarDescription,
+            Price = newCarPrice,
+            CarType = newCarType
+        };
+        await Http.PostAsJsonAsync("https://localhost:10001/car/create", newCar);
+        await GetCarModelList();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetCarModelList();
+    }
+
+    private async Task GetCarModelList()
+    {
+        cars = await Http.GetFromJsonAsync<List<CarModel>>("https://localhost:10001/car");
+    }
+}
