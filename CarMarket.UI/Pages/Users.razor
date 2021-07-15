@@ -44,7 +44,7 @@ else
                     <td>@user.Password</td>
                 </tr>
             }
-            </tbody>
+        </tbody>
     </table>
 }
 
@@ -55,6 +55,7 @@ else
     private string newUserLastName;
     private string newUserEmail;
     private string newUserPassword;
+
     //private List<Permission> newUserPermissions; TODO: How to get list of permissions and select there?
 
     private async Task AddUserAsync()
@@ -64,7 +65,7 @@ else
             FirstName = newUserFirstName,
             LastName = newUserLastName,
             Email = newUserEmail,
-            Permissions = new List<Permission>() { 
+            Permissions = new List<Permission>() {
                 new Permission() { PermissionName = Permission.PermissionType.Create},
                 //new Permission() { PermissionName = Permission.PermissionType.Edit }
             },

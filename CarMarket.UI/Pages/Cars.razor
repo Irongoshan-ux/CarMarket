@@ -12,6 +12,11 @@
 <input @bind="newCarType" placeholder="Enter car type name" />
 <button @onclick="AddCarAsync">Add</button>
 
+<p>Delete car</p>
+
+<input @bind="deleteCarId" placeholder="Enter the Id of the car you want to delete" />
+<button @onclick="DeleteCarAsync">Delete</button>
+
 <p>All cars</p>
 
 @if (cars == null)
@@ -41,7 +46,7 @@ else
                     <td>@car.Price</td>
                 </tr>
             }
-            </tbody>
+        </tbody>
     </table>
 }
 
@@ -51,6 +56,8 @@ else
     private string newCarDescription;
     private int newCarPrice;
     private CarType newCarType;
+
+    private long deleteCarId;
 
     private async Task AddCarAsync()
     {
@@ -62,6 +69,12 @@ else
             CarType = newCarType
         };
         await Http.PostAsJsonAsync("https://localhost:10001/car/create", newCar);
+        await GetCarModelList();
+    }
+
+    private async Task DeleteCarAsync()
+    {
+        await Http.PostAsJsonAsync<long>("https://localhost:10001/car/delete/" + deleteCarId, deleteCarId);
         await GetCarModelList();
     }
 

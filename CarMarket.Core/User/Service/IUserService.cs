@@ -13,6 +13,7 @@ namespace CarMarket.Core.User.Service
         Task<UserModel> GetByEmailAsync(string email);
         Task<List<UserModel>> GetAllAsync();
         Task DeleteAsync(long userId);
-        UserModel Authenticate(string email, string password);
+        Task<UserModel> AuthenticateAsync(string email, string password);
+        Task<Role> GetUserRoleAsync(string roleName);
     }
 }

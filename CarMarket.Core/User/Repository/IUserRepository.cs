@@ -10,7 +10,8 @@ namespace CarMarket.Core.User.Repository
         Task<long> SaveAsync(UserModel user);
         Task<List<UserModel>> FindAllAsync();
         Task DeleteAsync(long userId);
-        UserModel FindUserModel(string email, string password);
+        Task<UserModel> FindUserModelAsync(string email, string password);
         Task<UserModel> FindByEmailAsync(string email);
+        Task<Role> FindUserRoleAsync(string roleName);
     }
 }

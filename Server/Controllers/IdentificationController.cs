@@ -1,11 +1,14 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using CarMarket.Core.User.Domain;
+using CarMarket.Core.User.Service;
 using CarMarket.Server.Infrastructure.Identification.Models;
 using IdentityServer4;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CarMarket.Server.Controllers
@@ -15,16 +18,19 @@ namespace CarMarket.Server.Controllers
     public class IdentificationController : Controller
     {
         private readonly IIdentityServerInteractionService _interaction;
+        private readonly IUserService _userService;
         //private readonly SignInManager<ApplicationUser> _signInManager;
         //private readonly UserManager<ApplicationUser> _userManager;
 
         public IdentificationController(
-            IIdentityServerInteractionService interaction
+            IIdentityServerInteractionService interaction,
+            IUserService userService
             //SignInManager<ApplicationUser> signInManager,
             //UserManager<ApplicationUser> userManager
             )
         {
             _interaction = interaction;
+            _userService = userService;
             //_signInManager = signInManager;
             //_userManager = userManager;
         }
@@ -36,37 +42,25 @@ namespace CarMarket.Server.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> Login(LoginViewModel model)
+        public async Task<IActionResult> Login(LoginModel model)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                ModelState.AddModelError("", "Please. Validate your credentials and try again.");
-                return View(model);
+                var user = await _userService.AuthenticateAsync(model.Email, model.Password);
+
+                if (user != null)
+                {
+                    await Authenticate(user);
+
+                    await HttpContext.SignInAsync(new IdentityServerUser(model.Email));
+
+                    return Redirect(model.ReturnUrl);
+                }
+
+                ModelState.AddModelError("", "Invalid email or password");
             }
 
-            if (model.Email != "admin@gmail.com")
-            {
-                ModelState.AddModelError("", "User not found");
-                return View(model);
-            }
-
-            await HttpContext.SignInAsync(new IdentityServerUser(model.Email));
-
-            //var user = await _userManager.FindByNameAsync(model.UserName);
-            //if (user == null)
-            //{
-            //    ModelState.AddModelError("UserName", "User not found");
-            //    return View(model);
-            //}
-
-            //var signResult = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
-            //if (!signResult.Succeeded)
-            //{
-            //    ModelState.AddModelError("", "Something went wrong");
-            //    return View(model);
-            //}
-
-            return Redirect(model.ReturnUrl);
+            return View(model);
         }
 
         [HttpGet("[action]")]
@@ -75,8 +69,52 @@ namespace CarMarket.Server.Controllers
             var logout = await _interaction.GetLogoutContextAsync(logoutId);
 
             await HttpContext.SignOutAsync();
-            //await _signInManager.SignOutAsync();
             return Redirect(logout.PostLogoutRedirectUri);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Register(RegisterModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userService.GetByEmailAsync(model.Email);
+
+                if (user != null)
+                {
+                    ModelState.AddModelError("", "Invalid email or password");
+                    return View();
+                }
+
+                user = new UserModel { Email = model.Email, Password = model.Password };
+                Role userRole = await _userService.GetUserRoleAsync("user");
+
+                if (userRole != null)
+                {
+                    user.Role = userRole;
+                }
+
+                await _userService.CreateAsync(user);
+
+                await Authenticate(user);
+            }
+            return Redirect(model.ReturnUrl);
+        }
+
+        private async Task Authenticate(UserModel user)
+        {
+            // создаем один claim
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email),
+                new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role?.Name)
+            };
+            // создаем объект ClaimsIdentity
+            ClaimsIdentity id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType,
+                ClaimsIdentity.DefaultRoleClaimType);
+            // установка аутентификационных куки
+            await HttpContext.SignInAsync(new IdentityServerUser(id.NameClaimType));//, new ClaimsPrincipal(id));
+
+            //await HttpContext.SignInAsync(new IdentityServerUser(user.Email));
         }
     }
 }

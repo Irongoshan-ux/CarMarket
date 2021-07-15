@@ -2,7 +2,7 @@
 
 namespace CarMarket.Server.Infrastructure.Identification.Models
 {
-    public class LoginViewModel
+    public class LoginModel
     {
         [Required]
         public string Email { get; set; }

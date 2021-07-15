@@ -7,12 +7,14 @@ namespace CarMarket.Data.User.Converter
     {
         public UserEntity ToEntity(UserModel userModel)
         {
-            return new UserEntity(userModel.Id, userModel.FirstName, userModel.LastName, userModel.Permissions, userModel.Email, userModel.Password);
+            return new UserEntity(userModel.Id, userModel.FirstName, userModel.LastName, userModel.RoleId, userModel.Role,
+                userModel.Permissions, userModel.Email, userModel.Password);
         }
 
         public UserModel ToModel(UserEntity userEntity)
         {
-            return new UserModel(userEntity.Id, userEntity.FirstName, userEntity.LastName, userEntity.Permissions, userEntity.Email, userEntity.Password);
+            return new UserModel(userEntity.Id, userEntity.FirstName, userEntity.LastName, userEntity.RoleId, userEntity.Role,
+                userEntity.Permissions, userEntity.Email, userEntity.Password);
         }
     }
 }

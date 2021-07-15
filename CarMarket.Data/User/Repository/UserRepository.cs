@@ -19,9 +19,11 @@ namespace CarMarket.Data.User.Repository
             _userConverter = userConverter;
         }
 
-        public UserModel FindUserModel(string email, string password)
+        public async Task<UserModel> FindUserModelAsync(string email, string password)
         {
-            var userEntity = _context.Users.FirstOrDefault(x => (x.Email == email) && (x.Password == password));
+            var userEntity = await _context.Users
+                .Include(u => u.Role)
+                .FirstOrDefaultAsync(x => (x.Email == email) && (x.Password == password));
 
             return _userConverter.ToModel(userEntity);
         }
@@ -55,7 +57,8 @@ namespace CarMarket.Data.User.Repository
         public async Task DeleteAsync(long userId)
         {
             var userEntity = await _context.Users
-                .Where(x => x.Id == userId).FirstOrDefaultAsync(); // why isn't working? _userConverter.ToEntity(userModel);
+                .Where(x => x.Id == userId)
+                .FirstOrDefaultAsync(); // why isn't working? _userConverter.ToEntity(userModel);
 
             _context.Users.Remove(userEntity);
             await _context.SaveChangesAsync();
@@ -66,6 +69,11 @@ namespace CarMarket.Data.User.Repository
             var userEntity = await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
 
             return _userConverter.ToModel(userEntity);
+        }
+
+        public async Task<Role> FindUserRoleAsync(string roleName)
+        {
+            return await _context.Roles.FirstOrDefaultAsync(r => r.Name == roleName);
         }
     }
 }
