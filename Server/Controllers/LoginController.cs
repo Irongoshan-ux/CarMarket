@@ -5,6 +5,7 @@ using CarMarket.Server.Infrastructure.Identification.Models;
 using CarMarket.Server.Infrastructure.Identification.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace CarMarket.Server.Controllers
 {
@@ -22,11 +23,11 @@ namespace CarMarket.Server.Controllers
             _authService = authService;
         }
 
-        public IActionResult Login([FromBody] UserModel userModel)
+        public async Task<IActionResult> Login([FromBody] UserModel userModel)
         {
 
             TokenClass tokenClass = new TokenClass();
-            var user = _userService.GetByEmail(userModel.Email);
+            var user = await _userService.GetByEmailAsync(userModel.Email);
 
             if (user is null)
             {

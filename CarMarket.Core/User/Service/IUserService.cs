@@ -10,7 +10,7 @@ namespace CarMarket.Core.User.Service
         Task ChangePermissionAsync(long userId, Permission replaceablePermission, Permission substitutePermission);
         Task<long> CreateAsync(UserModel userModel);
         Task<UserModel> GetAsync(long userId);
-        UserModel GetByEmail(string email);
+        Task<UserModel> GetByEmailAsync(string email);
         Task<List<UserModel>> GetAllAsync();
         Task DeleteAsync(long userId);
         UserModel Authenticate(string email, string password);

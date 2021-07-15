@@ -77,9 +77,9 @@ namespace CarMarket.BusinessLogic.User.Service
             await _userRepository.DeleteAsync(userModel);
         }
 
-        public UserModel GetByEmail(string email)
+        public async Task<UserModel> GetByEmailAsync(string email)
         {
-            return _userRepository.FindByEmail(email);
+            return await _userRepository.FindByEmailAsync(email);
         }
 
         private bool IsUserContainsPermission(UserModel user, Permission permission) => user.Permissions.Contains(permission);
