@@ -45,7 +45,7 @@ namespace CarMarket.BusinessLogic.User.Service
                 throw new ArgumentException(nameof(carModel) + " shouldn't be null");
             }
 
-            await _carRepository.DeleteAsync(carModel);
+            await _carRepository.DeleteAsync(carModel.Id);
         }
 
         public async Task<CarModel> GetByName(string carName)

@@ -74,7 +74,7 @@ namespace CarMarket.BusinessLogic.User.Service
                 throw new ArgumentException(nameof(userModel) + " shouldn't be null");
             }
 
-            await _userRepository.DeleteAsync(userModel);
+            await _userRepository.DeleteAsync(userModel.Id);
         }
 
         public async Task<UserModel> GetByEmailAsync(string email)

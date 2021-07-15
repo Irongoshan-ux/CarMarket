@@ -52,9 +52,10 @@ namespace CarMarket.Data.User.Repository
             return added.Entity.Id;
         }
 
-        public async Task DeleteAsync(UserModel userModel)
+        public async Task DeleteAsync(long userId)
         {
-            var userEntity = await _context.Users.Where(x => x.Id == userModel.Id).FirstOrDefaultAsync(); // why isn't working? _userConverter.ToEntity(userModel);
+            var userEntity = await _context.Users
+                .Where(x => x.Id == userId).FirstOrDefaultAsync(); // why isn't working? _userConverter.ToEntity(userModel);
 
             _context.Users.Remove(userEntity);
             await _context.SaveChangesAsync();

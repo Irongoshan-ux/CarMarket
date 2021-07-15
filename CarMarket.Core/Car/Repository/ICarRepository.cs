@@ -11,6 +11,6 @@ namespace CarMarket.Core.Car.Repository
         Task<CarModel> FindOneByNameAsync(string name);
         Task<long> SaveAsync(CarModel car);
         Task<List<CarModel>> FindAllAsync();
-        Task DeleteAsync(CarModel car);
+        Task DeleteAsync(long carId);
     }
 }

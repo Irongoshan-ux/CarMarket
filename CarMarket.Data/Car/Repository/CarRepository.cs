@@ -45,9 +45,13 @@ namespace CarMarket.Data.Car.Repository
             return added.Entity.Id;
         }
 
-        public async Task DeleteAsync(CarModel carModel)
+        public async Task DeleteAsync(long carId)
         {
-            var carEntity = await _context.Cars.Where(x => x.Id == carModel.Id).FirstOrDefaultAsync(); // why not working??? _carConverter.ToEntity(carModel);
+            var carEntity = await _context.Cars
+                .Where(x => x.Id == carId)
+                .FirstOrDefaultAsync();
+
+            //var carEntity = _carConverter.ToEntity(carModel);
 
             _context.Cars.Remove(carEntity);
             await _context.SaveChangesAsync();
@@ -62,7 +66,9 @@ namespace CarMarket.Data.Car.Repository
 
         public async Task<IEnumerable<CarModel>> FindAllByNameAsync(string name)
         {
-            var carEntity = await _context.Cars.Where(x => x.Name == name).ToListAsync();
+            var carEntity = await _context.Cars
+                .Where(x => x.Name == name)
+                .ToListAsync();
 
             var carModels = new List<CarModel>(carEntity.Count);
 
