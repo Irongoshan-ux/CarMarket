@@ -84,7 +84,7 @@ namespace CarMarket.BusinessLogic.User.Service
             {
                 user = await _userRepository.FindByEmailAsync(email);
             }
-            catch(Exception e)
+            catch
             {
                 return null;
             }
