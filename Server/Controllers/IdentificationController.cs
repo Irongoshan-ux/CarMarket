@@ -41,6 +41,12 @@ namespace CarMarket.Server.Controllers
             return View();
         }
 
+        [HttpGet("[action]")]
+        public async Task<IActionResult> Register(string returnUrl)
+        {
+            return View();
+        }
+
         [HttpPost("[action]")]
         public async Task<IActionResult> Login(LoginModel model)
         {
@@ -63,16 +69,7 @@ namespace CarMarket.Server.Controllers
             return View(model);
         }
 
-        [HttpGet("[action]")]
-        public async Task<IActionResult> Logout(string logoutId)
-        {
-            var logout = await _interaction.GetLogoutContextAsync(logoutId);
-
-            await HttpContext.SignOutAsync();
-            return Redirect(logout.PostLogoutRedirectUri);
-        }
-
-        [HttpPost]
+        [HttpPost("[action]")]
         public async Task<IActionResult> Register(RegisterModel model)
         {
             if (ModelState.IsValid)
@@ -97,7 +94,16 @@ namespace CarMarket.Server.Controllers
 
                 await Authenticate(user);
             }
-            return Redirect(model.ReturnUrl);
+            return Redirect("https://localhost:5001"); // Redirect(model.ReturnUrl);
+        }
+
+        [HttpGet("[action]")]
+        public async Task<IActionResult> Logout(string logoutId)
+        {
+            var logout = await _interaction.GetLogoutContextAsync(logoutId);
+
+            await HttpContext.SignOutAsync();
+            return Redirect(logout.PostLogoutRedirectUri);
         }
 
         private async Task Authenticate(UserModel user)

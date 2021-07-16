@@ -16,7 +16,7 @@ namespace CarMarket.Server.Infrastructure.Identification.Models
         [Compare("Password", ErrorMessage = "Password mismatch")]
         public string ConfirmPassword { get; set; }
 
-        [Required]
-        public string ReturnUrl { get; set; }
+        //[Required]
+        //public string ReturnUrl { get; set; }
     }
 }

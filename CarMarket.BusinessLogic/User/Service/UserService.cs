@@ -79,7 +79,17 @@ namespace CarMarket.BusinessLogic.User.Service
 
         public async Task<UserModel> GetByEmailAsync(string email)
         {
-            return await _userRepository.FindByEmailAsync(email);
+            UserModel user;
+            try
+            {
+                user = await _userRepository.FindByEmailAsync(email);
+            }
+            catch(Exception e)
+            {
+                return null;
+            }
+
+            return user;
         }
 
         public async Task<Role> GetUserRoleAsync(string roleName)
