@@ -14,16 +14,14 @@ namespace CarMarket.Data.Image.Repository
             _context = context;
         }
 
-        public async Task<long> SaveAsync(CarImage carImageModel)
+        public async Task<long> SaveAsync(CarImage carImage)
         {
-            throw new NotImplementedException();
-
             // TODO Add automapper 
 
-            //var added = await _context.CarImages.AddAsync(carImageModel);
-            //await _context.SaveChangesAsync();
+            var added = await _context.CarImages.AddAsync(carImage);
+            await _context.SaveChangesAsync();
 
-            //return added.Entity.Id;
+            return added.Entity.Id;
         }
     }
 }
