@@ -1,4 +1,5 @@
 ﻿using CarMarket.Core.Car.Domain;
+using CarMarket.Core.Image.Domain;
 using System.Collections.Generic;
 
 namespace CarMarket.Data.Car.Domain

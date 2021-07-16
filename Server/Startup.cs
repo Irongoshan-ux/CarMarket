@@ -2,7 +2,6 @@ using CarMarket.BusinessLogic.User.Service;
 using CarMarket.Core.User.Repository;
 using CarMarket.Core.User.Service;
 using CarMarket.Data;
-using CarMarket.Data.User.Converter;
 using CarMarket.Data.User.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -59,7 +58,6 @@ namespace CarMarket.Server
 
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserService, UserService>();
-            services.AddSingleton<UserConverter>();
 
             services.AddScoped<ICarRepository, CarRepository>();
             services.AddScoped<ICarService, CarService>();
@@ -73,7 +71,8 @@ namespace CarMarket.Server
             {
                 builder.UseSqlServer(Configuration.GetConnectionString("CarMarketDb"));
             });
-           
+
+            services.AddAutoMapper(typeof(Startup));
 
             services.Configure<JWTContainerModel>(Configuration.GetSection("JWTSecretKey"));
         }

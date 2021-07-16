@@ -5,16 +5,34 @@ namespace CarMarket.Data.User.Converter
 {
     public class UserConverter
     {
-        public UserEntity ToEntity(UserModel userModel)
+        public static UserEntity ToEntity(UserModel userModel)
         {
-            return new UserEntity(userModel.Id, userModel.FirstName, userModel.LastName, userModel.RoleId, userModel.Role,
-                userModel.Permissions, userModel.Email, userModel.Password);
+            return new UserEntity
+            {
+                Id = userModel.Id,
+                Email = userModel.Email,
+                FirstName = userModel.FirstName,
+                LastName = userModel.LastName,
+                Permissions = userModel.Permissions,
+                RoleId = userModel.RoleId,
+                Role = userModel.Role,
+                Password = userModel.Password
+            };
         }
 
-        public UserModel ToModel(UserEntity userEntity)
+        public static UserModel ToModel(UserEntity userEntity)
         {
-            return new UserModel(userEntity.Id, userEntity.FirstName, userEntity.LastName, userEntity.RoleId, userEntity.Role,
-                userEntity.Permissions, userEntity.Email, userEntity.Password);
+            return new UserModel
+            {
+                Id = userEntity.Id,
+                Email = userEntity.Email,
+                FirstName = userEntity.FirstName,
+                LastName = userEntity.LastName,
+                Permissions = userEntity.Permissions,
+                RoleId = userEntity.RoleId,
+                Role = userEntity.Role,
+                Password = userEntity.Password
+            };
         }
     }
 }

@@ -11,4 +11,6 @@ namespace CarMarket.Core.Car.Service
         Task<List<CarModel>> GetAllAsync();
         Task DeleteAsync(long carId);
     }
+
+    
 }

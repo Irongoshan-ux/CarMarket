@@ -26,8 +26,6 @@ namespace CarMarket.Server.Controllers
             return await _carService.GetAllAsync();
         }
 
-        //TODO: Methods below don't work
-
         [HttpGet]
         [Route("{carId}")]
         public async Task<CarModel> Get(long carId)

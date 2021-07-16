@@ -1,4 +1,4 @@
-﻿using CarMarket.Core.Car.Domain;
+﻿using CarMarket.Core.Image.Domain;
 using CarMarket.Core.User.Domain;
 using CarMarket.Data.Car.Domain;
 using CarMarket.Data.Configuration;
