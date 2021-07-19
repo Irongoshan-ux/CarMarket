@@ -4,6 +4,7 @@ using CarMarket.Core.Image.Domain;
 using CarMarket.Core.Image.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -58,6 +59,7 @@ namespace CarMarket.Server.Controllers
         }
 
         [HttpPost]
+        [Route("images/upload")]
         public async Task<IActionResult> UploadCarImage()
         {
             foreach (var file in Request.Form.Files)
@@ -78,21 +80,24 @@ namespace CarMarket.Server.Controllers
             return Ok();
         }
 
-        // TODO: Realize method GET
+        [HttpGet]
+        [Route("images/get")]
+        public async Task<IDictionary<string, string>> GetCarImages(long carId)
+        {
+            var images = await _carImageService.GetAllAsync(carId);
 
-        //[HttpGet]
-        //public IActionResult GetCarImages()
-        //{
-        //    CarImage image = db.Images.OrderByDescending
-        //(i => i.Id).SingleOrDefault();
-        //    string imageBase64Data =
-        //Convert.ToBase64String(img.ImageData);
-        //    string imageDataURL =
-        //string.Format("data:image/jpg;base64,{0}",
-        //imageBase64Data);
-        //    ViewBag.ImageTitle = img.ImageTitle;
-        //    ViewBag.ImageDataUrl = imageDataURL;
-        //    return View("Index");
-        //}
+            Dictionary<string, string> frontImages = new Dictionary<string, string>(images.Count);
+
+            Parallel.ForEach(images, image =>
+            {
+                string imageBase64Data = Convert.ToBase64String(image.ImageData);
+
+                string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
+
+                frontImages.Add(imageDataURL, imageBase64Data);
+            });
+
+            return frontImages;
+        }
     }
 }
