@@ -4,23 +4,6 @@ namespace CarMarket.Core.User.Domain
 {
     public class UserModel
     {
-        public UserModel()
-        {
-
-        }
-
-        public UserModel(long id, string firstName, string lastName, int? roleId, Role role, ICollection<Permission> permissions, string email, string password)
-        {
-            Id = id;
-            FirstName = firstName;
-            LastName = lastName;
-            RoleId = roleId;
-            Role = role;
-            Permissions = permissions;
-            Email = email;
-            Password = password;
-        }
-
         public long Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }

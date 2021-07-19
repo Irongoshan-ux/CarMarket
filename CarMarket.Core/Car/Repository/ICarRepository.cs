@@ -1,4 +1,5 @@
 ﻿using CarMarket.Core.Car.Domain;
+using CarMarket.Core.Image.Domain;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -12,5 +13,6 @@ namespace CarMarket.Core.Car.Repository
         Task<long> SaveAsync(CarModel car);
         Task<List<CarModel>> FindAllAsync();
         Task DeleteAsync(long carId);
+        Task<long> SaveCarImageAsync(CarImage carImage);
     }
 }

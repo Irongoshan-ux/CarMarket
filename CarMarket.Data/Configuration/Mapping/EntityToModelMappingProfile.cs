@@ -6,12 +6,12 @@ using CarMarket.Data.User.Domain;
 
 namespace CarMarket.Data.Configuration.Mapping
 {
-    class EntityToModelMappingProfile : Profile
+    public class EntityToModelMappingProfile : Profile
     {
         public EntityToModelMappingProfile()
         {
-            CreateMap<CarEntity, CarModel>();
-            CreateMap<UserEntity, UserModel>();
+            CreateMap<CarEntity, CarModel>().ReverseMap();
+            CreateMap<UserEntity, UserModel>().ReverseMap();
         }
     }
 }

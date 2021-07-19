@@ -13,9 +13,13 @@ using Microsoft.OpenApi.Models;
 using CarMarket.Data.Car.Repository;
 using CarMarket.Core.Car.Repository;
 using CarMarket.Core.Car.Service;
-using CarMarket.Data.Car.Converter;
 using CarMarket.Server.Infrastructure;
 using CarMarket.Server.Infrastructure.Identification.Models;
+using CarMarket.Core.Image.Service;
+using CarMarket.BusinessLogic.Car.Service;
+using CarMarket.Core.Image.Repository;
+using CarMarket.Data.Image.Repository;
+using CarMarket.Data.Configuration.Mapping;
 
 namespace CarMarket.Server
 {
@@ -61,7 +65,8 @@ namespace CarMarket.Server
 
             services.AddScoped<ICarRepository, CarRepository>();
             services.AddScoped<ICarService, CarService>();
-            services.AddSingleton<CarConverter>();
+            services.AddScoped<ICarImageService, CarImageService>();
+            services.AddScoped<ICarImageRepository, CarImageRepository>();
 
             //services.AddScoped<IAuthService, JWTService>();
             //services.AddScoped<IAuthContainerModel, JWTContainerModel>();
@@ -72,7 +77,10 @@ namespace CarMarket.Server
                 builder.UseSqlServer(Configuration.GetConnectionString("CarMarketDb"));
             });
 
-            services.AddAutoMapper(typeof(Startup));
+            services.AddAutoMapper(cfg =>
+            {
+                cfg.AddProfile<EntityToModelMappingProfile>();
+            });
 
             services.Configure<JWTContainerModel>(Configuration.GetSection("JWTSecretKey"));
         }

@@ -1,6 +1,8 @@
-﻿using CarMarket.Core.Car.Domain;
+﻿using AutoMapper;
+using CarMarket.Core.Car.Domain;
 using CarMarket.Core.Car.Repository;
-using CarMarket.Data.Car.Converter;
+using CarMarket.Core.Image.Domain;
+using CarMarket.Data.Car.Domain;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,33 +13,32 @@ namespace CarMarket.Data.Car.Repository
     public class CarRepository : ICarRepository
     {
         private readonly ApplicationDbContext _context;
-        private readonly CarConverter _carConverter;
+        private readonly IMapper _mapper;
 
-        public CarRepository(ApplicationDbContext context, CarConverter carConverter)
+        public CarRepository(ApplicationDbContext context, IMapper mapper)
         {
             _context = context;
-            _carConverter = carConverter;
+            _mapper = mapper;
         }
 
         public async Task<CarModel> FindByIdAsync(long id)
         {
             var carEntity = await _context.Cars.FindAsync(id);
-            return _carConverter.ToModel(carEntity);
+            return _mapper.Map<CarModel>(carEntity);
         }
 
         public async Task<List<CarModel>> FindAllAsync()
         {
-            var carModels = await _context.Cars
+            var carEntities = await _context.Cars
                 .AsNoTracking()
-                .Select(x => _carConverter.ToModel(x))
                 .ToListAsync();
 
-            return carModels;
+            return _mapper.Map<List<CarModel>>(carEntities);
         }
 
         public async Task<long> SaveAsync(CarModel carModel)
         {
-            var newCarEntity = _carConverter.ToEntity(carModel);
+            var newCarEntity = _mapper.Map<CarEntity>(carModel);
 
             var added = await _context.Cars.AddAsync(newCarEntity);
             await _context.SaveChangesAsync();
@@ -51,8 +52,6 @@ namespace CarMarket.Data.Car.Repository
                 .Where(x => x.Id == carId)
                 .FirstOrDefaultAsync();
 
-            //var carEntity = _carConverter.ToEntity(carModel);
-
             _context.Cars.Remove(carEntity);
             await _context.SaveChangesAsync();
         }
@@ -61,23 +60,25 @@ namespace CarMarket.Data.Car.Repository
         {
             var carEntity = await _context.Cars.FirstOrDefaultAsync(x => x.Name == name);
 
-            return _carConverter.ToModel(carEntity);
+            return _mapper.Map<CarModel>(carEntity);
         }
 
         public async Task<IEnumerable<CarModel>> FindAllByNameAsync(string name)
         {
-            var carEntity = await _context.Cars
+            var carEntities = await _context.Cars
                 .Where(x => x.Name == name)
+                //.Select(x => _mapper.Map<CarModel>(x))
                 .ToListAsync();
 
-            var carModels = new List<CarModel>(carEntity.Count);
+            return _mapper.Map<List<CarModel>>(carEntities);
+        }
 
-            Parallel.ForEach(carEntity, x =>
-            {
-                carModels.Add(_carConverter.ToModel(x));
-            });
+        public async Task<long> SaveCarImageAsync(CarImage carImage)
+        {
+            var added = await _context.CarImages.AddAsync(carImage);
+            await _context.SaveChangesAsync();
 
-            return carModels;
+            return added.Entity.Id;
         }
     }
 }

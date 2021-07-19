@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace CarMarket.Data.Image.Repository
 {
-    class CarImageRepository : ICarImageRepository
+    public class CarImageRepository : ICarImageRepository
     {
         private readonly ApplicationDbContext _context;
 

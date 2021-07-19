@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CarMarket.BusinessLogic.Car.Service
 {
-    class CarImageService : ICarImageService
+    public class CarImageService : ICarImageService
     {
         private readonly ICarImageRepository _carImageRepository;
 

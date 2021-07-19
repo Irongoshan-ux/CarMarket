@@ -17,6 +17,7 @@ namespace CarMarket.Data
 
         public ApplicationDbContext()
         {
+            Database.EnsureCreated();
         }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
@@ -40,12 +41,17 @@ namespace CarMarket.Data
             string adminEmail = "admin@gmail.com";
             string adminPassword = "admin";
 
-            Role adminRole = new Role { Id = 1, Name = adminRoleName };
-            Role userRole = new Role { Id = 2, Name = userRoleName };
-            UserEntity adminUser = new UserEntity { Id = 1, Email = adminEmail, Password = adminPassword, RoleId = adminRole.Id };
+            string userEmail = "user@gmail.com";
+            string userPassword = "user";
+
+            Role adminRole = new() { Id = 1, Name = adminRoleName };
+            Role userRole = new() { Id = 2, Name = userRoleName };
+
+            UserEntity adminUser = new() { Id = 1, Email = adminEmail, Password = adminPassword, RoleId = adminRole.Id };
+            UserEntity defaultUser = new() { Id = 2, Email = userEmail, Password = userPassword, RoleId = userRole.Id };
 
             modelBuilder.Entity<Role>().HasData(new Role[] { adminRole, userRole });
-            modelBuilder.Entity<UserEntity>().HasData(new UserEntity[] { adminUser });
+            modelBuilder.Entity<UserEntity>().HasData(new UserEntity[] { adminUser, defaultUser });
             base.OnModelCreating(modelBuilder);
         }
     }
