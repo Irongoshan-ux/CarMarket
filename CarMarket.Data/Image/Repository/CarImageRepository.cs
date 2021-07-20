@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace CarMarket.Data.Image.Repository
 {
-    public class CarImageRepository : ICarImageRepository
+    public class CarImageRepository : IImageRepository
     {
         private readonly ApplicationDbContext _context;
 
@@ -18,7 +18,7 @@ namespace CarMarket.Data.Image.Repository
             _context = context;
         }
 
-        public async Task<List<CarImage>> FindAllAsync(long carId)
+        public async Task<List<ImageModel>> FindAllAsync(long carId)
         {
             // TODO: How to realize this business logic?
 
@@ -28,19 +28,19 @@ namespace CarMarket.Data.Image.Repository
                 .ThenInclude(images => images.ImageData)
                 .ToListAsync();
 
-            List<CarImage> carImages = new List<CarImage>(car.Count);
+            List<ImageModel> carImages = new(car.Count);
 
             foreach(var item in car)
             {
-                carImages = (List<CarImage>)item.CarImages;
+                carImages = (List<ImageModel>)item.CarImages;
             }
 
             return carImages;
         }
 
-        public async Task<long> SaveAsync(CarImage carImage)
+        public async Task<long> SaveAsync(ImageModel carImage)
         {
-            var added = await _context.CarImages.AddAsync(carImage);
+            var added = await _context.Images.AddAsync(carImage);
             await _context.SaveChangesAsync();
 
             return added.Entity.Id;

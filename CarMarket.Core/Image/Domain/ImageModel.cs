@@ -1,6 +1,6 @@
 ﻿namespace CarMarket.Core.Image.Domain
 {
-    public class CarImage
+    public class ImageModel
     {
         public long Id { get; set; }
         public string ImageTitle { get; set; }

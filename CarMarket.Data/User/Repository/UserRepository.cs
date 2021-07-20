@@ -74,5 +74,16 @@ namespace CarMarket.Data.User.Repository
         {
             return await _context.Roles.FirstOrDefaultAsync(r => r.Name == roleName);
         }
+
+        public async Task UpdateAsync(long userId, UserModel userModel)
+        {
+            var userEntity = _mapper.Map<UserEntity>(userModel);
+
+            _context.Update(userEntity);
+
+            //_context.Entry(userEntity).State = EntityState.Modified;
+
+            await _context.SaveChangesAsync();            
+        }
     }
 }

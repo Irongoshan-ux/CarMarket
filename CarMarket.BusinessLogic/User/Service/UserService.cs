@@ -97,6 +97,11 @@ namespace CarMarket.BusinessLogic.User.Service
             return await _userRepository.FindUserRoleAsync(roleName);
         }
 
+        public async Task UpdateUser(long userId, UserModel userModel)
+        {
+            await _userRepository.UpdateAsync(userId, userModel);
+        }
+
         private static bool IsUserContainsPermission(UserModel user, Permission permission) => user.Permissions.Contains(permission);
     }
 }

@@ -4,9 +4,9 @@ using CarMarket.Core.Image.Domain;
 
 namespace CarMarket.Core.Image.Service
 {
-    public interface ICarImageService
+    public interface IImageService
     {
-        Task<long> UploadAsync(CarImage carImage);
-        Task<List<CarImage>> GetAllAsync(long carId);
+        Task<long> UploadAsync(ImageModel carImage);
+        Task<List<ImageModel>> GetAllAsync(long carId);
     }
 }

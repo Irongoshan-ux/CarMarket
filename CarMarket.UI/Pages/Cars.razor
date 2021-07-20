@@ -68,13 +68,14 @@ else
             Price = newCarPrice,
             CarType = newCarType
         };
-        await Http.PostAsJsonAsync("https://localhost:10001/car/create", newCar);
+
+        await Http.PostAsJsonAsync("https://localhost:10001/Car/CreateCar", newCar);
         await GetCarModelList();
     }
 
     private async Task DeleteCarAsync()
     {
-        await Http.PostAsJsonAsync<long>("https://localhost:10001/car/delete/" + deleteCarId, deleteCarId);
+        await Http.PostAsJsonAsync<long>("https://localhost:10001/Car/DeleteCar/" + deleteCarId, deleteCarId);
         await GetCarModelList();
     }
 
@@ -85,6 +86,6 @@ else
 
     private async Task GetCarModelList()
     {
-        cars = await Http.GetFromJsonAsync<List<CarModel>>("https://localhost:10001/car");
+        cars = await Http.GetFromJsonAsync<List<CarModel>>("https://localhost:10001/Car/GetCars");
     }
 }

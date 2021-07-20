@@ -7,21 +7,21 @@ using System.Threading.Tasks;
 
 namespace CarMarket.BusinessLogic.Car.Service
 {
-    public class CarImageService : ICarImageService
+    public class CarImageService : IImageService
     {
-        private readonly ICarImageRepository _carImageRepository;
+        private readonly IImageRepository _carImageRepository;
 
-        public CarImageService(ICarImageRepository carImageRepository)
+        public CarImageService(IImageRepository carImageRepository)
         {
             _carImageRepository = carImageRepository;
         }
 
-        public async Task<List<CarImage>> GetAllAsync(long carId)
+        public async Task<List<ImageModel>> GetAllAsync(long carId)
         {
             return await _carImageRepository.FindAllAsync(carId);
         }
 
-        public async Task<long> UploadAsync(CarImage carImage)
+        public async Task<long> UploadAsync(ImageModel carImage)
         {
             return await _carImageRepository.SaveAsync(carImage);
         }

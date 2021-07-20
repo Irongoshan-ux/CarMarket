@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 
 namespace CarMarket.Core.Image.Repository
 {
-    public interface ICarImageRepository
+    public interface IImageRepository
     {
-        Task<long> SaveAsync(CarImage carImageModel);
-        Task<List<CarImage>> FindAllAsync(long carId);
+        Task<long> SaveAsync(ImageModel carImageModel);
+        Task<List<ImageModel>> FindAllAsync(long carId);
     }
 }

@@ -73,9 +73,10 @@ namespace CarMarket.Data.Car.Repository
             return _mapper.Map<List<CarModel>>(carEntities);
         }
 
-        public async Task<long> SaveCarImageAsync(CarImage carImage)
+        public async Task<long> SaveCarImageAsync(ImageModel carImage)
         {
-            var added = await _context.CarImages.AddAsync(carImage);
+            var added = await _context.Images.AddAsync(carImage);
+
             await _context.SaveChangesAsync();
 
             return added.Entity.Id;

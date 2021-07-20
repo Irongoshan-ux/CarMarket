@@ -65,8 +65,8 @@ namespace CarMarket.Server
 
             services.AddScoped<ICarRepository, CarRepository>();
             services.AddScoped<ICarService, CarService>();
-            services.AddScoped<ICarImageService, CarImageService>();
-            services.AddScoped<ICarImageRepository, CarImageRepository>();
+            services.AddScoped<IImageService, CarImageService>();
+            services.AddScoped<IImageRepository, CarImageRepository>();
 
             //services.AddScoped<IAuthService, JWTService>();
             //services.AddScoped<IAuthContainerModel, JWTContainerModel>();
@@ -82,7 +82,7 @@ namespace CarMarket.Server
                 cfg.AddProfile<EntityToModelMappingProfile>();
             });
 
-            services.Configure<JWTContainerModel>(Configuration.GetSection("JWTSecretKey"));
+            //services.Configure<JWTContainerModel>(Configuration.GetSection("JWTSecretKey"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

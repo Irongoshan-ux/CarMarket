@@ -39,11 +39,11 @@ namespace CarMarket.Data.Configuration
         }
     }
 
-    public class CarImageConfiguration : IEntityTypeConfiguration<CarImage>
+    public class ImageConfiguration : IEntityTypeConfiguration<ImageModel>
     {
-        public void Configure(EntityTypeBuilder<CarImage> builder)
+        public void Configure(EntityTypeBuilder<ImageModel> builder)
         {
-            builder.ToTable("CarImages").HasKey(p => p.Id);
+            builder.ToTable("Images").HasKey(p => p.Id);
         }
     }
 }

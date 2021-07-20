@@ -10,7 +10,7 @@ namespace CarMarket.Data.Car.Domain
         public string Name { get; set; }
         public CarType CarType { get; set; }
         public long? CarImageId { get; set; }
-        public ICollection<CarImage> CarImages { get; set; }
+        public ICollection<ImageModel> CarImages { get; set; }
         public string Description { get; set; }
         public int Price { get; set; }
     }

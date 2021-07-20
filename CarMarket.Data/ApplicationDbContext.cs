@@ -13,7 +13,7 @@ namespace CarMarket.Data
         public DbSet<CarEntity> Cars { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<Permission> Permissions { get; set; }
-        public DbSet<CarImage> CarImages { get; set; }
+        public DbSet<ImageModel> Images { get; set; }
 
         public ApplicationDbContext()
         {

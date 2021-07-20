@@ -13,6 +13,6 @@ namespace CarMarket.Core.Car.Repository
         Task<long> SaveAsync(CarModel car);
         Task<List<CarModel>> FindAllAsync();
         Task DeleteAsync(long carId);
-        Task<long> SaveCarImageAsync(CarImage carImage);
+        Task<long> SaveCarImageAsync(ImageModel carImage);
     }
 }
