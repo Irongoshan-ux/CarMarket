@@ -4,6 +4,7 @@ using CarMarket.Core.Image.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace CarMarket.Server.Controllers
@@ -38,7 +39,7 @@ namespace CarMarket.Server.Controllers
 
         [HttpDelete]
         [Route("DeleteCar/{carId}")]
-        public async Task Delete(long carId)
+        public async Task DeleteCar(long carId)
         {
             await _carService.DeleteAsync(carId);
         }
@@ -52,7 +53,16 @@ namespace CarMarket.Server.Controllers
             if (carId == default)
                 return BadRequest(carModel + " is invalid");
 
-            return Ok(carModel);
+            return CreatedAtAction("GetCar", new { id = carModel.Id }, carModel);
+        }
+
+        [HttpGet("GetCarsByPage")]
+        public async Task<ActionResult<IEnumerable<CarModel>>> GetCarsByPage(int pageSize, int pageNumber)
+        {
+            var carModelList = await _carService.GetAllAsync();
+            carModelList = carModelList.Skip(pageNumber * pageSize).Take(pageSize).ToList();
+
+            return await Task.FromResult(carModelList);
         }
 
         /// <summary>
