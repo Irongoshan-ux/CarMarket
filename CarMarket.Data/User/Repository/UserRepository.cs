@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using CarMarket.Core.User.Domain;
 using CarMarket.Core.User.Repository;
-using CarMarket.Data.User.Converter;
 using CarMarket.Data.User.Domain;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
