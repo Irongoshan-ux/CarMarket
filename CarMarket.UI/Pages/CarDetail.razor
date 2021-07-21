@@ -1,0 +1,33 @@
+﻿@page "/cars/cardetail/{carId:long}"
+@page "/cars/cardetail"
+@page "/car"
+@using CarMarket.Core.Car.Domain
+@inject HttpClient Http
+
+
+<h3>Car Detail</h3>
+<hr />
+
+<div class="col-12 row">
+
+    @if (CarDetails != null)
+    {
+        <h5 class="col-12 row" style="font-weight:bold">@CarDetails.Name @CarDetails.Price</h5>
+        <h6 class="col-12 row">Type: @CarDetails.CarType</h6>
+        <h6 class="col-12 row">Description: @CarDetails.Description</h6>
+    }
+
+</div>
+
+@code {
+
+    [Parameter]
+    public long CarId { get; set; }
+
+    public CarModel CarDetails { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        CarDetails = await Http.GetFromJsonAsync<CarModel>("https://localhost:10001/api/Car/GetCar/" + CarId);
+    }
+}
