@@ -20,6 +20,7 @@ using CarMarket.BusinessLogic.Car.Service;
 using CarMarket.Core.Image.Repository;
 using CarMarket.Data.Image.Repository;
 using CarMarket.Data.Configuration.Mapping;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace CarMarket.Server
 {
@@ -38,7 +39,13 @@ namespace CarMarket.Server
         {
             services.AddCors();
 
-            services.AddAuthentication();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                 .AddJwtBearer(options =>
+                 {
+                     options.Authority = "https://localhost:5001";
+                     options.Audience = "API";
+                 });
+
             services.AddAuthorization();
 
             services.AddIdentityServer(options =>
