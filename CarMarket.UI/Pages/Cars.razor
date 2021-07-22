@@ -39,7 +39,11 @@ else
             @foreach (var car in cars)
             {
                 <tr>
-                    <td>@car.Id</td>
+                    <td>
+                            <NavLink href=@string.Format("/cars/cardetail/{0}", @car.Id)>
+                                @car.Id
+                            </NavLink>
+                        </td>
                     <td>@car.Name</td>
                     <td>@car.CarType</td>
                     <td>@car.Description</td>
@@ -69,13 +73,13 @@ else
             CarType = newCarType
         };
 
-        await Http.PostAsJsonAsync("https://localhost:10001/Car/CreateCar", newCar);
+        await Http.PostAsJsonAsync("https://localhost:10001/api/Car/CreateCar", newCar);
         await GetCarModelList();
     }
 
     private async Task DeleteCarAsync()
     {
-        await Http.PostAsJsonAsync<long>("https://localhost:10001/Car/DeleteCar/" + deleteCarId, deleteCarId);
+        await Http.PostAsJsonAsync<long>("https://localhost:10001/api/Car/DeleteCar/" + deleteCarId, deleteCarId);
         await GetCarModelList();
     }
 
@@ -86,6 +90,6 @@ else
 
     private async Task GetCarModelList()
     {
-        cars = await Http.GetFromJsonAsync<List<CarModel>>("https://localhost:10001/Car/GetCars");
+        cars = await Http.GetFromJsonAsync<List<CarModel>>("https://localhost:10001/api/Car/GetCars");
     }
 }

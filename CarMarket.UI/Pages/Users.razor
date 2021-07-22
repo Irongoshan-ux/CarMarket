@@ -73,7 +73,7 @@ else
             },
             Password = newUserPassword
         };
-        await Http.PostAsJsonAsync("https://localhost:10001/User/CreateUser", newUser);
+        await Http.PostAsJsonAsync("https://localhost:10001/api/User/CreateUser", newUser);
         await GetUserModelList();
     }
 
@@ -84,6 +84,6 @@ else
 
     private async Task GetUserModelList()
     {
-        users = await Http.GetFromJsonAsync<List<UserModel>>("https://localhost:10001/User/GetUsers");
+        users = await Http.GetFromJsonAsync<List<UserModel>>("https://localhost:10001/api/User/GetUsers");
     }
 }
