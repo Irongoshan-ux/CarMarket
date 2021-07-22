@@ -74,6 +74,7 @@ namespace CarMarket.Server
 
             services.AddControllersWithViews();
             services.AddRazorPages();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CarMarket", Version = "v1" });
@@ -90,6 +91,7 @@ namespace CarMarket.Server
             services.AddScoped<IImageRepository, CarImageRepository>();
 
             services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
+            services.AddScoped<IUserAuthService, UserAuthService>();
 
             //services.AddScoped<IAuthService, JWTService>();
             //services.AddScoped<IAuthContainerModel, JWTContainerModel>();
