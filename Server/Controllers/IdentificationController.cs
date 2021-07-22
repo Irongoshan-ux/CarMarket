@@ -52,7 +52,7 @@ namespace CarMarket.Server.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await _userService.AuthenticateAsync(model.Email, model.Password);
+                var user = await _userService.AuthenticateAsync(model.Email, EncryptPassword(model.Password));
 
                 if (user != null)
                 {
@@ -82,7 +82,7 @@ namespace CarMarket.Server.Controllers
                     return View();
                 }
 
-                user = new UserModel { Email = model.Email, Password = model.Password };
+                user = new UserModel { Email = model.Email, Password = EncryptPassword(model.Password) };
                 Role userRole = await _userService.GetUserRoleAsync("user");
 
                 if (userRole != null)
@@ -108,6 +108,8 @@ namespace CarMarket.Server.Controllers
 
         private async Task Authenticate(UserModel user)
         {
+            user.Password = Utility.Encrypt(user.Password);
+
             // создаем один claim
             var claims = new List<Claim>
             {
@@ -122,5 +124,7 @@ namespace CarMarket.Server.Controllers
 
             //await HttpContext.SignInAsync(new IdentityServerUser(user.Email));
         }
+
+        private string EncryptPassword(string password) => Utility.Encrypt(password);
     }
 }

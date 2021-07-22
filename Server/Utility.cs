@@ -2,7 +2,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace CarMarket.UI
+namespace CarMarket.Server
 {
     public class Utility
     {
