@@ -37,6 +37,7 @@ namespace CarMarket.Data.User.Repository
         public async Task<List<UserModel>> FindAllAsync()
         {
             var userEntities = await _context.Users
+                .Include(x => x.Role)
                 .AsNoTracking()
                 .ToListAsync();
 

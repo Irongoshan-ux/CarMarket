@@ -48,17 +48,19 @@ namespace CarMarket.Server
                      options.Audience = "API";
                  });
 
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("Admin", policy =>
-                    policy.RequireClaim("IsAdmin", "true"));
 
-                options.AddPolicy("User", policy =>
-                    policy.RequireClaim("IsUser", "true"));
+            services.AddAuthorization();
+            //services.AddAuthorization(options =>
+            //{
+            //    options.AddPolicy("Admin", policy =>
+            //        policy.RequireClaim("IsAdmin", "true"));
 
-                options.AddPolicy("Guest", policy =>
-                    policy.RequireClaim("IsGuest", "true"));
-            });
+            //    options.AddPolicy("User", policy =>
+            //        policy.RequireClaim("IsUser", "true"));
+
+            //    options.AddPolicy("Guest", policy =>
+            //        policy.RequireClaim("IsGuest", "true"));
+            //});
 
             services.AddIdentityServer(options =>
                 {

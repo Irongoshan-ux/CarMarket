@@ -30,7 +30,7 @@ else
                 <th>Firstname</th>
                 <th>Lastname</th>
                 <th>Email</th>
-                <th>Role id</th>
+                <th>Role</th>
                 <th>Password</th>
             </tr>
         </thead>
@@ -42,7 +42,7 @@ else
                     <td>@user.FirstName</td>
                     <td>@user.LastName</td>
                     <td>@user.Email</td>
-                    <td>@user.Role.RoleName</td>
+                    <td>@user.Role?.RoleName</td>
                     <td>@user.Password</td>
                 </tr>
             }
@@ -53,6 +53,7 @@ else
 @code {
     private string permissionResult = string.Empty;
     private List<UserModel> users;
+    private string UserRole;
     private string newUserFirstName;
     private string newUserLastName;
     private string newUserEmail;

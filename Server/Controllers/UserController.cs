@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Security.Claims;
 using CarMarket.Server.Infrastructure.Identification.Models;
-using Microsoft.AspNetCore.Authorization;
 
 namespace CarMarket.Server.Controllers
 {
@@ -23,7 +22,6 @@ namespace CarMarket.Server.Controllers
             _logger = logger;
         }
 
-        [Authorize(Roles = "Admin")]
         [HttpGet("GetUsers")]
         public async Task<IEnumerable<UserModel>> GetAllUsers()
         {
@@ -57,6 +55,8 @@ namespace CarMarket.Server.Controllers
         [HttpPost("CreateUser")]
         public async Task<IActionResult> Create([FromBody] UserModel userModel)
         {
+            userModel.Password = EncryptPassword(userModel.Password);
+
             var userId = await _userService.CreateAsync(userModel);
 
             if (userId == default)
@@ -78,6 +78,7 @@ namespace CarMarket.Server.Controllers
             return NoContent();
         }
 
+        private string EncryptPassword(string password) => Utility.Encrypt(password);
         //UNUSED
         //[HttpPost]
         //[Route("authenticate")]
