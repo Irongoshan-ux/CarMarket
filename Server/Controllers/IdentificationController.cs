@@ -19,20 +19,14 @@ namespace CarMarket.Server.Controllers
     {
         private readonly IIdentityServerInteractionService _interaction;
         private readonly IUserService _userService;
-        //private readonly SignInManager<ApplicationUser> _signInManager;
-        //private readonly UserManager<ApplicationUser> _userManager;
 
         public IdentificationController(
             IIdentityServerInteractionService interaction,
             IUserService userService
-            //SignInManager<ApplicationUser> signInManager,
-            //UserManager<ApplicationUser> userManager
             )
         {
             _interaction = interaction;
             _userService = userService;
-            //_signInManager = signInManager;
-            //_userManager = userManager;
         }
 
         [HttpGet("[action]")]
@@ -94,7 +88,7 @@ namespace CarMarket.Server.Controllers
 
                 await Authenticate(user);
             }
-            return Redirect("https://localhost:5001"); // Redirect(model.ReturnUrl);
+            return Redirect("https://localhost:5001");
         }
 
         [HttpGet("[action]")]
@@ -114,7 +108,7 @@ namespace CarMarket.Server.Controllers
             var claims = new List<Claim>
             {
                 new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email),
-                new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role?.Name)
+                new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role?.RoleName)
             };
             // создаем объект ClaimsIdentity
             ClaimsIdentity id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType,

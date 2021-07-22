@@ -72,7 +72,7 @@ namespace CarMarket.Data.User.Repository
 
         public async Task<Role> FindUserRoleAsync(string roleName)
         {
-            return await _context.Roles.FirstOrDefaultAsync(r => r.Name == roleName);
+            return await _context.Roles.FirstOrDefaultAsync(r => r.RoleName == roleName);
         }
 
         public async Task UpdateAsync(long userId, UserModel userModel)

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Security.Claims;
 using CarMarket.Server.Infrastructure.Identification.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CarMarket.Server.Controllers
 {
@@ -22,6 +23,7 @@ namespace CarMarket.Server.Controllers
             _logger = logger;
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("GetUsers")]
         public async Task<IEnumerable<UserModel>> GetAllUsers()
         {

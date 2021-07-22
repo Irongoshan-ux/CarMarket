@@ -14,13 +14,15 @@ using CarMarket.Data.Car.Repository;
 using CarMarket.Core.Car.Repository;
 using CarMarket.Core.Car.Service;
 using CarMarket.Server.Infrastructure;
-using CarMarket.Server.Infrastructure.Identification.Models;
 using CarMarket.Core.Image.Service;
 using CarMarket.BusinessLogic.Car.Service;
 using CarMarket.Core.Image.Repository;
 using CarMarket.Data.Image.Repository;
 using CarMarket.Data.Configuration.Mapping;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using CarMarket.Server.Infrastructure.Auth;
+using Microsoft.AspNetCore.Components.Authorization;
+using Blazored.LocalStorage;
 
 namespace CarMarket.Server
 {
@@ -46,7 +48,17 @@ namespace CarMarket.Server
                      options.Audience = "API";
                  });
 
-            services.AddAuthorization();
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Admin", policy =>
+                    policy.RequireClaim("IsAdmin", "true"));
+
+                options.AddPolicy("User", policy =>
+                    policy.RequireClaim("IsUser", "true"));
+
+                options.AddPolicy("Guest", policy =>
+                    policy.RequireClaim("IsGuest", "true"));
+            });
 
             services.AddIdentityServer(options =>
                 {
@@ -67,6 +79,8 @@ namespace CarMarket.Server
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CarMarket", Version = "v1" });
             });
 
+            services.AddBlazoredLocalStorage();
+
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserService, UserService>();
 
@@ -74,6 +88,8 @@ namespace CarMarket.Server
             services.AddScoped<ICarService, CarService>();
             services.AddScoped<IImageService, CarImageService>();
             services.AddScoped<IImageRepository, CarImageRepository>();
+
+            services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 
             //services.AddScoped<IAuthService, JWTService>();
             //services.AddScoped<IAuthContainerModel, JWTContainerModel>();

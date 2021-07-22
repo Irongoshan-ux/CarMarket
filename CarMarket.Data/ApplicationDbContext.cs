@@ -30,29 +30,29 @@ namespace CarMarket.Data
             modelBuilder.ApplyConfiguration(new UserConfiguration());
             modelBuilder.ApplyConfiguration(new PermissonConfiguration());
 
-            InitializeUserTable(modelBuilder);
+            //InitializeUserTable(modelBuilder);
         }
 
-        private void InitializeUserTable(ModelBuilder modelBuilder)
-        {
-            string adminRoleName = "admin";
-            string userRoleName = "user";
+        //private void InitializeUserTable(ModelBuilder modelBuilder)
+        //{
+        //    string adminRoleName = "admin";
+        //    string userRoleName = "user";
 
-            string adminEmail = "admin@gmail.com";
-            string adminPassword = "admin";
+        //    string adminEmail = "admin@gmail.com";
+        //    string adminPassword = "admin";
 
-            string userEmail = "user@gmail.com";
-            string userPassword = "user";
+        //    string userEmail = "user@gmail.com";
+        //    string userPassword = "user";
 
-            Role adminRole = new() { Id = 1, Name = adminRoleName };
-            Role userRole = new() { Id = 2, Name = userRoleName };
+        //    Role adminRole = new() { Id = 1, RoleName = adminRoleName };
+        //    Role userRole = new() { Id = 2, RoleName = userRoleName };
 
-            UserEntity adminUser = new() { Id = 1, Email = adminEmail, Password = adminPassword, RoleId = adminRole.Id };
-            UserEntity defaultUser = new() { Id = 2, Email = userEmail, Password = userPassword, RoleId = userRole.Id };
+        //    UserEntity adminUser = new() { Id = 1, Email = adminEmail, Password = adminPassword, RoleId = adminRole.Id };
+        //    UserEntity defaultUser = new() { Id = 2, Email = userEmail, Password = userPassword, RoleId = userRole.Id };
 
-            modelBuilder.Entity<Role>().HasData(new Role[] { adminRole, userRole });
-            modelBuilder.Entity<UserEntity>().HasData(new UserEntity[] { adminUser, defaultUser });
-            base.OnModelCreating(modelBuilder);
-        }
+        //    modelBuilder.Entity<Role>().HasData(new Role[] { adminRole, userRole });
+        //    modelBuilder.Entity<UserEntity>().HasData(new UserEntity[] { adminUser, defaultUser });
+        //    base.OnModelCreating(modelBuilder);
+        //}
     }
 }
