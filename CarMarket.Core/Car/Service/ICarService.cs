@@ -10,5 +10,7 @@ namespace CarMarket.Core.Car.Service
         Task<CarModel> GetAsync(long id);
         Task<List<CarModel>> GetAllAsync();
         Task DeleteAsync(long carId);
+        Task<CarModel> GetByName(string carName);
+        Task<IEnumerable<CarModel>> GetByNameAsync(string carName);
     }
 }

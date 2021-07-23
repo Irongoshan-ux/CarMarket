@@ -1,9 +1,11 @@
 ﻿using CarMarket.Core.Car.Domain;
 using CarMarket.Core.Car.Service;
-using CarMarket.Core.Image.Service;
+using CarMarket.Core.Image.Domain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,12 +17,10 @@ namespace CarMarket.Server.Controllers
     {
         private readonly ILogger<CarController> _logger;
         private readonly ICarService _carService;
-        private readonly IImageService _carImageService;
 
-        public CarController(ICarService carService, IImageService carImageService, ILogger<CarController> logger)
+        public CarController(ICarService carService, ILogger<CarController> logger)
         {
             _carService = carService;
-            _carImageService = carImageService;
             _logger = logger;
         }
 
@@ -65,36 +65,9 @@ namespace CarMarket.Server.Controllers
             return await Task.FromResult(carModelList);
         }
 
-        /// <summary>
-        /// Think through
-        /// </summary>
-        //[HttpPost]
-        //[Route("images/upload")]
-        //public async Task<IActionResult> UploadCarImage()
+        //private async Task<IDictionary<string, string>> GetCarImages(CarModel car)
         //{
-        //    foreach (var file in Request.Form.Files)
-        //    {
-        //        var image = new ImageModel();
-        //        image.ImageTitle = file.FileName;
-
-        //        MemoryStream ms = new();
-        //        file.CopyTo(ms);
-        //        image.ImageData = ms.ToArray();
-
-        //        ms.Close();
-        //        ms.Dispose();
-
-        //        await _carImageService.UploadAsync(image);
-        //    }
-
-        //    return Ok();
-        //}
-
-        //[HttpGet]
-        //[Route("images/get")]
-        //public async Task<IDictionary<string, string>> GetCarImages(long carId)
-        //{
-        //    var images = await _carImageService.GetAllAsync(carId);
+        //    var images = _carService.
 
         //    Dictionary<string, string> frontImages = new Dictionary<string, string>(images.Count);
 

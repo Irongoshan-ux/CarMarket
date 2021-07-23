@@ -1,16 +1,28 @@
 ﻿@page "/cars"
+@using BlazorInputFile
+@using CarMarket.BusinessLogic.Car.Service
 @using CarMarket.Core.Car.Domain
 @inject HttpClient Http
-
+@using CarMarket.Core.Image.Domain
+@using System.IO
 <h1>Cars Controller</h1>
 
 <p>Add car</p>
 
-<input @bind="newCarName" placeholder="Enter car name" />
-<input @bind="newCarDescription" placeholder="Enter description" />
-<input @bind="newCarPrice" placeholder="Enter price" />
-<input @bind="newCarType" placeholder="Enter car type name" />
-<button @onclick="AddCarAsync">Add</button>
+
+    <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
+    <br>
+    <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
+    <br>
+    <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
+    <br>
+
+    <input @bind="newCarName" placeholder="Enter car name" />
+    <input @bind="newCarDescription" placeholder="Enter description" />
+    <input @bind="newCarPrice" placeholder="Enter price" />
+    <input @bind="newCarType" placeholder="Enter car type name" />
+
+    <button @onclick="AddCarAsync">Add car</button>
 
 <p>Delete car</p>
 
@@ -40,7 +52,7 @@ else
             {
                 <tr>
                     <td>
-                            <NavLink href=@string.Format("/cars/cardetail/{0}", @car.Id)>
+                            <NavLink href=@string.Format("/cars/cardetail/{0}", car.Id)>
                                 @car.Id
                             </NavLink>
                         </td>
@@ -56,12 +68,32 @@ else
 
 @code {
     private List<CarModel> cars;
+    private CarModel car;
     private string newCarName;
     private string newCarDescription;
     private int newCarPrice;
     private CarType newCarType;
-
     private long deleteCarId;
+    
+    private List<ImageModel> newCarImages = new List<ImageModel>();
+
+    void HandleFilesSelected(IFileListEntry[] files)
+    {
+        Parallel.ForEach(files, file =>
+        {
+            if (file != null)
+            {
+                var ms = new MemoryStream();
+                file.Data.CopyToAsync(ms).GetAwaiter();
+
+                newCarImages.Add(new ImageModel
+            {
+                ImageData = ms.ToArray(),
+                ImageTitle = file.Name
+            });
+            }
+        });
+    }
 
     private async Task AddCarAsync()
     {
@@ -69,6 +101,7 @@ else
         {
             Name = newCarName,
             Description = newCarDescription,
+            CarImages = newCarImages,
             Price = newCarPrice,
             CarType = newCarType
         };

@@ -23,13 +23,17 @@ namespace CarMarket.Data.Car.Repository
 
         public async Task<CarModel> FindByIdAsync(long id)
         {
-            var carEntity = await _context.Cars.FindAsync(id);
+            var carEntity = await _context.Cars
+                .Include(x => x.CarImages)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
             return _mapper.Map<CarModel>(carEntity);
         }
 
         public async Task<List<CarModel>> FindAllAsync()
         {
             var carEntities = await _context.Cars
+                .Include(x => x.CarImages)
                 .AsNoTracking()
                 .ToListAsync();
 
@@ -41,6 +45,7 @@ namespace CarMarket.Data.Car.Repository
             var newCarEntity = _mapper.Map<CarEntity>(carModel);
 
             var added = await _context.Cars.AddAsync(newCarEntity);
+
             await _context.SaveChangesAsync();
 
             return added.Entity.Id;
@@ -49,6 +54,7 @@ namespace CarMarket.Data.Car.Repository
         public async Task DeleteAsync(long carId)
         {
             var carEntity = await _context.Cars
+                .Include(x => x.CarImages)
                 .Where(x => x.Id == carId)
                 .FirstOrDefaultAsync();
 
@@ -58,7 +64,9 @@ namespace CarMarket.Data.Car.Repository
 
         public async Task<CarModel> FindOneByNameAsync(string name)
         {
-            var carEntity = await _context.Cars.FirstOrDefaultAsync(x => x.Name == name);
+            var carEntity = await _context.Cars
+                .Include(x => x.CarImages)
+                .FirstOrDefaultAsync(x => x.Name == name);
 
             return _mapper.Map<CarModel>(carEntity);
         }
@@ -66,20 +74,11 @@ namespace CarMarket.Data.Car.Repository
         public async Task<IEnumerable<CarModel>> FindAllByNameAsync(string name)
         {
             var carEntities = await _context.Cars
+                .Include(x => x.CarImages)
                 .Where(x => x.Name == name)
-                //.Select(x => _mapper.Map<CarModel>(x))
                 .ToListAsync();
 
             return _mapper.Map<List<CarModel>>(carEntities);
-        }
-
-        public async Task<long> SaveCarImageAsync(ImageModel carImage)
-        {
-            var added = await _context.Images.AddAsync(carImage);
-
-            await _context.SaveChangesAsync();
-
-            return added.Entity.Id;
         }
     }
 }

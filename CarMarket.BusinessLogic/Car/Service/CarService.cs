@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace CarMarket.BusinessLogic.User.Service
+namespace CarMarket.BusinessLogic.Car.Service
 {
     public class CarService : ICarService
     {
