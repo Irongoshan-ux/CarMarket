@@ -1,10 +1,11 @@
 ﻿@page "/cars"
 @using BlazorInputFile
-@using CarMarket.BusinessLogic.Car.Service
+@using CarMarket.BusinessLogic.Image.Service
 @using CarMarket.Core.Car.Domain
 @inject HttpClient Http
 @using CarMarket.Core.Image.Domain
 @using System.IO
+
 <h1>Cars Controller</h1>
 
 <p>Add car</p>
@@ -41,6 +42,7 @@ else
         <thead>
             <tr>
                 <th>Id</th>
+                <th>Image</th>
                 <th>Name</th>
                 <th>CarType</th>
                 <th>Description</th>
@@ -52,10 +54,11 @@ else
             {
                 <tr>
                     <td>
-                            <NavLink href=@string.Format("/cars/cardetail/{0}", car.Id)>
-                                @car.Id
-                            </NavLink>
-                        </td>
+                        <NavLink href=@string.Format("/cars/cardetail/{0}", car.Id)>
+                          @car.Id
+                        </NavLink>
+                    </td>
+                    <td><img src="@ImageService.ConvertImageToDisplay(car.CarImages.FirstOrDefault())" width="100px;"/></td>
                     <td>@car.Name</td>
                     <td>@car.CarType</td>
                     <td>@car.Description</td>

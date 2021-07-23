@@ -7,7 +7,7 @@ namespace CarMarket.BusinessLogic.Image.Service
     {
         public static string ConvertImageToDisplay(ImageModel image)
         {
-            if (image.ImageData is null) return string.Empty;
+            if (image is null) return string.Empty;
 
             var base64 = Convert.ToBase64String(image.ImageData);
 
