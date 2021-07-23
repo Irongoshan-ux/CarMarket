@@ -41,8 +41,8 @@ else
     <table class="table">
         <thead>
             <tr>
-                <th>Id</th>
                 <th>Image</th>
+                <th>Id</th>
                 <th>Name</th>
                 <th>CarType</th>
                 <th>Description</th>
@@ -55,10 +55,10 @@ else
                 <tr>
                     <td>
                         <NavLink href=@string.Format("/cars/cardetail/{0}", car.Id)>
-                          @car.Id
+                          <img src="@ImageService.ConvertImageToDisplay(car.CarImages.FirstOrDefault())" width="200px"/>
                         </NavLink>
                     </td>
-                    <td><img src="@ImageService.ConvertImageToDisplay(car.CarImages.FirstOrDefault())"/></td>
+                    <td>@car.Id</td>
                     <td>@car.Name</td>
                     <td>@car.CarType</td>
                     <td>@car.Description</td>
