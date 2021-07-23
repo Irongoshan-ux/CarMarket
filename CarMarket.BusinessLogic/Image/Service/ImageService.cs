@@ -1,4 +1,5 @@
 ﻿using CarMarket.Core.Image.Domain;
+using CarMarket.Core.Image.Service;
 using System;
 
 namespace CarMarket.BusinessLogic.Image.Service

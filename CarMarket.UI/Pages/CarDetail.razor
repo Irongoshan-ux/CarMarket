@@ -2,6 +2,7 @@
 @page "/cars/cardetail"
 @page "/car"
 @using CarMarket.Core.Car.Domain
+@using CarMarket.BusinessLogic.Image.Service
 @inject HttpClient Http
 
 
@@ -15,6 +16,11 @@
         <h5 class="col-12 row" style="font-weight:bold">@CarDetails.Name @CarDetails.Price</h5>
         <h6 class="col-12 row">Type: @CarDetails.CarType</h6>
         <h6 class="col-12 row">Description: @CarDetails.Description</h6>
+
+        @foreach(var image in CarDetails.CarImages)
+        {
+         <h6 class="col-12 row"><img src="@ImageService.ConvertImageToDisplay(image)"/></h6>
+        }
     }
 
 </div>

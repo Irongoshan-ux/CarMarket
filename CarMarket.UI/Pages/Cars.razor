@@ -58,7 +58,7 @@ else
                           @car.Id
                         </NavLink>
                     </td>
-                    <td><img src="@ImageService.ConvertImageToDisplay(car.CarImages.FirstOrDefault())" width="100px;"/></td>
+                    <td><img src="@ImageService.ConvertImageToDisplay(car.CarImages.FirstOrDefault())"/></td>
                     <td>@car.Name</td>
                     <td>@car.CarType</td>
                     <td>@car.Description</td>
@@ -80,22 +80,20 @@ else
     
     private List<ImageModel> newCarImages = new List<ImageModel>();
 
-    void HandleFilesSelected(IFileListEntry[] files)
+    async Task HandleFilesSelected(IFileListEntry[] files)
     {
-        Parallel.ForEach(files, file =>
+        var file = files.FirstOrDefault();
+        if (file != null)
         {
-            if (file != null)
-            {
-                var ms = new MemoryStream();
-                file.Data.CopyToAsync(ms).GetAwaiter();
+            var ms = new MemoryStream();
+            await file.Data.CopyToAsync(ms);
 
-                newCarImages.Add(new ImageModel
+            newCarImages.Add(new ImageModel
             {
                 ImageData = ms.ToArray(),
                 ImageTitle = file.Name
             });
-            }
-        });
+        }
     }
 
     private async Task AddCarAsync()
