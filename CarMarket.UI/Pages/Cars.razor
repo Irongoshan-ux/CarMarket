@@ -10,7 +10,6 @@
 
 <p>Add car</p>
 
-
     <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
     <br>
     <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
@@ -38,22 +37,18 @@
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Image</th>
-                <th>Id</th>
-                <th>Name</th>
-                <th>CarType</th>
-                <th>Description</th>
-                <th>Price</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var car in cars)
-            {
-                <tr>
-                    <td>
+    <GridView Items="cars">
+        <GridColumns>
+            <GridColumn ColumnTitle="Image"></GridColumn>
+            <GridColumn ColumnTitle="Id"></GridColumn>
+            <GridColumn ColumnTitle="Title"></GridColumn>
+            <GridColumn ColumnTitle="Car type"></GridColumn>
+            <GridColumn ColumnTitle="Description"></GridColumn>
+            <GridColumn ColumnTitle="Price"></GridColumn>
+        </GridColumns>
+
+        <GridRow Context="car">
+                        <td>
                         <NavLink href=@string.Format("/cars/cardetail/{0}", car.Id)>
                           <img src="@ImageService.ConvertImageToDisplay(car.CarImages.FirstOrDefault())" width="200px"/>
                         </NavLink>
@@ -63,10 +58,8 @@ else
                     <td>@car.CarType</td>
                     <td>@car.Description</td>
                     <td>@car.Price</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+        </GridRow>
+    </GridView>
 }
 
 @code {
