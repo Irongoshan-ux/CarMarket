@@ -13,6 +13,7 @@ namespace CarMarket.Data.User.Repository
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
+
         public UserRepository(ApplicationDbContext userContext, IMapper mapper)
         {
             _context = userContext;
@@ -47,7 +48,7 @@ namespace CarMarket.Data.User.Repository
         public async Task<long> SaveAsync(UserModel userModel)
         {
             var newUserEntity = _mapper.Map<UserEntity>(userModel);
-            
+
             var added = await _context.Users.AddAsync(newUserEntity);
             await _context.SaveChangesAsync();
 
@@ -82,9 +83,7 @@ namespace CarMarket.Data.User.Repository
 
             _context.Update(userEntity);
 
-            //_context.Entry(userEntity).State = EntityState.Modified;
-
-            await _context.SaveChangesAsync();            
+            await _context.SaveChangesAsync();
         }
     }
 }

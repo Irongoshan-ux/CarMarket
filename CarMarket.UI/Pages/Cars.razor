@@ -83,7 +83,8 @@ else
     async Task HandleFilesSelected(IFileListEntry[] files)
     {
         var file = files.FirstOrDefault();
-        if (file != null)
+
+        if ((file != null) && (ImageService.IsImage(file.Name)))
         {
             var ms = new MemoryStream();
             await file.Data.CopyToAsync(ms);
@@ -94,6 +95,7 @@ else
                 ImageTitle = file.Name
             });
         }
+        else throw new ArgumentException("File type " + file.Type + " not supported.");
     }
 
     private async Task AddCarAsync()
