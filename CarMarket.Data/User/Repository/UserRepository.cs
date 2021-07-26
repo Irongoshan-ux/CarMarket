@@ -23,7 +23,8 @@ namespace CarMarket.Data.User.Repository
         public async Task<UserModel> FindUserModelAsync(string email, string password)
         {
             var userEntity = await _context.Users
-                .Include(u => u.Role)
+                .Include(x => x.Role)
+                .Include(x => x.Permissions)
                 .FirstOrDefaultAsync(x => (x.Email == email) && (x.Password == password));
 
             return _mapper.Map<UserModel>(userEntity);
@@ -31,7 +32,10 @@ namespace CarMarket.Data.User.Repository
 
         public async Task<UserModel> FindByIdAsync(long id)
         {
-            var userEntity = await _context.Users.FindAsync(id);
+            var userEntity = await _context.Users
+                .Include(u => u.Role)
+                .Include(u => u.Permissions)
+                .FirstOrDefaultAsync(x => x.Id == id); ;
             return _mapper.Map<UserModel>(userEntity);
         }
 
@@ -39,6 +43,7 @@ namespace CarMarket.Data.User.Repository
         {
             var userEntities = await _context.Users
                 .Include(x => x.Role)
+                .Include(x => x.Permissions)
                 .AsNoTracking()
                 .ToListAsync();
 
@@ -67,7 +72,10 @@ namespace CarMarket.Data.User.Repository
 
         public async Task<UserModel> FindByEmailAsync(string email)
         {
-            var userEntity = await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
+            var userEntity = await _context.Users
+                .Include(x => x.Role)
+                .Include(x => x.Permissions)
+                .FirstOrDefaultAsync(x => x.Email == email);
 
             return _mapper.Map<UserModel>(userEntity);
         }
