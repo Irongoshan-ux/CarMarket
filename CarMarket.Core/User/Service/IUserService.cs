@@ -16,5 +16,6 @@ namespace CarMarket.Core.User.Service
         Task<UserModel> AuthenticateAsync(string email, string password);
         Task<Role> GetUserRoleAsync(string roleName);
         Task UpdateUser(long userId, UserModel userModel);
+        Task DeletePermissionAsync(long userId, Permission permission);
     }
 }

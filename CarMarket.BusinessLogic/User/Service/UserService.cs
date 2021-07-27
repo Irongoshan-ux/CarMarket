@@ -32,6 +32,8 @@ namespace CarMarket.BusinessLogic.User.Service
 
                 user.Permissions.Add(permission);
             }
+
+            await UpdateUser(userId, user);
         }
 
         public async Task ChangePermissionAsync(long userId, Permission replaceablePermission, Permission substitutePermission)
@@ -42,6 +44,20 @@ namespace CarMarket.BusinessLogic.User.Service
             {
                 user.Permissions.Remove(replaceablePermission);
                 user.Permissions.Add(substitutePermission);
+
+                await UpdateUser(userId, user);
+            }
+        }
+
+        public async Task DeletePermissionAsync(long userId, Permission permission)
+        {
+            var user = await GetAsync(userId);
+
+            if (IsUserContainsPermission(user, permission))
+            {
+                user.Permissions.Remove(permission);
+
+                await UpdateUser(userId, user);
             }
         }
 
