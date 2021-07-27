@@ -67,7 +67,7 @@ namespace CarMarket.Server.Controllers
         }
 
         [HttpPut("UpdateCar/{carId}")]
-        public async Task<IActionResult> UpdateUser(long carId, CarModel car)
+        public async Task<IActionResult> UpdateCar(long carId, CarModel car)
         {
             if (carId != car.Id)
             {

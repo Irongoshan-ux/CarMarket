@@ -82,7 +82,7 @@ namespace CarMarket.Data.Car.Repository
         }
         public async Task UpdateAsync(long carId, CarModel car)
         {
-            var carEntity = _mapper.Map<UserEntity>(car);
+            var carEntity = _mapper.Map<CarEntity>(car);
 
             _context.Update(carEntity);
 
