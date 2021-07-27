@@ -45,19 +45,32 @@ else
             <GridColumn ColumnTitle="Car type"></GridColumn>
             <GridColumn ColumnTitle="Description"></GridColumn>
             <GridColumn ColumnTitle="Price"></GridColumn>
+            <AuthorizeView>@* Roles="Admin" Policy="Admin">*@
+                <Authorized>
+                    <GridColumn ColumnTitle="Actions"></GridColumn>
+                </Authorized>
+            </AuthorizeView>
         </GridColumns>
 
         <GridRow Context="car">
-                        <td>
-                        <NavLink href=@string.Format("/cars/cardetail/{0}", car.Id)>
-                          <img src="@ImageService.ConvertImageToDisplay(car.CarImages.FirstOrDefault())" width="200px"/>
-                        </NavLink>
-                    </td>
-                    <td>@car.Id</td>
-                    <td>@car.Name</td>
-                    <td>@car.CarType</td>
-                    <td>@car.Description</td>
-                    <td>@car.Price</td>
+            <td>
+                <NavLink href=@string.Format("/cars/cardetail/{0}", car.Id)>
+                    <img src="@ImageService.ConvertImageToDisplay(car.CarImages.FirstOrDefault())" width="200px"/>
+                </NavLink>
+            </td>
+            <td>@car.Id</td>
+            <td>@car.Name</td>
+            <td>@car.CarType</td>
+            <td>@car.Description</td>
+            <td>@car.Price</td>
+            <AuthorizeView>@* Roles="Admin" Policy="Admin">*@
+                <Authorized>
+                    <th>
+                        <a style="text-underline-position:below; cursor:pointer; color:blue" @onclick="(() => EditCar(car))">Edit</a> |
+                        <a style="text-underline-position:below; cursor:pointer; color:blue" @onclick="(() => DeleteCar(car))">Delete</a>
+                    </th>
+                </Authorized>
+            </AuthorizeView>
         </GridRow>
     </GridView>
 }
@@ -72,6 +85,18 @@ else
     private long deleteCarId;
     
     private List<ImageModel> newCarImages = new List<ImageModel>();
+
+    private void EditCar(CarModel editedCar)
+    {
+        car = editedCar;
+    }
+
+    private async Task DeleteCar(CarModel deletedCar)
+    {
+        await Http.DeleteAsync("https://localhost:10001/api/Car/DeleteCar/" + deletedCar.Id);
+
+        await GetCarModelList();
+    }
 
     async Task HandleFilesSelected(IFileListEntry[] files)
     {
