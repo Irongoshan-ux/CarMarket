@@ -7,6 +7,48 @@
 
 <h1>Users Controller</h1>
 
+@*<div class="col-12">
+    <h3><b>Add User</b></h3>
+    <hr />
+
+<EditForm Model="@newUser" OnValidSubmit="@AddUserAsync">
+        <div class="col-12 row">
+            <label class="col-2 font-weight-bold">first name :</label>
+            <InputText class="form-control col-3" @bind-Value="newUser.FirstName" placeholder="first name" />
+            <ValidationMessage For="@(() => newUser.FirstName)" />
+        </div>
+        <br />
+        <div class="col-12 row">
+            <label class="col-2 font-weight-bold">last name :</label>
+            <InputText class="form-control col-3" @bind-Value="newUser.LastName" placeholder="last name" />
+            <ValidationMessage For="@(() => newUser.LastName)" />
+        </div>
+        <br />
+        <div class="col-12 row">
+            <label class="col-2 font-weight-bold">email address :</label>
+            <InputText class="form-control col-3" @bind-Value="newUser.Email" placeholder="email address" />
+            <ValidationMessage For="@(() => newUser.Email)" />
+        </div>
+        <div class="col-12 row">
+            <label class="col-2 font-weight-bold">email address :</label>
+            <InputText class="form-control col-3" @bind-Value="newUser.Password" placeholder="password" />
+            <ValidationMessage For="@(() => newUser.Password)" />
+        </div>
+        <div class="col-12 row">
+            <label class="col-2 font-weight-bold">role</label>
+            <InputText class="form-control col-3" @bind-Value="newUser.Role.RoleName" placeholder="role" />
+            &nbsp;<ValidationMessage For="@(() => newUser.Role.RoleName)" />
+        </div>
+        <br />
+        <div class="col-12 row">
+            <span class="col-2"></span>
+            <input type="submit" class="form-control col-1 btn btn-primary" value="Save" />
+        </div>
+    </EditForm>
+</div>
+<br />*@
+
+<br>
 <p>Add user</p>
 
 <input @bind="newUserFirstName" placeholder="Enter firstname" />
@@ -14,6 +56,8 @@
 <input @bind="newUserEmail" placeholder="Enter email" />
 <input @bind="newUserPassword" placeholder="Enter password" />
 <button @onclick="AddUserAsync">Add</button>
+<br />
+<br>
 
 <p>All users</p>
 
@@ -42,14 +86,13 @@ else
                     <td>@user.Password</td>
         </GridRow>
     </GridView>
-
-   
 }
 
 @code {
     private string permissionResult = string.Empty;
     private List<UserModel> users;
     private UserModel user;
+    //private UserModel newUser;
     private string UserRole;
     private string newUserFirstName;
     private string newUserLastName;
@@ -67,7 +110,7 @@ else
             Email = newUserEmail,
             Permissions = new List<Permission>() {
                 new Permission() { PermissionName = Permission.PermissionType.Create},
-                //new Permission() { PermissionName = Permission.PermissionType.Edit }
+                //new Permission() { PermissionName = Permission.PermAissionType.Edit }
             },
             Password = newUserPassword
         };
