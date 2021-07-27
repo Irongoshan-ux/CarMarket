@@ -1,6 +1,7 @@
 ﻿using CarMarket.Core.Car.Domain;
 using CarMarket.Core.Car.Service;
 using CarMarket.Core.Image.Domain;
+using CarMarket.Core.User.Domain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -63,6 +64,19 @@ namespace CarMarket.Server.Controllers
             carModelList = carModelList.Skip(pageNumber * pageSize).Take(pageSize).ToList();
 
             return await Task.FromResult(carModelList);
+        }
+
+        [HttpPut("UpdateCar/{carId}")]
+        public async Task<IActionResult> UpdateUser(long carId, CarModel car)
+        {
+            if (carId != car.Id)
+            {
+                return BadRequest();
+            }
+
+            await _carService.UpdateCar(carId, car);
+
+            return NoContent();
         }
 
         //private async Task<IDictionary<string, string>> GetCarImages(CarModel car)

@@ -2,7 +2,9 @@
 using CarMarket.Core.Car.Domain;
 using CarMarket.Core.Car.Repository;
 using CarMarket.Core.Image.Domain;
+using CarMarket.Core.User.Domain;
 using CarMarket.Data.Car.Domain;
+using CarMarket.Data.User.Domain;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
@@ -79,6 +81,14 @@ namespace CarMarket.Data.Car.Repository
                 .ToListAsync();
 
             return _mapper.Map<List<CarModel>>(carEntities);
+        }
+        public async Task UpdateAsync(long carId, CarModel car)
+        {
+            var carEntity = _mapper.Map<UserEntity>(car);
+
+            _context.Update(carEntity);
+
+            await _context.SaveChangesAsync();
         }
     }
 }

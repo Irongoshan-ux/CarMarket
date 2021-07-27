@@ -34,7 +34,7 @@ namespace CarMarket.Server.Controllers
             return await _userService.GetAsync(userId);
         }
 
-        [HttpPost("DeleteUser/{userId}")]
+        [HttpDelete("DeleteUser/{userId}")]
         public async Task DeleteUser(long userId)
         {
             await _userService.DeleteAsync(userId);
@@ -122,16 +122,16 @@ namespace CarMarket.Server.Controllers
         //    //return Request.Headers.Authorization?.Parameter == "fake-jwt-token";
         //}
 
-        private static JWTContainerModel GetJWTContainerModel(string role, string email)
-        {
-            return new JWTContainerModel()
-            {
-                Claims = new Claim[]
-                {
-                    new Claim(ClaimTypes.Role, role),
-                    new Claim(ClaimTypes.Email, email)
-                }
-            };
-        }
+        //private static JWTContainerModel GetJWTContainerModel(string role, string email)
+        //{
+        //    return new JWTContainerModel()
+        //    {
+        //        Claims = new Claim[]
+        //        {
+        //            new Claim(ClaimTypes.Role, role),
+        //            new Claim(ClaimTypes.Email, email)
+        //        }
+        //    };
+        //}
     }
 }
