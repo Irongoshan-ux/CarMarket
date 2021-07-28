@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using CarMarket.Server.Infrastructure.Auth;
 using Microsoft.AspNetCore.Components.Authorization;
 using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Identity;
 
 namespace CarMarket.Server
 {
@@ -43,20 +44,30 @@ namespace CarMarket.Server
                  {
                      options.Authority = "https://localhost:5001";
                      options.Audience = "API";
+                     options.TokenValidationParameters.ValidTypes = new[] { "at+jwt" };
                  });
 
 
             services.AddAuthorization();
             //services.AddAuthorization(options =>
             //{
-            //    options.AddPolicy("Admin", policy =>
-            //        policy.RequireClaim("IsAdmin", "true"));
+            //    options.AddPolicy("AddCarPolicy", policy =>
+            //        policy.RequireClaim("Add Car"));
 
-            //    options.AddPolicy("User", policy =>
-            //        policy.RequireClaim("IsUser", "true"));
+            //    options.AddPolicy("DeleteCarPolicy", policy =>
+            //        policy.RequireClaim("Delete Car"));
 
-            //    options.AddPolicy("Guest", policy =>
-            //        policy.RequireClaim("IsGuest", "true"));
+            //    options.AddPolicy("EditCarPolicy", policy =>
+            //        policy.RequireClaim("Edit Car"));
+
+            //    options.AddPolicy("AdminRolePolicy", policy =>
+            //        policy.RequireRole("Admin", "User", "Guest"));
+
+            //    options.AddPolicy("UserRolePolicy", policy =>
+            //        policy.RequireRole("User"));
+
+            //    options.AddPolicy("GuestRolePolicy", policy =>
+            //        policy.RequireRole("Guest"));
             //});
 
             services.AddIdentityServer(options =>
@@ -90,14 +101,13 @@ namespace CarMarket.Server
             services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
             services.AddScoped<IUserAuthService, UserAuthService>();
 
-            //services.AddScoped<IAuthService, JWTService>();
-            //services.AddScoped<IAuthContainerModel, JWTContainerModel>();
-            //services.AddScoped<System.Net.Http.HttpClient>();
-
             services.AddDbContext<ApplicationDbContext>(builder =>
             {
                 builder.UseSqlServer(Configuration.GetConnectionString("CarMarketDb"));
             });
+
+            //services.AddIdentity<IdentityUser, IdentityRole>()
+            //    .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddAutoMapper(cfg =>
             {

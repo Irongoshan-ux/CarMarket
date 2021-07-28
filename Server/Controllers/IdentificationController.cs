@@ -79,11 +79,6 @@ namespace CarMarket.Server.Controllers
                 user = new UserModel { Email = model.Email, Password = EncryptPassword(model.Password) };
                 Role userRole = await _userService.GetUserRoleAsync("user");
 
-                if (userRole != null)
-                {
-                    user.Role = userRole;
-                }
-
                 await _userService.CreateAsync(user);
 
                 await Authenticate(user);
@@ -104,19 +99,19 @@ namespace CarMarket.Server.Controllers
         {
             user.Password = Utility.Encrypt(user.Password);
 
-            // создаем один claim
             var claims = new List<Claim>
             {
                 new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email),
-                new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role?.RoleName)
             };
-            // создаем объект ClaimsIdentity
-            ClaimsIdentity id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType,
+           
+            ClaimsIdentity id = new(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType,
                 ClaimsIdentity.DefaultRoleClaimType);
-            // установка аутентификационных куки
+
             await HttpContext.SignInAsync(new IdentityServerUser(id.NameClaimType));//, new ClaimsPrincipal(id));
 
-            //await HttpContext.SignInAsync(new IdentityServerUser(user.Email));
+            //await HttpContext.SignInAsync(new ClaimsPrincipal(id));
+
+            await HttpContext.SignInAsync(new IdentityServerUser(user.Email));
         }
 
         private string EncryptPassword(string password) => Utility.Encrypt(password);

@@ -2,6 +2,7 @@
 using CarMarket.Core.User.Domain;
 using CarMarket.Data.Car.Domain;
 using CarMarket.Data.User.Domain;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -23,13 +24,13 @@ namespace CarMarket.Data.Configuration
         }
     }
 
-    public class RoleConfiguration : IEntityTypeConfiguration<Role>
-    {
-        public void Configure(EntityTypeBuilder<Role> builder)
-        {
-            builder.ToTable("Roles").HasKey(p => p.Id);
-        }
-    }
+    //public class RoleConfiguration : IEntityTypeConfiguration<Role>
+    //{
+    //    public void Configure(EntityTypeBuilder<Role> builder)
+    //    {
+    //        builder.ToTable("Roles").HasKey(p => p.Id);
+    //    }
+    //}
 
     public class PermissonConfiguration : IEntityTypeConfiguration<Permission>
     {
@@ -44,6 +45,30 @@ namespace CarMarket.Data.Configuration
         public void Configure(EntityTypeBuilder<ImageModel> builder)
         {
             builder.ToTable("Images").HasKey(p => p.Id);
+        }
+    }
+
+    public class RoleConfiguration : IEntityTypeConfiguration<IdentityRole>
+    {
+        public void Configure(EntityTypeBuilder<IdentityRole> builder)
+        {
+            builder.HasData(
+                new IdentityRole
+                {
+                    Name = "Guest",
+                    NormalizedName = "GUEST"
+                },
+                new IdentityRole
+                {
+                    Name = "User",
+                    NormalizedName = "USER"
+                },
+                new IdentityRole
+                {
+                    Name = "Admin",
+                    NormalizedName = "ADMIN"
+                }
+            );
         }
     }
 }

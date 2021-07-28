@@ -76,16 +76,10 @@ namespace CarMarket.Server.Infrastructure.Auth
                 claimsIdentity = new ClaimsIdentity(new[]
                                 {
                                     new Claim(ClaimTypes.Name, user.Email),
-                                    new Claim(ClaimTypes.Role, user.Role.RoleName),
-                                    new Claim("IsAdmin", CheckRole(user, "Admin")),
-                                    new Claim("IsUser", CheckRole(user, "User")),
-                                    new Claim("IsGuest", CheckRole(user, "Guest"))
                                 }, "apiauth_type");
             }
 
             return claimsIdentity;
         }
-
-        private string CheckRole(UserModel user, string role) => user.Role.RoleName.Equals(role) ? "true" : "false";
     }
 }

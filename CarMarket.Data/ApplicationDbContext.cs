@@ -30,6 +30,8 @@ namespace CarMarket.Data
             modelBuilder.ApplyConfiguration(new UserConfiguration());
             modelBuilder.ApplyConfiguration(new PermissonConfiguration());
 
+            modelBuilder.ApplyConfiguration(new RoleConfiguration());
+
             InitializeUserTable(modelBuilder);
         }
 
@@ -47,8 +49,8 @@ namespace CarMarket.Data
             Role adminRole = new() { Id = 1, RoleName = adminRoleName };
             Role userRole = new() { Id = 2, RoleName = userRoleName };
 
-            UserEntity admin = new() { Id = 1, Email = adminEmail, Password = adminPassword, RoleId = adminRole?.Id };
-            UserEntity user = new() { Id = 2, Email = userEmail, Password = userPassword, RoleId = userRole?.Id };
+            UserEntity admin = new() { Id = 1, Email = adminEmail, Password = adminPassword/*, RoleId = adminRole?.Id*/ };
+            UserEntity user = new() { Id = 2, Email = userEmail, Password = userPassword/*, RoleId = userRole?.Id*/ };
 
             modelBuilder.Entity<Role>().HasData(new Role[] { adminRole, userRole });
             modelBuilder.Entity<UserEntity>().HasData(new UserEntity[] { admin, user });

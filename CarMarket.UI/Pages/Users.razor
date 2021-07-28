@@ -73,7 +73,7 @@ else
             <GridColumn ColumnTitle="FirstName"></GridColumn>
             <GridColumn ColumnTitle="LastName"></GridColumn>
             <GridColumn ColumnTitle="Email"></GridColumn>
-            <GridColumn ColumnTitle="Role"></GridColumn>
+            @*<GridColumn ColumnTitle="Role"></GridColumn>*@
             <GridColumn ColumnTitle="Encrypted Password"></GridColumn>
         </GridColumns>
 
@@ -82,7 +82,7 @@ else
                     <td>@user.FirstName</td>
                     <td>@user.LastName</td>
                     <td>@user.Email</td>
-                    <td>@user.Role?.RoleName</td>
+                    @*<td>@user.Role?.RoleName</td>*@
                     <td>@user.Password</td>
         </GridRow>
     </GridView>
