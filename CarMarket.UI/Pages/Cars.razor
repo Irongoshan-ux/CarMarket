@@ -1,33 +1,29 @@
 ﻿@page "/cars"
-@using BlazorInputFile
-@using CarMarket.BusinessLogic.Image.Service
+@*@using BlazorInputFile*@
+@*@using CarMarket.BusinessLogic.Image.Service*@
 @using CarMarket.Core.Car.Domain
 @inject HttpClient Http
-@using CarMarket.Core.Image.Domain
+@*@using CarMarket.Core.Image.Domain*@
 @using System.IO
 
 <h1>Cars Controller</h1>
 
-<p>Add car</p>
+<div class="col-md-2">
+    <a href="/createCar">Create Car</a>
+</div>
+    @*<BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
+    <br>
+    <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
+    <br>
+    <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
+    <br>*@
 
-    <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
-    <br>
-    <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
-    <br>
-    <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
-    <br>
-
-    <input @bind="newCarName" placeholder="Enter car name" />
+    @*<input @bind="newCarName" placeholder="Enter car name" />
     <input @bind="newCarDescription" placeholder="Enter description" />
     <input @bind="newCarPrice" placeholder="Enter price" />
     <input @bind="newCarType" placeholder="Enter car type name" />
 
-    <button @onclick="AddCarAsync">Add car</button>
-
-<p>Delete car</p>
-
-<input @bind="deleteCarId" placeholder="Enter the Id of the car you want to delete" />
-<button @onclick="DeleteCarAsync">Delete</button>
+    <button @onclick="AddCarAsync">Add car</button>*@
 
 <p>All cars</p>
 
@@ -39,7 +35,7 @@ else
 {
     <GridView Items="cars">
         <GridColumns>
-            <GridColumn ColumnTitle="Image"></GridColumn>
+            @*<GridColumn ColumnTitle="Image"></GridColumn>*@
             <GridColumn ColumnTitle="Id"></GridColumn>
             <GridColumn ColumnTitle="Title"></GridColumn>
             <GridColumn ColumnTitle="Car type"></GridColumn>
@@ -54,9 +50,9 @@ else
 
         <GridRow Context="car">
             <td>
-                <NavLink href=@string.Format("/cars/cardetail/{0}", car.Id)>
+                @*<NavLink href=@string.Format("/cars/cardetail/{0}", car.Id)>
                     <img src="@ImageService.ConvertImageToDisplay(car.CarImages.FirstOrDefault())" width="200px"/>
-                </NavLink>
+                </NavLink>*@
             </td>
             <td>@car.Id</td>
             <td>@car.Name</td>
@@ -83,8 +79,8 @@ else
     private int newCarPrice;
     private CarType newCarType;
     private long deleteCarId;
-    
-    private List<ImageModel> newCarImages = new List<ImageModel>();
+
+    //private List<ImageModel> newCarImages = new List<ImageModel>();
 
     private void EditCar(CarModel editedCar)
     {
@@ -98,23 +94,23 @@ else
         await GetCarModelList();
     }
 
-    async Task HandleFilesSelected(IFileListEntry[] files)
-    {
-        var file = files.FirstOrDefault();
+    //async Task HandleFilesSelected(IFileListEntry[] files)
+    //{
+    //    var file = files.FirstOrDefault();
 
-        if ((file != null) && (ImageService.IsImage(file.Name)))
-        {
-            var ms = new MemoryStream();
-            await file.Data.CopyToAsync(ms);
+    //    if ((file != null) && (ImageService.IsImage(file.Name)))
+    //    {
+    //        var ms = new MemoryStream();
+    //        await file.Data.CopyToAsync(ms);
 
-            newCarImages.Add(new ImageModel
-            {
-                ImageData = ms.ToArray(),
-                ImageTitle = file.Name
-            });
-        }
-        else throw new ArgumentException("File type " + file.Type + " not supported.");
-    }
+    //        newCarImages.Add(new ImageModel
+    //        {
+    //            ImageData = ms.ToArray(),
+    //            ImageTitle = file.Name
+    //        });
+    //    }
+    //    else throw new ArgumentException("File type " + file.Type + " not supported.");
+    //}
 
     private async Task AddCarAsync()
     {
@@ -122,7 +118,7 @@ else
         {
             Name = newCarName,
             Description = newCarDescription,
-            CarImages = newCarImages,
+            //CarImages = newCarImages,
             Price = newCarPrice,
             CarType = newCarType
         };

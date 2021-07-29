@@ -1,4 +1,6 @@
 ﻿using CarMarket.Core.Car.Domain;
+using CarMarket.Core.Paging;
+using CarMarket.Core.RequestFeatures;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -13,5 +15,6 @@ namespace CarMarket.Core.Car.Service
         Task<CarModel> GetByName(string carName);
         Task<IEnumerable<CarModel>> GetByNameAsync(string carName);
         Task UpdateCar(long carId, CarModel car);
+        Task<PagedList<CarModel>> GetAllByParametersAsync(ModelParameters carParameters);
     }
 }

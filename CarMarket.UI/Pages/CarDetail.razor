@@ -1,4 +1,4 @@
-﻿@page "/cars/cardetail/{carId:long}"
+﻿@*@page "/cars/cardetail/{carId:long}"
 @page "/cars/cardetail"
 @page "/car"
 @using CarMarket.Core.Car.Domain
@@ -36,4 +36,4 @@
     {
         CarDetails = await Http.GetFromJsonAsync<CarModel>("https://localhost:10001/api/Car/GetCar/" + CarId);
     }
-}
+}*@

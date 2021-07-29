@@ -12,11 +12,13 @@ namespace CarMarket.BusinessLogic.Image.Service
         {
             if (image is null) return string.Empty;
 
-            var base64 = Convert.ToBase64String(image.ImageData);
+            //var base64 = Convert.ToBase64String(image.ImageData);
 
-            var result = string.Format("data:image/jpg;base64,{0}", base64);
+            //var result = string.Format("data:image/jpg;base64,{0}", base64);
 
-            return result;
+            //return result;
+
+            return null;
         }
 
         public static bool IsImage(ImageModel image)

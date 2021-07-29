@@ -1,7 +1,8 @@
 ﻿using CarMarket.Core.Car.Domain;
 using CarMarket.Core.Car.Repository;
 using CarMarket.Core.Car.Service;
-using CarMarket.Core.User.Domain;
+using CarMarket.Core.Paging;
+using CarMarket.Core.RequestFeatures;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -25,6 +26,11 @@ namespace CarMarket.BusinessLogic.Car.Service
             }
 
             return await _carRepository.SaveAsync(carModel);
+        }
+
+        public async Task<PagedList<CarModel>> GetAllByParametersAsync(ModelParameters carParameters)
+        {
+            return await _carRepository.FindAllByParametersAsync(carParameters);
         }
 
         public async Task<CarModel> GetAsync(long carId)

@@ -1,0 +1,66 @@
+﻿@page "/createCar"
+
+<h2>Create Product Form</h2>
+
+<EditForm Model="_car" OnValidSubmit="Create" class="card card-body bg-light mt-5">
+    <DataAnnotationsValidator />
+    <div class="form-group row">
+        <label for="name" class="col-md-2 col-form-label">Name:</label>
+        <div class="col-md-10">
+            <InputText id="name" class="form-control" @bind-Value="_car.Name" />
+            <ValidationMessage For="@(() => _car.Name)" />
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label for="description" class="col-md-2 col-form-label">Description:</label>
+        <div class="col-md-10">
+            <InputText id="name" class="form-control" @bind-Value="_car.Description" />
+            <ValidationMessage For="@(() => _car.Description)" />
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label for="price" class="col-md-2 col-form-label">Price:</label>
+        <div class="col-md-10">
+            <InputNumber id="price" class="form-control" @bind-Value="_car.Price" />
+            <ValidationMessage For="@(() => _car.Price)" />
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label for="carType" class="col-md-2 col-form-label">Car Type:</label>
+        <div class="col-md-10">
+            <InputText id="carType" class="form-control" @bind-Value="_car.CarType" />
+            <ValidationMessage For="@(() => _car.CarType)" />
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label for="image" class="col-md-2 col-form-label">Image:</label>
+        <div class="col-md-10">
+            <ImageUpload OnChange="AssignImageUrl" />
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label for="image1" class="col-md-2 col-form-label">Image:</label>
+        <div class="col-md-10">
+            <ImageUpload OnChange="AssignImageUrl" />
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label for="image2" class="col-md-2 col-form-label">Image:</label>
+        <div class="col-md-10">
+            <ImageUpload OnChange="AssignImageUrl" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 text-right">
+            <button type="submit" class="btn btn-success">Create</button>
+        </div>
+    </div>
+</EditForm>
+<SuccessNotification @ref="_notification"/>

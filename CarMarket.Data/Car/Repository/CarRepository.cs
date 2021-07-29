@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
 using CarMarket.Core.Car.Domain;
 using CarMarket.Core.Car.Repository;
+using CarMarket.Core.Paging;
+using CarMarket.Core.RequestFeatures;
 using CarMarket.Data.Car.Domain;
+using CarMarket.Data.Car.Repository.RepositoryExtensions;
 using CarMarket.Data.User.Domain;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -25,6 +28,7 @@ namespace CarMarket.Data.Car.Repository
         {
             var carEntity = await _context.Cars
                 .Include(x => x.CarImages)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             return _mapper.Map<CarModel>(carEntity);
@@ -56,6 +60,7 @@ namespace CarMarket.Data.Car.Repository
             var carEntity = await _context.Cars
                 .Include(x => x.CarImages)
                 .Where(x => x.Id == carId)
+                .AsNoTracking()
                 .FirstOrDefaultAsync();
 
             _context.Cars.Remove(carEntity);
@@ -66,6 +71,7 @@ namespace CarMarket.Data.Car.Repository
         {
             var carEntity = await _context.Cars
                 .Include(x => x.CarImages)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Name == name);
 
             return _mapper.Map<CarModel>(carEntity);
@@ -76,6 +82,7 @@ namespace CarMarket.Data.Car.Repository
             var carEntities = await _context.Cars
                 .Include(x => x.CarImages)
                 .Where(x => x.Name == name)
+                .AsNoTracking()
                 .ToListAsync();
 
             return _mapper.Map<List<CarModel>>(carEntities);
@@ -87,6 +94,18 @@ namespace CarMarket.Data.Car.Repository
             _context.Update(carEntity);
 
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<PagedList<CarModel>> FindAllByParametersAsync(ModelParameters carParameters)
+        {
+            var carEntities = await _context.Cars
+                .Search(carParameters.SearchTerm)
+                .ToListAsync();
+
+            var cars = _mapper.Map<List<CarModel>>(carEntities);
+
+            return PagedList<CarModel>
+                .ToPagedList(cars, carParameters.PageNumber, carParameters.PageSize);
         }
     }
 }

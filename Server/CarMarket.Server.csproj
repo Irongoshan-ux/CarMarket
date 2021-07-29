@@ -26,5 +26,9 @@
     <ProjectReference Include="..\CarMarket.Data\CarMarket.Data.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="StaticFiles\Images\" />
+  </ItemGroup>
+
 
 </Project>
