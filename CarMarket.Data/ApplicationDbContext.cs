@@ -30,8 +30,6 @@ namespace CarMarket.Data
             modelBuilder.ApplyConfiguration(new UserConfiguration());
             modelBuilder.ApplyConfiguration(new PermissonConfiguration());
 
-            modelBuilder.ApplyConfiguration(new RoleConfiguration());
-
             InitializeUserTable(modelBuilder);
         }
 
@@ -41,19 +39,19 @@ namespace CarMarket.Data
             string userRoleName = "user";
 
             string adminEmail = "admin@gmail.com";
-            string adminPassword = "c54cd4083d0e3b7625cd3b8c652a2537"; // qwe
+            string adminPassword = "admin";
 
             string userEmail = "user@gmail.com";
-            string userPassword = "c54cd4083d0e3b7625cd3b8c652a2537"; // qwe
+            string userPassword = "user";
 
             Role adminRole = new() { Id = 1, RoleName = adminRoleName };
             Role userRole = new() { Id = 2, RoleName = userRoleName };
 
-            UserEntity admin = new() { Id = 1, Email = adminEmail, Password = adminPassword/*, RoleId = adminRole?.Id*/ };
-            UserEntity user = new() { Id = 2, Email = userEmail, Password = userPassword/*, RoleId = userRole?.Id*/ };
+            UserEntity adminUser = new() { Id = 1, Email = adminEmail, Password = adminPassword, RoleId = adminRole.Id };
+            UserEntity defaultUser = new() { Id = 2, Email = userEmail, Password = userPassword, RoleId = userRole.Id };
 
             modelBuilder.Entity<Role>().HasData(new Role[] { adminRole, userRole });
-            modelBuilder.Entity<UserEntity>().HasData(new UserEntity[] { admin, user });
+            modelBuilder.Entity<UserEntity>().HasData(new UserEntity[] { adminUser, defaultUser });
             base.OnModelCreating(modelBuilder);
         }
     }

@@ -13,7 +13,6 @@ namespace CarMarket.Data.User.Repository
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
-
         public UserRepository(ApplicationDbContext userContext, IMapper mapper)
         {
             _context = userContext;
@@ -23,8 +22,7 @@ namespace CarMarket.Data.User.Repository
         public async Task<UserModel> FindUserModelAsync(string email, string password)
         {
             var userEntity = await _context.Users
-                //.Include(x => x.Role)
-                .Include(x => x.Permissions)
+                .Include(u => u.Role)
                 .FirstOrDefaultAsync(x => (x.Email == email) && (x.Password == password));
 
             return _mapper.Map<UserModel>(userEntity);
@@ -32,18 +30,13 @@ namespace CarMarket.Data.User.Repository
 
         public async Task<UserModel> FindByIdAsync(long id)
         {
-            var userEntity = await _context.Users
-                //.Include(u => u.Role)
-                .Include(u => u.Permissions)
-                .FirstOrDefaultAsync(x => x.Id == id); ;
+            var userEntity = await _context.Users.FindAsync(id);
             return _mapper.Map<UserModel>(userEntity);
         }
 
         public async Task<List<UserModel>> FindAllAsync()
         {
             var userEntities = await _context.Users
-                //.Include(x => x.Role)
-                .Include(x => x.Permissions)
                 .AsNoTracking()
                 .ToListAsync();
 
@@ -53,7 +46,7 @@ namespace CarMarket.Data.User.Repository
         public async Task<long> SaveAsync(UserModel userModel)
         {
             var newUserEntity = _mapper.Map<UserEntity>(userModel);
-
+            
             var added = await _context.Users.AddAsync(newUserEntity);
             await _context.SaveChangesAsync();
 
@@ -72,10 +65,7 @@ namespace CarMarket.Data.User.Repository
 
         public async Task<UserModel> FindByEmailAsync(string email)
         {
-            var userEntity = await _context.Users
-                //.Include(x => x.Role)
-                .Include(x => x.Permissions)
-                .FirstOrDefaultAsync(x => x.Email == email);
+            var userEntity = await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
 
             return _mapper.Map<UserModel>(userEntity);
         }
@@ -91,7 +81,9 @@ namespace CarMarket.Data.User.Repository
 
             _context.Update(userEntity);
 
-            await _context.SaveChangesAsync();
+            //_context.Entry(userEntity).State = EntityState.Modified;
+
+            await _context.SaveChangesAsync();            
         }
     }
 }
