@@ -17,10 +17,7 @@ using CarMarket.Server.Infrastructure;
 using CarMarket.BusinessLogic.Car.Service;
 using CarMarket.Data.Configuration.Mapping;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using CarMarket.Server.Infrastructure.Auth;
-using Microsoft.AspNetCore.Components.Authorization;
 using Blazored.LocalStorage;
-using Microsoft.AspNetCore.Identity;
 
 namespace CarMarket.Server
 {
@@ -98,9 +95,6 @@ namespace CarMarket.Server
             services.AddScoped<ICarRepository, CarRepository>();
             services.AddScoped<ICarService, CarService>();
 
-            services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
-            services.AddScoped<IUserAuthService, UserAuthService>();
-
             services.AddDbContext<ApplicationDbContext>(builder =>
             {
                 builder.UseSqlServer(Configuration.GetConnectionString("CarMarketDb"));
@@ -113,8 +107,6 @@ namespace CarMarket.Server
             {
                 cfg.AddProfile<EntityToModelMappingProfile>();
             });
-
-            //services.Configure<JWTContainerModel>(Configuration.GetSection("JWTSecretKey"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
