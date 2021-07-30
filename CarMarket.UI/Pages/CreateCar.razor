@@ -31,7 +31,7 @@
     <div class="form-group row">
         <label for="carType" class="col-md-2 col-form-label">Car Type:</label>
         <div class="col-md-10">
-            <InputText id="carType" class="form-control" @bind-Value="_car.CarType" />
+            <InputSelect id="carType" class="form-control" @bind-Value="_car.CarType" />
             <ValidationMessage For="@(() => _car.CarType)" />
         </div>
     </div>

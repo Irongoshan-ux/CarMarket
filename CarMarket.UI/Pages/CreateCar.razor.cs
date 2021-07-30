@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CarMarket.UI.Pages
 {
-    public partial class CreateProduct
+    public partial class CreateCar
     {
         protected CarModel _car = new CarModel();
         protected SuccessNotification _notification;
