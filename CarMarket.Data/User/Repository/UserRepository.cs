@@ -22,7 +22,7 @@ namespace CarMarket.Data.User.Repository
         public async Task<UserModel> FindUserModelAsync(string email, string password)
         {
             var userEntity = await _context.Users
-                .Include(u => u.Role)
+                //.Include(u => u.Role)
                 .FirstOrDefaultAsync(x => (x.Email == email) && (x.Password == password));
 
             return _mapper.Map<UserModel>(userEntity);

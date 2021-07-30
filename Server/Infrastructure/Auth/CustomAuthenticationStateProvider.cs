@@ -45,8 +45,8 @@ namespace CarMarket.Server.Infrastructure.Auth
 
         public async Task MarkUserAsAuthenticated(UserModel user)
         {
-            await _localStorageService.SetItemAsync("accessToken", user.AccessToken);
-            await _localStorageService.SetItemAsync("refreshToken", user.RefreshToken);
+            //await _localStorageService.SetItemAsync("accessToken", user.AccessToken);
+            //await _localStorageService.SetItemAsync("refreshToken", user.RefreshToken);
 
             var identity = GetClaimsIdentity(user);
 

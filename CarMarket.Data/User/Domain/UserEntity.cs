@@ -14,7 +14,5 @@ namespace CarMarket.Data.User.Domain
         public string Email { get; set; }
         public ICollection<Permission> Permissions { get; set; }
         public string Password { get; set; }
-        public string AccessToken { get; set; }
-        public string RefreshToken { get; set; }
     }
 }
