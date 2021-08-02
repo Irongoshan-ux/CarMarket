@@ -3,6 +3,7 @@ using CarMarket.Core.User.Domain;
 using CarMarket.Data.Car.Domain;
 using CarMarket.Data.Configuration;
 using CarMarket.Data.User.Domain;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace CarMarket.Data
@@ -11,7 +12,7 @@ namespace CarMarket.Data
     {
         public DbSet<UserEntity> Users { get; set; }
         public DbSet<CarEntity> Cars { get; set; }
-        public DbSet<Role> Roles { get; set; }
+        //public DbSet<Role> Roles { get; set; }
         public DbSet<Permission> Permissions { get; set; }
         public DbSet<ImageModel> Images { get; set; }
 
@@ -28,6 +29,8 @@ namespace CarMarket.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new UserConfiguration());
+            modelBuilder.ApplyConfiguration(new RoleConfiguration());
+            modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
             modelBuilder.ApplyConfiguration(new PermissonConfiguration());
 
             InitializeUserTable(modelBuilder);
@@ -47,10 +50,10 @@ namespace CarMarket.Data
             Role adminRole = new() { Id = 1, RoleName = adminRoleName };
             Role userRole = new() { Id = 2, RoleName = userRoleName };
 
-            UserEntity admin = new() { Id = 1, Email = adminEmail, Password = adminPassword/*, RoleId = adminRole?.Id*/ };
-            UserEntity user = new() { Id = 2, Email = userEmail, Password = userPassword/*, RoleId = userRole?.Id*/ };
+            UserEntity admin = new() { Id = "qwe", Email = adminEmail, PasswordHash = adminPassword/*, RoleId = adminRole?.Id*/ };
+            UserEntity user = new() { Id = "qwerty", Email = userEmail, PasswordHash = userPassword/*, RoleId = userRole?.Id*/ };
 
-            modelBuilder.Entity<Role>().HasData(new Role[] { adminRole, userRole });
+            //modelBuilder.Entity<Role>().HasData(new Role[] { adminRole, userRole });
             modelBuilder.Entity<UserEntity>().HasData(new UserEntity[] { admin, user });
             base.OnModelCreating(modelBuilder);
         }

@@ -42,7 +42,7 @@ namespace CarMarket.Server.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> Login(LoginModel model)
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -64,7 +64,7 @@ namespace CarMarket.Server.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> Register(RegisterModel model)
+        public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -76,7 +76,7 @@ namespace CarMarket.Server.Controllers
                     return View();
                 }
 
-                user = new UserModel { Email = model.Email, Password = EncryptPassword(model.Password) };
+                user = new UserModel { Email = model.Email, PasswordHash = EncryptPassword(model.Password) };
                 Role userRole = await _userService.GetUserRoleAsync("user");
 
                 await _userService.CreateAsync(user);
@@ -97,7 +97,7 @@ namespace CarMarket.Server.Controllers
 
         private async Task Authenticate(UserModel user)
         {
-            user.Password = Utility.Encrypt(user.Password);
+            user.PasswordHash = EncryptPassword(user.PasswordHash);
 
             var claims = new List<Claim>
             {

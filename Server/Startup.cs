@@ -18,6 +18,8 @@ using CarMarket.BusinessLogic.Car.Service;
 using CarMarket.Data.Configuration.Mapping;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Identity;
+using CarMarket.Data.User.Domain;
 
 namespace CarMarket.Server
 {
@@ -66,6 +68,12 @@ namespace CarMarket.Server
             //    options.AddPolicy("GuestRolePolicy", policy =>
             //        policy.RequireRole("Guest"));
             //});
+
+            services.AddIdentity<UserEntity, IdentityRole>(options =>
+            {
+                options.Password.RequiredLength = 10;
+                options.Password.RequiredUniqueChars = 3;
+            }).AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddIdentityServer(options =>
                 {

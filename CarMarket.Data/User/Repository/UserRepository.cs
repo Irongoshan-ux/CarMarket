@@ -23,12 +23,12 @@ namespace CarMarket.Data.User.Repository
         {
             var userEntity = await _context.Users
                 //.Include(u => u.Role)
-                .FirstOrDefaultAsync(x => (x.Email == email) && (x.Password == password));
+                .FirstOrDefaultAsync(x => (x.Email == email) && (x.PasswordHash == password));
 
             return _mapper.Map<UserModel>(userEntity);
         }
 
-        public async Task<UserModel> FindByIdAsync(long id)
+        public async Task<UserModel> FindByIdAsync(string id)
         {
             var userEntity = await _context.Users.FindAsync(id);
             return _mapper.Map<UserModel>(userEntity);
@@ -43,7 +43,7 @@ namespace CarMarket.Data.User.Repository
             return _mapper.Map<List<UserModel>>(userEntities);
         }
 
-        public async Task<long> SaveAsync(UserModel userModel)
+        public async Task<string> SaveAsync(UserModel userModel)
         {
             var newUserEntity = _mapper.Map<UserEntity>(userModel);
             
@@ -53,7 +53,7 @@ namespace CarMarket.Data.User.Repository
             return added.Entity.Id;
         }
 
-        public async Task DeleteAsync(long userId)
+        public async Task DeleteAsync(string userId)
         {
             var userEntity = await _context.Users
                 .Where(x => x.Id == userId)
@@ -72,16 +72,15 @@ namespace CarMarket.Data.User.Repository
 
         public async Task<Role> FindUserRoleAsync(string roleName)
         {
-            return await _context.Roles.FirstOrDefaultAsync(r => r.RoleName == roleName);
+            return default;
+            //return await _context.Roles.FirstOrDefaultAsync(r => r.RoleName == roleName);
         }
 
-        public async Task UpdateAsync(long userId, UserModel userModel)
+        public async Task UpdateAsync(string userId, UserModel userModel)
         {
             var userEntity = _mapper.Map<UserEntity>(userModel);
 
             _context.Update(userEntity);
-
-            //_context.Entry(userEntity).State = EntityState.Modified;
 
             await _context.SaveChangesAsync();            
         }

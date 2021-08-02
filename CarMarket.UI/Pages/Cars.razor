@@ -8,6 +8,8 @@
 
 <h1>Cars Controller</h1>
 
+<AuthorizeView Roles ="Admin" >
+
 <p>Add car</p>
 
     <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
@@ -24,6 +26,7 @@
 
     <button @onclick="AddCarAsync">Add car</button>
 
+    </AuthorizeView>
 <p>Delete car</p>
 
 <input @bind="deleteCarId" placeholder="Enter the Id of the car you want to delete" />

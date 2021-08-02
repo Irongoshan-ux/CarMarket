@@ -2,6 +2,7 @@
 using CarMarket.Core.Car.Service;
 using CarMarket.Core.Image.Domain;
 using CarMarket.Core.User.Domain;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -14,6 +15,7 @@ namespace CarMarket.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin")]
     public class CarController : ControllerBase
     {
         private readonly ILogger<CarController> _logger;
@@ -54,7 +56,9 @@ namespace CarMarket.Server.Controllers
             if (carId == default)
                 return BadRequest(carModel + " is invalid");
 
-            return CreatedAtAction("GetCar", new { id = carModel.Id }, carModel);
+            return Ok(carModel);
+
+            //return CreatedAtAction("GetCar", new { id = carModel.Id }, carModel);
         }
 
         [HttpGet("GetCarsByPage")]

@@ -24,6 +24,14 @@ namespace CarMarket.Data.Configuration
         }
     }
 
+    public class RoleConfiguration : IEntityTypeConfiguration<IdentityRole>
+    {
+        public void Configure(EntityTypeBuilder<IdentityRole> builder)
+        {
+            builder.ToTable("AspNetRoles").HasKey(p => p.Id);
+        }
+    }
+
     //public class RoleConfiguration : IEntityTypeConfiguration<Role>
     //{
     //    public void Configure(EntityTypeBuilder<Role> builder)
@@ -48,27 +56,35 @@ namespace CarMarket.Data.Configuration
         }
     }
 
-    public class RoleConfiguration : IEntityTypeConfiguration<IdentityRole>
+    public class UserRoleConfiguration : IEntityTypeConfiguration<IdentityUserRole<string>>
     {
-        public void Configure(EntityTypeBuilder<IdentityRole> builder)
+        public void Configure(EntityTypeBuilder<IdentityUserRole<string>> builder)
         {
-            builder.HasData(
-                new IdentityRole
-                {
-                    Name = "Guest",
-                    NormalizedName = "GUEST"
-                },
-                new IdentityRole
-                {
-                    Name = "User",
-                    NormalizedName = "USER"
-                },
-                new IdentityRole
-                {
-                    Name = "Admin",
-                    NormalizedName = "ADMIN"
-                }
-            );
+            builder.ToTable("AspNetUserRoles").HasNoKey();
         }
     }
+
+    //public class RoleConfiguration : IEntityTypeConfiguration<IdentityRole>
+    //{
+    //    public void Configure(EntityTypeBuilder<IdentityRole> builder)
+    //    {
+    //        builder.HasData(
+    //            new IdentityRole
+    //            {
+    //                Name = "Guest",
+    //                NormalizedName = "GUEST"
+    //            },
+    //            new IdentityRole
+    //            {
+    //                Name = "User",
+    //                NormalizedName = "USER"
+    //            },
+    //            new IdentityRole
+    //            {
+    //                Name = "Admin",
+    //                NormalizedName = "ADMIN"
+    //            }
+    //        );
+    //    }
+    //}
 }
