@@ -49,12 +49,14 @@ namespace CarMarket.Server.Controllers
             return BadRequest($"Role {model.RoleName} already exists.");
         }
 
+        [AllowAnonymous]
         [HttpGet("GetRoles")]
         public IList<IdentityRole> GetRoles()
         {
             return _roleManager.Roles.ToList();
         }
 
+        [AllowAnonymous]
         [HttpGet("GetUsersInRole")]
         public async Task<IActionResult> GetUsersInRole(string roleId)
         {

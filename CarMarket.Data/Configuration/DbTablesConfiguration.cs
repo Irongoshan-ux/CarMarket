@@ -60,7 +60,7 @@ namespace CarMarket.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<IdentityUserRole<string>> builder)
         {
-            builder.ToTable("AspNetUserRoles").HasNoKey();
+            builder.ToTable("AspNetUserRoles").HasKey(keys => new { keys.UserId, keys.RoleId });
         }
     }
 

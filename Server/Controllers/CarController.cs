@@ -15,7 +15,6 @@ namespace CarMarket.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "Admin")]
     public class CarController : ControllerBase
     {
         private readonly ILogger<CarController> _logger;
