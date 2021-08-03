@@ -24,13 +24,13 @@ namespace CarMarket.Data.Configuration
         }
     }
 
-    public class RoleConfiguration : IEntityTypeConfiguration<IdentityRole>
-    {
-        public void Configure(EntityTypeBuilder<IdentityRole> builder)
-        {
-            builder.ToTable("AspNetRoles").HasKey(p => p.Id);
-        }
-    }
+    //public class RoleConfiguration : IEntityTypeConfiguration<IdentityRole>
+    //{
+    //    public void Configure(EntityTypeBuilder<IdentityRole> builder)
+    //    {
+    //        builder.ToTable("AspNetRoles").HasKey(p => p.Id);
+    //    }
+    //}
 
     //public class RoleConfiguration : IEntityTypeConfiguration<Role>
     //{
@@ -61,30 +61,38 @@ namespace CarMarket.Data.Configuration
         public void Configure(EntityTypeBuilder<IdentityUserRole<string>> builder)
         {
             builder.ToTable("AspNetUserRoles").HasKey(keys => new { keys.UserId, keys.RoleId });
+
+            builder.HasData(
+                new IdentityUserRole<string>
+                {
+                    RoleId = "qwe",
+                    UserId = "qwe"
+                });
         }
     }
 
-    //public class RoleConfiguration : IEntityTypeConfiguration<IdentityRole>
-    //{
-    //    public void Configure(EntityTypeBuilder<IdentityRole> builder)
-    //    {
-    //        builder.HasData(
-    //            new IdentityRole
-    //            {
-    //                Name = "Guest",
-    //                NormalizedName = "GUEST"
-    //            },
-    //            new IdentityRole
-    //            {
-    //                Name = "User",
-    //                NormalizedName = "USER"
-    //            },
-    //            new IdentityRole
-    //            {
-    //                Name = "Admin",
-    //                NormalizedName = "ADMIN"
-    //            }
-    //        );
-    //    }
-    //}
+    public class RoleConfiguration : IEntityTypeConfiguration<IdentityRole>
+    {
+        public void Configure(EntityTypeBuilder<IdentityRole> builder)
+        {
+            builder.HasData(
+                new IdentityRole
+                {
+                    Name = "Guest",
+                    NormalizedName = "GUEST"
+                },
+                new IdentityRole
+                {
+                    Name = "User",
+                    NormalizedName = "USER"
+                },
+                new IdentityRole
+                {
+                    Id = "qwe",
+                    Name = "Admin",
+                    NormalizedName = "ADMIN"
+                }
+            );
+        }
+    }
 }

@@ -1,4 +1,4 @@
-﻿using CarMarket.Data.User.Domain;
+﻿using CarMarket.Core.User.Domain;
 using CarMarket.Server.Infrastructure.Identification.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -15,9 +15,9 @@ namespace CarMarket.Server.Controllers
     public class AdministrationController : ControllerBase
     {
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly UserManager<UserEntity> _userManager;
+        private readonly UserManager<UserModel> _userManager;
 
-        public AdministrationController(RoleManager<IdentityRole> roleManager, UserManager<UserEntity> userManager)
+        public AdministrationController(RoleManager<IdentityRole> roleManager, UserManager<UserModel> userManager)
         {
             _roleManager = roleManager;
             _userManager = userManager;
@@ -96,7 +96,7 @@ namespace CarMarket.Server.Controllers
                 return NotFound($"Role with id={roleId} not found");
             }
 
-            var result = new IdentityResult();
+            IdentityResult result = null;
 
             foreach (var userRoleModel in model)
             {

@@ -3,12 +3,14 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using CarMarket.Core.User.Domain;
 using CarMarket.Core.User.Service;
+using CarMarket.Data.User.Domain;
 using CarMarket.Server.Infrastructure.Identification.Models;
 using IdentityServer4;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CarMarket.Server.Controllers
@@ -19,14 +21,17 @@ namespace CarMarket.Server.Controllers
     {
         private readonly IIdentityServerInteractionService _interaction;
         private readonly IUserService _userService;
+        private readonly UserManager<UserModel> _userManager;
 
         public IdentificationController(
             IIdentityServerInteractionService interaction,
+            UserManager<UserModel> userManager,
             IUserService userService
             )
         {
             _interaction = interaction;
             _userService = userService;
+            _userManager = userManager;
         }
 
         [HttpGet("[action]")]
@@ -103,13 +108,23 @@ namespace CarMarket.Server.Controllers
             {
                 new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email),
             };
-           
+
+            var roles = await _userManager.GetRolesAsync(user);
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
+
             ClaimsIdentity id = new(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType,
                 ClaimsIdentity.DefaultRoleClaimType);
 
+            // How does it work?
+
             await HttpContext.SignInAsync(new IdentityServerUser(id.NameClaimType));//, new ClaimsPrincipal(id));
 
-            //await HttpContext.SignInAsync(new ClaimsPrincipal(id));
+            await HttpContext.SignInAsync(new IdentityServerUser(id.RoleClaimType));
+
+            await HttpContext.SignInAsync(new ClaimsPrincipal(id));
 
             await HttpContext.SignInAsync(new IdentityServerUser(user.Email));
         }

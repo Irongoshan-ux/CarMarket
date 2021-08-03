@@ -19,7 +19,7 @@ using CarMarket.Data.Configuration.Mapping;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Identity;
-using CarMarket.Data.User.Domain;
+using CarMarket.Core.User.Domain;
 
 namespace CarMarket.Server
 {
@@ -46,30 +46,10 @@ namespace CarMarket.Server
                      options.TokenValidationParameters.ValidTypes = new[] { "at+jwt" };
                  });
 
-
             services.AddAuthorization();
-            //services.AddAuthorization(options =>
-            //{
-            //    options.AddPolicy("AddCarPolicy", policy =>
-            //        policy.RequireClaim("Add Car"));
 
-            //    options.AddPolicy("DeleteCarPolicy", policy =>
-            //        policy.RequireClaim("Delete Car"));
-
-            //    options.AddPolicy("EditCarPolicy", policy =>
-            //        policy.RequireClaim("Edit Car"));
-
-            //    options.AddPolicy("AdminRolePolicy", policy =>
-            //        policy.RequireRole("Admin", "User", "Guest"));
-
-            //    options.AddPolicy("UserRolePolicy", policy =>
-            //        policy.RequireRole("User"));
-
-            //    options.AddPolicy("GuestRolePolicy", policy =>
-            //        policy.RequireRole("Guest"));
-            //});
-
-            services.AddIdentity<UserEntity, IdentityRole>(options =>
+            // This instruction ruins LOG OUT
+            services.AddIdentity<UserModel, IdentityRole>(options =>
             {
                 options.Password.RequiredLength = 10;
                 options.Password.RequiredUniqueChars = 3;
@@ -85,7 +65,6 @@ namespace CarMarket.Server
                 .AddInMemoryIdentityResources(IdentityServerConfiguration.GetIdentityResources())
                 .AddInMemoryApiScopes(IdentityServerConfiguration.GetScopes())
                 .AddDeveloperSigningCredential();
-
 
             services.AddControllersWithViews();
             services.AddRazorPages();
@@ -107,9 +86,6 @@ namespace CarMarket.Server
             {
                 builder.UseSqlServer(Configuration.GetConnectionString("CarMarketDb"));
             });
-
-            //services.AddIdentity<IdentityUser, IdentityRole>()
-            //    .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddAutoMapper(cfg =>
             {
