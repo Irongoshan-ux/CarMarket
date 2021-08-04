@@ -24,6 +24,14 @@ namespace CarMarket.Data.Configuration
         }
     }
 
+    public class UserModelConfiguration : IEntityTypeConfiguration<UserModel>
+    {
+        public void Configure(EntityTypeBuilder<UserModel> builder)
+        {
+            builder.ToTable("UserModels").HasKey(p => p.Id);
+        }
+    }
+
     //public class RoleConfiguration : IEntityTypeConfiguration<IdentityRole>
     //{
     //    public void Configure(EntityTypeBuilder<IdentityRole> builder)

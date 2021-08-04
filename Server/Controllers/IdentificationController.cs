@@ -1,16 +1,23 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using CarMarket.Core.User.Domain;
 using CarMarket.Core.User.Service;
 using CarMarket.Server.Infrastructure.Identification.Models;
+using IdentityModel;
 using IdentityServer4;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CarMarket.Server.Controllers
 {
@@ -97,7 +104,7 @@ namespace CarMarket.Server.Controllers
 
             await HttpContext.SignOutAsync();
 
-            if (logout.PostLogoutRedirectUri is null) 
+            if (logout.PostLogoutRedirectUri is null)
                 return Redirect("https://localhost:5001");
 
             return Redirect(logout.PostLogoutRedirectUri);
@@ -108,19 +115,20 @@ namespace CarMarket.Server.Controllers
             user.PasswordHash = EncryptPassword(user.PasswordHash);
 
             var claims = await GetUserClaimsAsync(user);
-            
+
             var identity = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType,
                 ClaimsIdentity.DefaultRoleClaimType);
 
-            //How does it work?
 
-            //await HttpContext.SignInAsync(new IdentityServerUser(identity.NameClaimType));
+            // How to include role claim to jwt token and then use the Authorize attribute?
+            // See https://weblog.west-wind.com/posts/2021/Mar/09/Role-based-JWT-Tokens-in-ASPNET-Core
+
+
+            await HttpContext.SignInAsync(new IdentityServerUser(identity.RoleClaimType));
 
             //await HttpContext.SignInAsync(new IdentityServerUser(identity.RoleClaimType));
 
             await HttpContext.SignInAsync(new ClaimsPrincipal(identity));
-
-            //await HttpContext.SignInAsync(new IdentityServerUser(identity.Claims.ToString()));
         }
 
         private async Task<IEnumerable<Claim>> GetUserClaimsAsync(UserModel user)
