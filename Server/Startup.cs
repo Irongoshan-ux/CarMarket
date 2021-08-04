@@ -53,7 +53,8 @@ namespace CarMarket.Server
             {
                 options.Password.RequiredLength = 10;
                 options.Password.RequiredUniqueChars = 3;
-            }).AddEntityFrameworkStores<ApplicationDbContext>();
+            })
+                .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddIdentityServer(options =>
                 {

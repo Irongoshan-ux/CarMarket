@@ -57,7 +57,7 @@ namespace CarMarket.Server.Controllers
                 {
                     await Authenticate(user);
 
-                    await HttpContext.SignInAsync(new IdentityServerUser(model.Email));
+                    await HttpContext.SignInAsync(new IdentityServerUser(user.Email));
 
                     return Redirect(model.ReturnUrl);
                 }
@@ -97,6 +97,10 @@ namespace CarMarket.Server.Controllers
             var logout = await _interaction.GetLogoutContextAsync(logoutId);
 
             await HttpContext.SignOutAsync();
+
+            if (logout.PostLogoutRedirectUri is null) 
+                return Redirect("https://localhost:5001");
+
             return Redirect(logout.PostLogoutRedirectUri);
         }
 
@@ -115,16 +119,16 @@ namespace CarMarket.Server.Controllers
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }
 
-            ClaimsIdentity id = new(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType,
+            var identity = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType,
                 ClaimsIdentity.DefaultRoleClaimType);
 
             // How does it work?
 
-            await HttpContext.SignInAsync(new IdentityServerUser(id.NameClaimType));//, new ClaimsPrincipal(id));
+            await HttpContext.SignInAsync(new IdentityServerUser(identity.NameClaimType));//, new ClaimsPrincipal(id));
 
-            await HttpContext.SignInAsync(new IdentityServerUser(id.RoleClaimType));
+            await HttpContext.SignInAsync(new IdentityServerUser(identity.RoleClaimType));
 
-            await HttpContext.SignInAsync(new ClaimsPrincipal(id));
+            await HttpContext.SignInAsync(new ClaimsPrincipal(identity));
 
             await HttpContext.SignInAsync(new IdentityServerUser(user.Email));
         }
