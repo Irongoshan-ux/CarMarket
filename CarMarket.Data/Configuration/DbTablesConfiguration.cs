@@ -60,7 +60,7 @@ namespace CarMarket.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<IdentityUserRole<string>> builder)
         {
-            builder.ToTable("AspNetUserRoles").HasKey(keys => new { keys.UserId, keys.RoleId });
+            builder.HasKey(keys => new { keys.UserId, keys.RoleId });
 
             builder.HasData(
                 new IdentityUserRole<string>
@@ -68,6 +68,14 @@ namespace CarMarket.Data.Configuration
                     RoleId = "qwe",
                     UserId = "qwe"
                 });
+        }
+    }
+
+    public class UserClaimsConfiguration : IEntityTypeConfiguration<IdentityUserClaim<string>>
+    {
+        public void Configure(EntityTypeBuilder<IdentityUserClaim<string>> builder)
+        {
+            builder.HasKey(p => p.Id);
         }
     }
 

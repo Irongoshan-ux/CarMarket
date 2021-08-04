@@ -3,7 +3,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using CarMarket.Core.User.Domain;
 using CarMarket.Core.User.Service;
-using CarMarket.Data.User.Domain;
 using CarMarket.Server.Infrastructure.Identification.Models;
 using IdentityServer4;
 using IdentityServer4.Services;
@@ -55,7 +54,7 @@ namespace CarMarket.Server.Controllers
 
                 if (user != null)
                 {
-                    await Authenticate(user);
+                    await AuthorizeAsync(user);
 
                     await HttpContext.SignInAsync(new IdentityServerUser(user.Email));
 
@@ -86,7 +85,7 @@ namespace CarMarket.Server.Controllers
 
                 await _userService.CreateAsync(user);
 
-                await Authenticate(user);
+                await AuthorizeAsync(user);
             }
             return Redirect("https://localhost:5001");
         }
@@ -104,33 +103,41 @@ namespace CarMarket.Server.Controllers
             return Redirect(logout.PostLogoutRedirectUri);
         }
 
-        private async Task Authenticate(UserModel user)
+        private async Task AuthorizeAsync(UserModel user)
         {
             user.PasswordHash = EncryptPassword(user.PasswordHash);
 
+            var claims = await GetUserClaimsAsync(user);
+            
+            var identity = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType,
+                ClaimsIdentity.DefaultRoleClaimType);
+
+            //How does it work?
+
+            //await HttpContext.SignInAsync(new IdentityServerUser(identity.NameClaimType));
+
+            //await HttpContext.SignInAsync(new IdentityServerUser(identity.RoleClaimType));
+
+            await HttpContext.SignInAsync(new ClaimsPrincipal(identity));
+
+            //await HttpContext.SignInAsync(new IdentityServerUser(identity.Claims.ToString()));
+        }
+
+        private async Task<IEnumerable<Claim>> GetUserClaimsAsync(UserModel user)
+        {
             var claims = new List<Claim>
             {
                 new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email),
             };
 
             var roles = await _userManager.GetRolesAsync(user);
+
             foreach (var role in roles)
             {
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }
 
-            var identity = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType,
-                ClaimsIdentity.DefaultRoleClaimType);
-
-            // How does it work?
-
-            await HttpContext.SignInAsync(new IdentityServerUser(identity.NameClaimType));//, new ClaimsPrincipal(id));
-
-            await HttpContext.SignInAsync(new IdentityServerUser(identity.RoleClaimType));
-
-            await HttpContext.SignInAsync(new ClaimsPrincipal(identity));
-
-            await HttpContext.SignInAsync(new IdentityServerUser(user.Email));
+            return claims;
         }
 
         private string EncryptPassword(string password) => Utility.Encrypt(password);
