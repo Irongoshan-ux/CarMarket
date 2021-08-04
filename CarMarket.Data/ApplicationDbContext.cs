@@ -33,6 +33,7 @@ namespace CarMarket.Data
             modelBuilder.ApplyConfiguration(new RoleConfiguration());
             modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
             modelBuilder.ApplyConfiguration(new UserClaimsConfiguration());
+            modelBuilder.ApplyConfiguration(new RoleClaimConfiguration());
             modelBuilder.ApplyConfiguration(new PermissonConfiguration());
 
             InitializeUserTable(modelBuilder);

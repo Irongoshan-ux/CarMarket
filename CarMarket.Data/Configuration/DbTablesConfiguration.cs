@@ -20,7 +20,7 @@ namespace CarMarket.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<UserEntity> builder)
         {
-            builder.ToTable("Users").HasKey(p => p.Id);
+            builder.HasKey(p => p.Id);
         }
     }
 
@@ -28,25 +28,9 @@ namespace CarMarket.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<UserModel> builder)
         {
-            builder.ToTable("UserModels").HasKey(p => p.Id);
+            builder.HasKey(p => p.Id);
         }
     }
-
-    //public class RoleConfiguration : IEntityTypeConfiguration<IdentityRole>
-    //{
-    //    public void Configure(EntityTypeBuilder<IdentityRole> builder)
-    //    {
-    //        builder.ToTable("AspNetRoles").HasKey(p => p.Id);
-    //    }
-    //}
-
-    //public class RoleConfiguration : IEntityTypeConfiguration<Role>
-    //{
-    //    public void Configure(EntityTypeBuilder<Role> builder)
-    //    {
-    //        builder.ToTable("Roles").HasKey(p => p.Id);
-    //    }
-    //}
 
     public class PermissonConfiguration : IEntityTypeConfiguration<Permission>
     {
@@ -76,6 +60,14 @@ namespace CarMarket.Data.Configuration
                     RoleId = "qwe",
                     UserId = "qwe"
                 });
+        }
+    }
+
+    public class RoleClaimConfiguration : IEntityTypeConfiguration<IdentityRoleClaim<string>>
+    {
+        public void Configure(EntityTypeBuilder<IdentityRoleClaim<string>> builder)
+        {
+            builder.HasKey(key => key.Id);
         }
     }
 
