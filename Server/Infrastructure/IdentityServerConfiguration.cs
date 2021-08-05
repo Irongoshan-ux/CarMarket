@@ -26,14 +26,13 @@ namespace CarMarket.Server.Infrastructure
                     IdentityServerConstants.StandardScopes.Email,
                     IdentityServerConstants.StandardScopes.OpenId,
                     IdentityServerConstants.StandardScopes.Profile
-                    //"roles"
                 },
                 RedirectUris = { "https://localhost:5001/authentication/login-callback" },
                 PostLogoutRedirectUris = { "https://localhost:5001/authentication/logout-callback" },
                 ClientSecrets = { new Secret("BlazorSecret".Sha512()) },
                 AllowedCorsOrigins = { "https://localhost:5001" }
-            };    
-        }        
+            };
+        }
 
         internal static IEnumerable<IdentityResource> GetIdentityResources()
         {
@@ -41,7 +40,6 @@ namespace CarMarket.Server.Infrastructure
             yield return new IdentityResources.Address();
             yield return new IdentityResources.Profile();
             yield return new IdentityResources.Email();
-            //yield return new IdentityResource("roles", "User role(s)", new List<string> { "role" });
         }
 
         internal static IEnumerable<ApiScope> GetScopes()

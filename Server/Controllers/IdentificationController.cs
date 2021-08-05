@@ -1,22 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using CarMarket.Core.User.Domain;
 using CarMarket.Core.User.Service;
 using CarMarket.Server.Infrastructure.Identification.Models;
-using IdentityModel;
 using IdentityServer4;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
 namespace CarMarket.Server.Controllers
@@ -29,18 +28,23 @@ namespace CarMarket.Server.Controllers
         private readonly IUserService _userService;
         private readonly UserManager<UserModel> _userManager;
         private readonly SignInManager<UserModel> _signInManager;
+        private readonly IConfiguration _configuration;
+        private readonly IConfigurationSection _jwtSettings;
 
         public IdentificationController(
             IIdentityServerInteractionService interaction,
             UserManager<UserModel> userManager,
             IUserService userService,
-            SignInManager<UserModel> signInManager
+            SignInManager<UserModel> signInManager,
+            IConfiguration configuration
             )
         {
             _interaction = interaction;
             _userService = userService;
             _userManager = userManager;
             _signInManager = signInManager;
+            _configuration = configuration;
+            _jwtSettings = _configuration.GetSection("JwtSettings");
         }
 
         [HttpGet("[action]")]
@@ -66,7 +70,9 @@ namespace CarMarket.Server.Controllers
                 {
                     await AuthorizeAsync(user);
 
-                    await HttpContext.SignInAsync(new IdentityServerUser(user.Email));
+                    //var identityUser = new IdentityServerUser(user.Email);
+
+                    //await HttpContext.SignInAsync(new IdentityServerUser(user.Email));
 
                     return Redirect(model.ReturnUrl);
                 }
@@ -117,18 +123,26 @@ namespace CarMarket.Server.Controllers
         {
             user.PasswordHash = EncryptPassword(user.PasswordHash);
 
-            var claims = await GetUserClaimsAsync(user);
+            var claims = await GetClaimsAsync(user);
 
-            var identity = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType,
-                ClaimsIdentity.DefaultRoleClaimType);
+            //var identity = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType,
+            //    ClaimsIdentity.DefaultRoleClaimType);
 
-            await HttpContext.SignInAsync(new ClaimsPrincipal(identity));
+            var claim = claims.ElementAt(1);
+
+            var identityUser = new IdentityServerUser(user.UserName)
+            {
+                AdditionalClaims = claims
+            };
+
+            //await HttpContext.SignInAsync(new ClaimsPrincipal(identity));
 
             await _userManager.AddClaimsAsync(user, claims);
 
-            await _signInManager.SignInWithClaimsAsync(user, false, claims);
+            //await _signInManager.SignInWithClaimsAsync(user, false, claims); // throws an exception
+            // Check https://stackoverflow.com/questions/46884549/identityserver4-sub-claim-is-missing
 
-            await _userManager.UpdateAsync(user);
+            //await _userManager.UpdateAsync(user);
 
             //await _signInManager.SignInAsync(user, isPersistent: false);
 
@@ -137,19 +151,18 @@ namespace CarMarket.Server.Controllers
             // How to include role claim to jwt token and then use the Authorize attribute?
             // See https://weblog.west-wind.com/posts/2021/Mar/09/Role-based-JWT-Tokens-in-ASPNET-Core
 
-
-            //await HttpContext.SignInAsync(new IdentityServerUser(identity.RoleClaimType));
+            await HttpContext.SignInAsync(identityUser); // don't add the role claim to jwt token :(
 
             //await HttpContext.SignInAsync(new IdentityServerUser(identity.RoleClaimType));
 
             //await HttpContext.SignInAsync(new ClaimsPrincipal(identity));
         }
 
-        private async Task<IEnumerable<Claim>> GetUserClaimsAsync(UserModel user)
+        private async Task<ICollection<Claim>> GetClaimsAsync(UserModel user)
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email),
+                new Claim(ClaimTypes.Name, user.Email),
             };
 
             var roles = await _userManager.GetRolesAsync(user);
@@ -160,6 +173,26 @@ namespace CarMarket.Server.Controllers
             }
 
             return claims;
+        }
+
+        private SigningCredentials GetSigningCredentials()
+        {
+            var key = Encoding.UTF8.GetBytes(_jwtSettings.GetSection("securityKey").Value);
+            var secret = new SymmetricSecurityKey(key);
+
+            return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
+        }
+
+        private JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims)
+        {
+            var tokenOptions = new JwtSecurityToken(
+                issuer: _jwtSettings.GetSection("validIssuer").Value,
+                audience: _jwtSettings.GetSection("validAudience").Value,
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(Convert.ToDouble(_jwtSettings.GetSection("expiryInMinutes").Value)),
+                signingCredentials: signingCredentials);
+
+            return tokenOptions;
         }
 
         private string EncryptPassword(string password) => Utility.Encrypt(password);
