@@ -52,14 +52,14 @@ namespace CarMarket.Server.Controllers
 
             var user = await _userService.GetByEmailAsync(currentUser.Identity.Name);
 
-            if ((user.Id == (await _carService.GetAsync(carId)).Owner.Id) ||
-                currentUser.IsInRole("Admin"))
+            if ((user != null) && ((user.Id == (await _carService.GetAsync(carId)).Owner.Id) ||
+                currentUser.IsInRole("Admin")))
             {
                 await _carService.DeleteAsync(carId);
                 return Ok();
             }
-
-            else return BadRequest("Access denied.");
+            
+            return BadRequest("Access denied.");
         }
         
         [HttpPost]
