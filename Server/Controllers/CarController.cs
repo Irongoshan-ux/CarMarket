@@ -1,13 +1,8 @@
 ﻿using CarMarket.Core.Car.Domain;
 using CarMarket.Core.Car.Service;
-using CarMarket.Core.Image.Domain;
-using CarMarket.Core.User.Domain;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -81,23 +76,5 @@ namespace CarMarket.Server.Controllers
 
             return NoContent();
         }
-
-        //private async Task<IDictionary<string, string>> GetCarImages(CarModel car)
-        //{
-        //    var images = _carService.
-
-        //    Dictionary<string, string> frontImages = new Dictionary<string, string>(images.Count);
-
-        //    Parallel.ForEach(images, image =>
-        //    {
-        //        string imageBase64Data = Convert.ToBase64String(image.ImageData);
-
-        //        string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
-
-        //        frontImages.Add(imageDataURL, imageBase64Data);
-        //    });
-
-        //    return frontImages;
-        //}
     }
 }

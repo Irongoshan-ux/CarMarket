@@ -1,4 +1,5 @@
-﻿using IdentityServer4;
+﻿using IdentityModel;
+using IdentityServer4;
 using IdentityServer4.Models;
 using System.Collections.Generic;
 
@@ -8,7 +9,11 @@ namespace CarMarket.Server.Infrastructure
     {
         internal static IEnumerable<ApiResource> GetApiResources()
         {
-            yield return new ApiResource("API", "ServerAPI");
+            return new List<ApiResource>
+            {
+                new ApiResource("API", "ServerAPI",
+                new[] { JwtClaimTypes.Subject, JwtClaimTypes.Email, JwtClaimTypes.Role })
+            };
         }
 
         internal static IEnumerable<Client> GetClients()

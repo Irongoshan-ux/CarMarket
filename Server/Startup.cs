@@ -61,6 +61,7 @@ namespace CarMarket.Server
                     options.UserInteraction.LoginUrl = "/identification/login";
                     options.UserInteraction.LogoutUrl = "/identification/logout";
                 })
+                .AddProfileService<IdentityServerProfileService>()
                 .AddInMemoryApiResources(IdentityServerConfiguration.GetApiResources())
                 .AddInMemoryClients(IdentityServerConfiguration.GetClients())
                 .AddInMemoryIdentityResources(IdentityServerConfiguration.GetIdentityResources())
