@@ -2,6 +2,9 @@
 using CarMarket.Core.Car.Service;
 using CarMarket.Core.Image.Domain;
 using CarMarket.Core.User.Domain;
+using CarMarket.Core.User.Service;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -18,10 +21,12 @@ namespace CarMarket.Server.Controllers
     {
         private readonly ILogger<CarController> _logger;
         private readonly ICarService _carService;
+        private readonly IUserService _userService;
 
-        public CarController(ICarService carService, ILogger<CarController> logger)
+        public CarController(ICarService carService, IUserService userService, ILogger<CarController> logger)
         {
             _carService = carService;
+            _userService = userService;
             _logger = logger;
         }
 
@@ -40,9 +45,21 @@ namespace CarMarket.Server.Controllers
 
         [HttpDelete]
         [Route("DeleteCar/{carId}")]
-        public async Task DeleteCar(long carId)
+        [Authorize]
+        public async Task<IActionResult> DeleteCar(long carId)
         {
-            await _carService.DeleteAsync(carId);
+            var currentUser = HttpContext.User;
+
+            var user = await _userService.GetByEmailAsync(currentUser.Identity.Name);
+
+            if ((user.Id == (await _carService.GetAsync(carId)).Owner.Id) ||
+                currentUser.IsInRole("Admin"))
+            {
+                await _carService.DeleteAsync(carId);
+                return Ok();
+            }
+
+            else return BadRequest("Access denied.");
         }
         
         [HttpPost]
