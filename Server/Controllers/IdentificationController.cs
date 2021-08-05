@@ -46,7 +46,7 @@ namespace CarMarket.Server.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await _userService.AuthenticateAsync(model.Email, EncryptPassword(model.Password));
+                var user = await _userService.AuthenticateAsync(model.Email, model.Password);//EncryptPassword(model.Password));
 
                 if (user != null)
                 {

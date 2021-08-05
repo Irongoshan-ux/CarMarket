@@ -86,9 +86,11 @@ else
     
     private List<ImageModel> newCarImages = new List<ImageModel>();
 
-    private void EditCar(CarModel editedCar)
+    private async Task EditCar(CarModel editedCar)
     {
         car = editedCar;
+
+        await Http.PutAsJsonAsync("https://localhost:10001/api/Car/UpdateCar/" + editedCar.Id, car);
     }
 
     private async Task DeleteCar(CarModel deletedCar)
