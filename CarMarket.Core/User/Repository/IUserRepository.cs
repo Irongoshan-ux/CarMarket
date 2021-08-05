@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using CarMarket.Core.Car.Domain;
 using CarMarket.Core.User.Domain;
 
 namespace CarMarket.Core.User.Repository

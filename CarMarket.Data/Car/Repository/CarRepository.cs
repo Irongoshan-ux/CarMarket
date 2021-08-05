@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace CarMarket.Data.Car.Repository
 {
@@ -87,6 +88,18 @@ namespace CarMarket.Data.Car.Repository
             _context.Update(carEntity);
 
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<CarModel>> FindAllUserCarsAsync(long userId)
+        {
+            var carEntities = await _context.Cars
+                 .Include(x => x.CarImages)
+                 .Where(x => x.Owner.Id == userId)
+                 .ToListAsync();
+
+            var userCars = _mapper.Map<List<CarModel>>(carEntities);
+
+            return userCars;
         }
     }
 }

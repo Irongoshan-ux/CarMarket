@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CarMarket.Core.Car.Domain;
 using CarMarket.Core.User.Domain;
 using CarMarket.Core.User.Repository;
 using CarMarket.Data.User.Domain;
@@ -13,6 +14,7 @@ namespace CarMarket.Data.User.Repository
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
+
         public UserRepository(ApplicationDbContext userContext, IMapper mapper)
         {
             _context = userContext;

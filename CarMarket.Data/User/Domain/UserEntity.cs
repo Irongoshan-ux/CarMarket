@@ -1,4 +1,5 @@
 ﻿using CarMarket.Core.User.Domain;
+using CarMarket.Data.Car.Domain;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 

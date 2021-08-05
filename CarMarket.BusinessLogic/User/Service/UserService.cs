@@ -1,4 +1,5 @@
-﻿using CarMarket.Core.User.Domain;
+﻿using CarMarket.Core.Car.Domain;
+using CarMarket.Core.User.Domain;
 using CarMarket.Core.User.Repository;
 using CarMarket.Core.User.Service;
 using System;

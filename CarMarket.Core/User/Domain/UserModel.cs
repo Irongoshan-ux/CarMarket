@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using CarMarket.Core.Car.Domain;
+using System.Collections.Generic;
 
 namespace CarMarket.Core.User.Domain
 {

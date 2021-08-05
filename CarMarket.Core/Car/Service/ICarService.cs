@@ -13,5 +13,6 @@ namespace CarMarket.Core.Car.Service
         Task<CarModel> GetByName(string carName);
         Task<IEnumerable<CarModel>> GetByNameAsync(string carName);
         Task UpdateCar(long carId, CarModel car);
+        Task<IEnumerable<CarModel>> GetAllUserCarsAsync(long userId);
     }
 }
