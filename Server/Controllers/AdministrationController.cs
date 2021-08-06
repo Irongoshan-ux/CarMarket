@@ -3,6 +3,7 @@ using CarMarket.Server.Infrastructure.Identification.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,13 +15,18 @@ namespace CarMarket.Server.Controllers
     [Authorize(Roles = "Admin")]
     public class AdministrationController : ControllerBase
     {
+        private readonly ILogger<CarController> _logger;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserManager<UserModel> _userManager;
 
-        public AdministrationController(RoleManager<IdentityRole> roleManager, UserManager<UserModel> userManager)
+        public AdministrationController(
+            RoleManager<IdentityRole> roleManager,
+            UserManager<UserModel> userManager,
+            ILogger<CarController> logger)
         {
             _roleManager = roleManager;
             _userManager = userManager;
+            _logger = logger;
         }
 
         [HttpPost("CreateRole")]

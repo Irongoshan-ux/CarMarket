@@ -7,7 +7,9 @@ using IdentityServer4.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace CarMarket.Server.Controllers
 {
@@ -15,13 +17,21 @@ namespace CarMarket.Server.Controllers
     [Route("[controller]")]
     public class IdentificationController : Controller
     {
+        private readonly ILogger<CarController> _logger;
         private readonly IIdentityServerInteractionService _interaction;
         private readonly IUserService _userService;
+        private readonly UserManager<UserModel> _userManager;
 
-        public IdentificationController(IIdentityServerInteractionService interaction, IUserService userService)
+        public IdentificationController(
+            IIdentityServerInteractionService interaction,
+            IUserService userService,
+            UserManager<UserModel> userManager,
+            ILogger<CarController> logger)
         {
             _interaction = interaction;
             _userService = userService;
+            _userManager = userManager;
+            _logger = logger;
         }
 
         [HttpGet("[action]")]
@@ -69,10 +79,11 @@ namespace CarMarket.Server.Controllers
                     return View();
                 }
 
-                user = new UserModel { Email = model.Email, PasswordHash = EncryptPassword(model.Password) };
-                Role userRole = await _userService.GetUserRoleAsync("user");
+                user = new UserModel { Email = model.Email, UserName = model.Email, PasswordHash = EncryptPassword(model.Password) };
 
                 await _userService.CreateAsync(user);
+
+                var result = await _userManager.AddToRoleAsync(user, "User"); // Description: "Optimistic concurrency failure, object has been modified."
 
                 await AuthorizeAsync(user);
             }
