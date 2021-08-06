@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using CarMarket.Core.User.Domain;
 using CarMarket.Core.User.Service;
 using CarMarket.Server.Infrastructure.Identification.Models;
@@ -9,7 +7,9 @@ using IdentityServer4.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace CarMarket.Server.Controllers
 {
@@ -17,16 +17,21 @@ namespace CarMarket.Server.Controllers
     [Route("[controller]")]
     public class IdentificationController : Controller
     {
+        private readonly ILogger<CarController> _logger;
         private readonly IIdentityServerInteractionService _interaction;
         private readonly IUserService _userService;
+        private readonly UserManager<UserModel> _userManager;
 
         public IdentificationController(
             IIdentityServerInteractionService interaction,
-            IUserService userService
-            )
+            IUserService userService,
+            UserManager<UserModel> userManager,
+            ILogger<CarController> logger)
         {
             _interaction = interaction;
             _userService = userService;
+            _userManager = userManager;
+            _logger = logger;
         }
 
         [HttpGet("[action]")]
@@ -42,7 +47,7 @@ namespace CarMarket.Server.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> Login(LoginModel model)
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -50,9 +55,7 @@ namespace CarMarket.Server.Controllers
 
                 if (user != null)
                 {
-                    await Authenticate(user);
-
-                    await HttpContext.SignInAsync(new IdentityServerUser(model.Email));
+                    await AuthorizeAsync(user);
 
                     return Redirect(model.ReturnUrl);
                 }
@@ -64,7 +67,7 @@ namespace CarMarket.Server.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> Register(RegisterModel model)
+        public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -76,12 +79,13 @@ namespace CarMarket.Server.Controllers
                     return View();
                 }
 
-                user = new UserModel { Email = model.Email, Password = EncryptPassword(model.Password) };
-                Role userRole = await _userService.GetUserRoleAsync("user");
+                user = new UserModel { Email = model.Email, UserName = model.Email, PasswordHash = EncryptPassword(model.Password) };
 
                 await _userService.CreateAsync(user);
 
-                await Authenticate(user);
+                var result = await _userManager.AddToRoleAsync(user, "User"); // Description: "Optimistic concurrency failure, object has been modified."
+
+                await AuthorizeAsync(user);
             }
             return Redirect("https://localhost:5001");
         }
@@ -92,28 +96,20 @@ namespace CarMarket.Server.Controllers
             var logout = await _interaction.GetLogoutContextAsync(logoutId);
 
             await HttpContext.SignOutAsync();
+
+            if (logout.PostLogoutRedirectUri is null)
+                return Redirect("https://localhost:5001");
+
             return Redirect(logout.PostLogoutRedirectUri);
         }
 
-        private async Task Authenticate(UserModel user)
+        private async Task AuthorizeAsync(UserModel user)
         {
-            user.Password = Utility.Encrypt(user.Password);
-
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email),
-            };
+            user.PasswordHash = EncryptPassword(user.PasswordHash);
            
-            ClaimsIdentity id = new(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType,
-                ClaimsIdentity.DefaultRoleClaimType);
-
-            await HttpContext.SignInAsync(new IdentityServerUser(id.NameClaimType));//, new ClaimsPrincipal(id));
-
-            //await HttpContext.SignInAsync(new ClaimsPrincipal(id));
-
             await HttpContext.SignInAsync(new IdentityServerUser(user.Email));
         }
-
+        
         private string EncryptPassword(string password) => Utility.Encrypt(password);
     }
 }

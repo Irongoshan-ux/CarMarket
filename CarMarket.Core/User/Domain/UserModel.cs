@@ -1,14 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Identity;
 
 namespace CarMarket.Core.User.Domain
 {
-    public class UserModel
+    public class UserModel : IdentityUser
     {
-        public long Id { get; set; }
+        //public string Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string Email { get; set; }
-        public ICollection<Permission> Permissions { get; set; }
-        public string Password { get; set; }
+        //public string Email { get; set; }
+        //public string PasswordHash { get; set; }
+        //public ICollection<Permission> Permissions { get; set; }
     }
 }
