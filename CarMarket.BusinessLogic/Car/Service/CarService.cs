@@ -52,7 +52,7 @@ namespace CarMarket.BusinessLogic.Car.Service
             await _carRepository.DeleteAsync(carModel.Id);
         }
 
-        public async Task<CarModel> UpdateCar(long carId, CarModel car)
+        public async Task<CarModel> UpdateCarAsync(long carId, CarModel car)
         {
             var carToUpdate = await _carRepository.FindByIdAsync(carId);
 

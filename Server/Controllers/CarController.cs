@@ -87,7 +87,6 @@ namespace CarMarket.Server.Controllers
 
         [HttpDelete]
         [Route("DeleteCar/{carId:long}")]
-        [Authorize]
         public async Task<IActionResult> DeleteCar(long carId)
         {
             var currentUser = HttpContext.User;
@@ -163,7 +162,7 @@ namespace CarMarket.Server.Controllers
 
             try
             {
-                return await _carService.UpdateCar(carId, car);
+                return await _carService.UpdateCarAsync(carId, car);
             }
             catch (CarNotFoundException e)
             {

@@ -10,7 +10,7 @@ namespace CarMarket.UI.Services
         Task<CarModel> GetAsync(long id);
         Task<IEnumerable<CarModel>> GetAllAsync();
         Task DeleteAsync(long carId);
-        Task<CarModel> UpdateCar(long carId, CarModel car);
+        Task<CarModel> UpdateCarAsync(long carId, CarModel car);
         Task<IEnumerable<CarModel>> GetAllUserCarsAsync(long userId);
         Task<IEnumerable<CarModel>> SearchAsync(string carName, CarType? carType);
     }

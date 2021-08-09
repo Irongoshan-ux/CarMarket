@@ -21,14 +21,10 @@
 <input @bind="newCarName" placeholder="Enter car name" />
 <input @bind="newCarDescription" placeholder="Enter description" />
 <input @bind="newCarPrice" placeholder="Enter price" />
+<input @bind="newCarOwnerId" placeholder="Enter owner Id" />
 <input @bind="newCarType" placeholder="Enter car type name" />
 
 <button @onclick="AddCarAsync">Add car</button>
-
-<p>Delete car</p>
-
-<input @bind="deleteCarId" placeholder="Enter the Id of the car you want to delete" />
-<button @onclick="DeleteCarAsync">Delete</button>
 
 <p>All cars</p>
 
@@ -45,6 +41,7 @@ else
             <GridColumn ColumnTitle="Title"></GridColumn>
             <GridColumn ColumnTitle="Car type"></GridColumn>
             <GridColumn ColumnTitle="Description"></GridColumn>
+            <GridColumn ColumnTitle="Owner"></GridColumn>
             <GridColumn ColumnTitle="Price"></GridColumn>
             <AuthorizeView>
                 @* Roles="Admin" Policy="Admin">*@
@@ -64,13 +61,14 @@ else
         <td>@car.Name</td>
         <td>@car.CarType</td>
         <td>@car.Description</td>
+        <td>@car.Owner.Email</td>
         <td>@car.Price</td>
         <AuthorizeView>
             @* Roles="Admin" Policy="Admin">*@
         <Authorized>
             <th>
                 <a style="text-underline-position:below; cursor:pointer; color:blue" @onclick="(() => EditCar(car))">Edit</a> |
-                <a style="text-underline-position:below; cursor:pointer; color:blue" @onclick="(() => DeleteCar(car))">Delete</a>
+                <a style="text-underline-position:below; cursor:pointer; color:blue" @onclick="(() => DeleteCar(car.Id))">Delete</a>
             </th>
         </Authorized>
     </AuthorizeView>
@@ -79,13 +77,16 @@ else
 }
 
 @code {
+    [Inject]
+    public ICarService CarService { get; set; }
+
     private List<CarModel> cars;
     private CarModel car;
     private string newCarName;
     private string newCarDescription;
+    private string newCarOwnerId;
     private int newCarPrice;
     private CarType newCarType;
-    private long deleteCarId;
 
     private List<ImageModel> newCarImages = new List<ImageModel>();
 
@@ -93,12 +94,12 @@ else
     {
         car = editedCar;
 
-        await Http.PutAsJsonAsync("https://localhost:10001/api/Car/UpdateCar/" + editedCar.Id, car);
+        await CarService.UpdateCarAsync(editedCar.Id, car);
     }
 
-    private async Task DeleteCar(CarModel deletedCar)
+    private async Task DeleteCar(long deletedCarId)
     {
-        await Http.DeleteAsync("https://localhost:10001/api/Car/DeleteCar/" + deletedCar.Id);
+        await CarService.DeleteAsync(deletedCarId);
 
         await GetCarModelList();
     }
@@ -128,17 +129,12 @@ else
             Name = newCarName,
             Description = newCarDescription,
             CarImages = newCarImages,
+            Owner = new Core.User.Domain.UserModel { Id = newCarOwnerId },
             Price = newCarPrice,
             CarType = newCarType
         };
 
-        await Http.PostAsJsonAsync("https://localhost:10001/api/Car/CreateCar", newCar);
-        await GetCarModelList();
-    }
-
-    private async Task DeleteCarAsync()
-    {
-        await Http.PostAsJsonAsync<long>("https://localhost:10001/api/Car/DeleteCar/" + deleteCarId, deleteCarId);
+        await CarService.CreateAsync(newCar);
         await GetCarModelList();
     }
 
@@ -149,6 +145,6 @@ else
 
     private async Task GetCarModelList()
     {
-        cars = await Http.GetFromJsonAsync<List<CarModel>>("https://localhost:10001/api/Car/GetCars");
+        cars = (await CarService.GetAllAsync()).ToList();
     }
 }
