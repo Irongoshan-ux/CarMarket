@@ -42,16 +42,6 @@ namespace CarMarket.UI.Services
             return await _httpClient.GetFromJsonAsync<CarModel>("/api/Car/GetCar/" + id);
         }
 
-        public Task<CarModel> GetByName(string carName)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public Task<IEnumerable<CarModel>> GetByNameAsync(string carName)
-        {
-            throw new System.NotImplementedException();
-        }
-
         public async Task<IEnumerable<CarModel>> SearchAsync(string carName, CarType? carType)
         {
             // temporarily not working
