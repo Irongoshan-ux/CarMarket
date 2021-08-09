@@ -148,7 +148,13 @@ namespace CarMarket.Server.Controllers
             var carModelList = await _carService.GetAllAsync();
             carModelList = carModelList.Skip(pageNumber * pageSize).Take(pageSize).ToList();
 
-            return await Task.FromResult(carModelList);
+            return Ok(carModelList);
+        }
+
+        [HttpGet("GetAllUserCars/{userId:long}")]
+        public async Task<ActionResult<IEnumerable<CarModel>>> GetAllUserCars(long userId)
+        {
+            return Ok(await _carService.GetAllUserCarsAsync(userId));
         }
 
         [HttpPut("UpdateCar/{carId:long}")]

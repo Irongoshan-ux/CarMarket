@@ -10,7 +10,7 @@ namespace CarMarket.Core.Car.Repository
         Task<IEnumerable<CarModel>> FindAllByNameAsync(string name);
         Task<CarModel> FindOneByNameAsync(string name);
         Task<CarModel> AddAsync(CarModel car);
-        Task<List<CarModel>> FindAllAsync();
+        Task<IEnumerable<CarModel>> FindAllAsync();
         Task DeleteAsync(long carId);
         Task<CarModel> UpdateAsync(long carId, CarModel car);
         Task<IEnumerable<CarModel>> FindAllUserCarsAsync(long userId);

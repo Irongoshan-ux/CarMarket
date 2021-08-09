@@ -31,7 +31,7 @@ namespace CarMarket.Data.Car.Repository
             return _mapper.Map<CarModel>(carEntity);
         }
 
-        public async Task<List<CarModel>> FindAllAsync()
+        public async Task<IEnumerable<CarModel>> FindAllAsync()
         {
             var carEntities = await _context.Cars
                 .Include(x => x.CarImages)
