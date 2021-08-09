@@ -41,15 +41,20 @@ namespace CarMarket.Data.Car.Repository
             return _mapper.Map<List<CarModel>>(carEntities);
         }
 
-        public async Task<long> SaveAsync(CarModel carModel)
+        public async Task<CarModel> SaveAsync(CarModel carModel)
         {
             var newCarEntity = _mapper.Map<CarEntity>(carModel);
+
+            if (newCarEntity.Owner != null)
+            {
+                _context.Entry(newCarEntity.Owner).State = EntityState.Unchanged;
+            }
 
             var added = await _context.Cars.AddAsync(newCarEntity);
 
             await _context.SaveChangesAsync();
 
-            return added.Entity.Id;
+            return _mapper.Map<CarModel>(added.Entity);
         }
 
         public async Task DeleteAsync(long carId)
@@ -100,6 +105,23 @@ namespace CarMarket.Data.Car.Repository
             var userCars = _mapper.Map<List<CarModel>>(carEntities);
 
             return userCars;
+        }
+
+        public async Task<IEnumerable<CarModel>> SearchAsync(string carName, CarType? carType)
+        {
+            IQueryable<CarEntity> query = _context.Cars;
+
+            if (!string.IsNullOrEmpty(carName))
+            {
+                query = query.Where(c => c.Name.Contains(carName));
+            }
+
+            if (carType != null)
+            {
+                query = query.Where(c => c.CarType == carType);
+            }
+
+            return _mapper.Map<IEnumerable<CarModel>>(await query.ToListAsync());
         }
     }
 }

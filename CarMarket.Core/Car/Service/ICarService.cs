@@ -6,7 +6,7 @@ namespace CarMarket.Core.Car.Service
 {
     public interface ICarService
     {
-        Task<long> CreateAsync(CarModel userModel);
+        Task<CarModel> CreateAsync(CarModel userModel);
         Task<CarModel> GetAsync(long id);
         Task<List<CarModel>> GetAllAsync();
         Task DeleteAsync(long carId);
@@ -14,5 +14,6 @@ namespace CarMarket.Core.Car.Service
         Task<IEnumerable<CarModel>> GetByNameAsync(string carName);
         Task UpdateCar(long carId, CarModel car);
         Task<IEnumerable<CarModel>> GetAllUserCarsAsync(long userId);
+        Task<IEnumerable<CarModel>> SearchAsync(string carName, CarType? carType);
     }
 }

@@ -20,13 +20,8 @@ namespace CarMarket.BusinessLogic.Car.Service
             _userService = userService;
         }
 
-        public async Task<long> CreateAsync(CarModel carModel)
+        public async Task<CarModel> CreateAsync(CarModel carModel)
         {
-            if (carModel is null)
-            {
-                throw new ArgumentNullException(nameof(carModel));
-            }
-
             var owner = await _userService.GetAsync(carModel.Owner.Id);
 
             carModel.Owner = owner;
@@ -74,6 +69,11 @@ namespace CarMarket.BusinessLogic.Car.Service
         public Task<IEnumerable<CarModel>> GetAllUserCarsAsync(long userId)
         {
             return _carRepository.FindAllUserCarsAsync(userId);
+        }
+
+        public async Task<IEnumerable<CarModel>> SearchAsync(string carName, CarType? carType)
+        {
+            return await _carRepository.SearchAsync(carName, carType);
         }
     }
 }

@@ -5,6 +5,7 @@ using CarMarket.Core.User.Domain;
 using CarMarket.Core.User.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -31,16 +32,39 @@ namespace CarMarket.Server.Controllers
         }
 
         [HttpGet("GetCars")]
-        public async Task<IEnumerable<CarModel>> GetAllCars()
+        public async Task<IActionResult> GetAllCars()
         {
-            return await _carService.GetAllAsync();
+            try
+            {
+                return Ok(await _carService.GetAllAsync());
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "Error retrieving data from the database");
+            }
         }
 
         [HttpGet]
-        [Route("GetCar/{carId}")]
-        public async Task<CarModel> GetCar(long carId)
+        [Route("GetCar/{carId:long}")]
+        public async Task<ActionResult<CarModel>> GetCar(long carId)
         {
-            return await _carService.GetAsync(carId);
+            try
+            {
+                var result = await _carService.GetAsync(carId);
+
+                if (result is null)
+                {
+                    return NotFound();
+                }
+
+                return result;
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "Error retrieving data from the database");
+            }
         }
 
         [HttpDelete]
@@ -61,17 +85,27 @@ namespace CarMarket.Server.Controllers
             
             return BadRequest("Access denied.");
         }
-        
+
         [HttpPost]
         [Route("CreateCar")]
         public async Task<IActionResult> CreateCar([FromBody] CarModel carModel)
         {
-            var carId = await _carService.CreateAsync(carModel);
+            if (carModel is null)
+            {
+                return BadRequest();
+            }
 
-            if (carId == default)
-                return BadRequest(carModel + " is invalid");
+            try
+            {
+                var createdCar = await _carService.CreateAsync(carModel);
 
-            return CreatedAtAction("GetCar", new { id = carModel.Id }, carModel);
+                return CreatedAtAction(nameof(GetCar), new { id = createdCar.Id }, carModel);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "Error creating new car record");
+            }
         }
 
         [HttpGet("GetCarsByPage")]
