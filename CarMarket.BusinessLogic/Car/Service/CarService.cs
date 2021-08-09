@@ -52,16 +52,6 @@ namespace CarMarket.BusinessLogic.Car.Service
             await _carRepository.DeleteAsync(carModel.Id);
         }
 
-        public async Task<CarModel> GetByName(string carName)
-        {
-            return await _carRepository.FindOneByNameAsync(carName);
-        }
-
-        public async Task<IEnumerable<CarModel>> GetByNameAsync(string carName)
-        {
-            return await _carRepository.FindAllByNameAsync(carName);
-        }
-
         public async Task<CarModel> UpdateCar(long carId, CarModel car)
         {
             var carToUpdate = await _carRepository.FindByIdAsync(carId);

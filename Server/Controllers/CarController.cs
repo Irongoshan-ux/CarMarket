@@ -1,17 +1,13 @@
 ﻿using CarMarket.Core.Car.Domain;
 using CarMarket.Core.Car.Exceptions;
 using CarMarket.Core.Car.Service;
-using CarMarket.Core.Image.Domain;
-using CarMarket.Core.User.Domain;
 using CarMarket.Core.User.Service;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 

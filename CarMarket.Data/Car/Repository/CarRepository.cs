@@ -67,25 +67,7 @@ namespace CarMarket.Data.Car.Repository
             _context.Cars.Remove(carEntity);
             await _context.SaveChangesAsync();
         }
-
-        public async Task<CarModel> FindOneByNameAsync(string name)
-        {
-            var carEntity = await _context.Cars
-                .Include(x => x.CarImages)
-                .FirstOrDefaultAsync(x => x.Name == name);
-
-            return _mapper.Map<CarModel>(carEntity);
-        }
-
-        public async Task<IEnumerable<CarModel>> FindAllByNameAsync(string name)
-        {
-            var carEntities = await _context.Cars
-                .Include(x => x.CarImages)
-                .Where(x => x.Name == name)
-                .ToListAsync();
-
-            return _mapper.Map<List<CarModel>>(carEntities);
-        }
+        
         public async Task<CarModel> UpdateAsync(long carId, CarModel car)
         {
             var carEntity = _mapper.Map<CarEntity>(car);
