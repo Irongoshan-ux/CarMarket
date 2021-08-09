@@ -2,7 +2,7 @@
 
 namespace CarMarket.Server.Infrastructure.Identification.Models
 {
-    public class RegisterModel
+    public class RegisterViewModel
     {
         [Required(ErrorMessage = "No email provided")]
         [DataType(DataType.EmailAddress, ErrorMessage = "Invalid email")]

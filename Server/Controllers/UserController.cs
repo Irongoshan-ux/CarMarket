@@ -13,8 +13,6 @@ namespace CarMarket.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
-    //[Authorize(Roles = "Admin")]
     public class UserController : ControllerBase
     {
         private readonly ILogger<UserController> _logger;
@@ -33,26 +31,26 @@ namespace CarMarket.Server.Controllers
         }
 
         [HttpGet("GetUser/{userId}")]
-        public async Task<UserModel> GetUser(long userId)
+        public async Task<UserModel> GetUser(string userId)
         {
             return await _userService.GetAsync(userId);
         }
 
         [HttpDelete("DeleteUser/{userId}")]
-        public async Task DeleteUser(long userId)
+        public async Task DeleteUser(string userId)
         {
             await _userService.DeleteAsync(userId);
         }
 
         [HttpPost("ChangeUserPermission")]
         [Authorize(Policy = "")]
-        public async Task ChangeUserPermission(long userId, [FromQuery] Permission replaceablePermission, [FromQuery] Permission substitutePermission)
+        public async Task ChangeUserPermission(string userId, [FromQuery] Permission replaceablePermission, [FromQuery] Permission substitutePermission)
         {
             await _userService.ChangePermissionAsync(userId, replaceablePermission, substitutePermission);
         }
 
         [HttpPost("AddUserPermission")]
-        public async Task AddUserPermission(long userId, [FromBody] Permission[] permissions)
+        public async Task AddUserPermission(string userId, [FromBody] Permission[] permissions)
         {
             await _userService.AddPermissionAsync(userId, permissions);
         }
@@ -60,7 +58,7 @@ namespace CarMarket.Server.Controllers
         [HttpPost("CreateUser")]
         public async Task<IActionResult> Create([FromBody] UserModel userModel)
         {
-            userModel.Password = EncryptPassword(userModel.Password);
+            userModel.PasswordHash = EncryptPassword(userModel.PasswordHash);
 
             var userId = await _userService.CreateAsync(userModel);
 
@@ -71,7 +69,7 @@ namespace CarMarket.Server.Controllers
         }
 
         [HttpPut("UpdateUser/{userId}")]
-        public async Task<IActionResult> UpdateUser(long userId, UserModel user)
+        public async Task<IActionResult> UpdateUser(string userId, UserModel user)
         {
             if (userId != user.Id)
             {

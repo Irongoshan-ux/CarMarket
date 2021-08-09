@@ -6,23 +6,24 @@
 @using CarMarket.Core.Image.Domain
 @using System.IO
 
+<AuthorizeView Roles="Admin">
 <h1>Cars Controller</h1>
-
+    </AuthorizeView>
 <p>Add car</p>
 
-    <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
-    <br>
-    <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
-    <br>
-    <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
-    <br>
+<BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
+<br>
+<BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
+<br>
+<BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
+<br>
 
-    <input @bind="newCarName" placeholder="Enter car name" />
-    <input @bind="newCarDescription" placeholder="Enter description" />
-    <input @bind="newCarPrice" placeholder="Enter price" />
-    <input @bind="newCarType" placeholder="Enter car type name" />
+<input @bind="newCarName" placeholder="Enter car name" />
+<input @bind="newCarDescription" placeholder="Enter description" />
+<input @bind="newCarPrice" placeholder="Enter price" />
+<input @bind="newCarType" placeholder="Enter car type name" />
 
-    <button @onclick="AddCarAsync">Add car</button>
+<button @onclick="AddCarAsync">Add car</button>
 
 <p>Delete car</p>
 
@@ -45,34 +46,36 @@ else
             <GridColumn ColumnTitle="Car type"></GridColumn>
             <GridColumn ColumnTitle="Description"></GridColumn>
             <GridColumn ColumnTitle="Price"></GridColumn>
-            <AuthorizeView>@* Roles="Admin" Policy="Admin">*@
-                <Authorized>
-                    <GridColumn ColumnTitle="Actions"></GridColumn>
-                </Authorized>
-            </AuthorizeView>
-        </GridColumns>
+            <AuthorizeView>
+                @* Roles="Admin" Policy="Admin">*@
+            <Authorized>
+                <GridColumn ColumnTitle="Actions"></GridColumn>
+            </Authorized>
+        </AuthorizeView>
+    </GridColumns>
 
-        <GridRow Context="car">
-            <td>
-                <NavLink href=@string.Format("/cars/cardetail/{0}", car.Id)>
-                    <img src="@ImageService.ConvertImageToDisplay(car.CarImages.FirstOrDefault())" width="200px"/>
-                </NavLink>
-            </td>
-            <td>@car.Id</td>
-            <td>@car.Name</td>
-            <td>@car.CarType</td>
-            <td>@car.Description</td>
-            <td>@car.Price</td>
-            <AuthorizeView>@* Roles="Admin" Policy="Admin">*@
-                <Authorized>
-                    <th>
-                        <a style="text-underline-position:below; cursor:pointer; color:blue" @onclick="(() => EditCar(car))">Edit</a> |
-                        <a style="text-underline-position:below; cursor:pointer; color:blue" @onclick="(() => DeleteCar(car))">Delete</a>
-                    </th>
-                </Authorized>
-            </AuthorizeView>
-        </GridRow>
-    </GridView>
+    <GridRow Context="car">
+        <td>
+            <NavLink href=@string.Format("/cars/cardetail/{0}", car.Id)>
+                <img src="@ImageService.ConvertImageToDisplay(car.CarImages.FirstOrDefault())" width="200px" />
+            </NavLink>
+        </td>
+        <td>@car.Id</td>
+        <td>@car.Name</td>
+        <td>@car.CarType</td>
+        <td>@car.Description</td>
+        <td>@car.Price</td>
+        <AuthorizeView>
+            @* Roles="Admin" Policy="Admin">*@
+        <Authorized>
+            <th>
+                <a style="text-underline-position:below; cursor:pointer; color:blue" @onclick="(() => EditCar(car))">Edit</a> |
+                <a style="text-underline-position:below; cursor:pointer; color:blue" @onclick="(() => DeleteCar(car))">Delete</a>
+            </th>
+        </Authorized>
+    </AuthorizeView>
+</GridRow>
+</GridView>
 }
 
 @code {
@@ -83,7 +86,7 @@ else
     private int newCarPrice;
     private CarType newCarType;
     private long deleteCarId;
-    
+
     private List<ImageModel> newCarImages = new List<ImageModel>();
 
     private async Task EditCar(CarModel editedCar)

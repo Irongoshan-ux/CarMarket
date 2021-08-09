@@ -17,10 +17,10 @@ using CarMarket.Server.Infrastructure;
 using CarMarket.BusinessLogic.Car.Service;
 using CarMarket.Data.Configuration.Mapping;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using CarMarket.Server.Infrastructure.Auth;
-using Microsoft.AspNetCore.Components.Authorization;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Identity;
+using CarMarket.Core.User.Domain;
+using CarMarket.Data.User.Domain;
 
 namespace CarMarket.Server
 {
@@ -47,40 +47,27 @@ namespace CarMarket.Server
                      options.TokenValidationParameters.ValidTypes = new[] { "at+jwt" };
                  });
 
-
             services.AddAuthorization();
-            //services.AddAuthorization(options =>
-            //{
-            //    options.AddPolicy("AddCarPolicy", policy =>
-            //        policy.RequireClaim("Add Car"));
 
-            //    options.AddPolicy("DeleteCarPolicy", policy =>
-            //        policy.RequireClaim("Delete Car"));
-
-            //    options.AddPolicy("EditCarPolicy", policy =>
-            //        policy.RequireClaim("Edit Car"));
-
-            //    options.AddPolicy("AdminRolePolicy", policy =>
-            //        policy.RequireRole("Admin", "User", "Guest"));
-
-            //    options.AddPolicy("UserRolePolicy", policy =>
-            //        policy.RequireRole("User"));
-
-            //    options.AddPolicy("GuestRolePolicy", policy =>
-            //        policy.RequireRole("Guest"));
-            //});
+            // This instruction ruins LOG OUT
+            services.AddIdentity<UserModel, IdentityRole>(options =>
+            {
+                options.Password.RequiredLength = 10;
+                options.Password.RequiredUniqueChars = 3;
+            })
+                .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddIdentityServer(options =>
                 {
                     options.UserInteraction.LoginUrl = "/identification/login";
                     options.UserInteraction.LogoutUrl = "/identification/logout";
                 })
+                .AddProfileService<IdentityServerProfileService>()
                 .AddInMemoryApiResources(IdentityServerConfiguration.GetApiResources())
                 .AddInMemoryClients(IdentityServerConfiguration.GetClients())
                 .AddInMemoryIdentityResources(IdentityServerConfiguration.GetIdentityResources())
                 .AddInMemoryApiScopes(IdentityServerConfiguration.GetScopes())
                 .AddDeveloperSigningCredential();
-
 
             services.AddControllersWithViews();
             services.AddRazorPages();
@@ -98,23 +85,15 @@ namespace CarMarket.Server
             services.AddScoped<ICarRepository, CarRepository>();
             services.AddScoped<ICarService, CarService>();
 
-            services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
-            services.AddScoped<IUserAuthService, UserAuthService>();
-
             services.AddDbContext<ApplicationDbContext>(builder =>
             {
                 builder.UseSqlServer(Configuration.GetConnectionString("CarMarketDb"));
             });
 
-            //services.AddIdentity<IdentityUser, IdentityRole>()
-            //    .AddEntityFrameworkStores<ApplicationDbContext>();
-
             services.AddAutoMapper(cfg =>
             {
                 cfg.AddProfile<EntityToModelMappingProfile>();
             });
-
-            //services.Configure<JWTContainerModel>(Configuration.GetSection("JWTSecretKey"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

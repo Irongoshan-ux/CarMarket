@@ -20,17 +20,17 @@ namespace CarMarket.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<UserEntity> builder)
         {
-            builder.ToTable("Users").HasKey(p => p.Id);
+            builder.HasKey(p => p.Id);
         }
     }
 
-    //public class RoleConfiguration : IEntityTypeConfiguration<Role>
-    //{
-    //    public void Configure(EntityTypeBuilder<Role> builder)
-    //    {
-    //        builder.ToTable("Roles").HasKey(p => p.Id);
-    //    }
-    //}
+    public class UserModelConfiguration : IEntityTypeConfiguration<UserModel>
+    {
+        public void Configure(EntityTypeBuilder<UserModel> builder)
+        {
+            builder.HasKey(p => p.Id);
+        }
+    }
 
     public class PermissonConfiguration : IEntityTypeConfiguration<Permission>
     {
@@ -45,6 +45,37 @@ namespace CarMarket.Data.Configuration
         public void Configure(EntityTypeBuilder<ImageModel> builder)
         {
             builder.ToTable("Images").HasKey(p => p.Id);
+        }
+    }
+
+    public class UserRoleConfiguration : IEntityTypeConfiguration<IdentityUserRole<string>>
+    {
+        public void Configure(EntityTypeBuilder<IdentityUserRole<string>> builder)
+        {
+            builder.HasKey(keys => new { keys.UserId, keys.RoleId });
+
+            builder.HasData(
+                new IdentityUserRole<string>
+                {
+                    RoleId = "qwe",
+                    UserId = "qwe"
+                });
+        }
+    }
+
+    public class RoleClaimConfiguration : IEntityTypeConfiguration<IdentityRoleClaim<string>>
+    {
+        public void Configure(EntityTypeBuilder<IdentityRoleClaim<string>> builder)
+        {
+            builder.HasKey(key => key.Id);
+        }
+    }
+
+    public class UserClaimsConfiguration : IEntityTypeConfiguration<IdentityUserClaim<string>>
+    {
+        public void Configure(EntityTypeBuilder<IdentityUserClaim<string>> builder)
+        {
+            builder.HasKey(p => p.Id);
         }
     }
 
@@ -65,6 +96,7 @@ namespace CarMarket.Data.Configuration
                 },
                 new IdentityRole
                 {
+                    Id = "qwe",
                     Name = "Admin",
                     NormalizedName = "ADMIN"
                 }

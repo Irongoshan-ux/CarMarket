@@ -2,6 +2,7 @@
 using CarMarket.Core.User.Domain;
 using CarMarket.Core.User.Repository;
 using CarMarket.Core.User.Service;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -22,7 +23,7 @@ namespace CarMarket.BusinessLogic.User.Service
             return await _userRepository.FindUserModelAsync(email, password);
         }
 
-        public async Task AddPermissionAsync(long userId, params Permission[] permissions)
+        public async Task AddPermissionAsync(string userId, params Permission[] permissions)
         {
             var user = await GetAsync(userId);
 
@@ -31,38 +32,38 @@ namespace CarMarket.BusinessLogic.User.Service
                 if (IsUserContainsPermission(user, permission))
                     continue;
 
-                user.Permissions.Add(permission);
+                //user.Permissions.Add(permission);
             }
 
             await UpdateUser(userId, user);
         }
 
-        public async Task ChangePermissionAsync(long userId, Permission replaceablePermission, Permission substitutePermission)
+        public async Task ChangePermissionAsync(string userId, Permission replaceablePermission, Permission substitutePermission)
         {
             var user = await GetAsync(userId);
 
             if (IsUserContainsPermission(user, replaceablePermission))
             {
-                user.Permissions.Remove(replaceablePermission);
-                user.Permissions.Add(substitutePermission);
+                //user.Permissions.Remove(replaceablePermission);
+                //user.Permissions.Add(substitutePermission);
 
                 await UpdateUser(userId, user);
             }
         }
 
-        public async Task DeletePermissionAsync(long userId, Permission permission)
+        public async Task DeletePermissionAsync(string userId, Permission permission)
         {
             var user = await GetAsync(userId);
 
             if (IsUserContainsPermission(user, permission))
             {
-                user.Permissions.Remove(permission);
+                //user.Permissions.Remove(permission);
 
                 await UpdateUser(userId, user);
             }
         }
 
-        public async Task<long> CreateAsync(UserModel userModel)
+        public async Task<string> CreateAsync(UserModel userModel)
         {
             if (userModel is null)
             {
@@ -72,7 +73,7 @@ namespace CarMarket.BusinessLogic.User.Service
             return await _userRepository.SaveAsync(userModel);
         }
 
-        public async Task<UserModel> GetAsync(long userId)
+        public async Task<UserModel> GetAsync(string userId)
         {
             return await _userRepository.FindByIdAsync(userId);
         }
@@ -82,7 +83,7 @@ namespace CarMarket.BusinessLogic.User.Service
             return await _userRepository.FindAllAsync();
         }
 
-        public async Task DeleteAsync(long userId)
+        public async Task DeleteAsync(string userId)
         {
             var userModel = await _userRepository.FindByIdAsync(userId);
 
@@ -114,11 +115,11 @@ namespace CarMarket.BusinessLogic.User.Service
             return await _userRepository.FindUserRoleAsync(roleName);
         }
 
-        public async Task UpdateUser(long userId, UserModel userModel)
+        public async Task UpdateUser(string userId, UserModel userModel)
         {
             await _userRepository.UpdateAsync(userId, userModel);
         }
 
-        private static bool IsUserContainsPermission(UserModel user, Permission permission) => user.Permissions.Contains(permission);
+        private static bool IsUserContainsPermission(UserModel user, Permission permission) => false;/*user.Permissions.Contains(permission);*/
     }
 }
