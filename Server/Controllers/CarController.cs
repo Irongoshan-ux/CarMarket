@@ -133,7 +133,7 @@ namespace CarMarket.Server.Controllers
             {
                 var createdCar = await _carService.CreateAsync(carModel);
 
-                return CreatedAtAction(nameof(GetCar), new { id = createdCar.Id }, carModel);
+                return CreatedAtAction(nameof(GetCar), new { carId = createdCar.Id }, createdCar);
             }
             catch (Exception)
             {
