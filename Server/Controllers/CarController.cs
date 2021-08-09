@@ -1,4 +1,5 @@
 ﻿using CarMarket.Core.Car.Domain;
+using CarMarket.Core.Car.Exceptions;
 using CarMarket.Core.Car.Service;
 using CarMarket.Core.Image.Domain;
 using CarMarket.Core.User.Domain;
@@ -29,6 +30,27 @@ namespace CarMarket.Server.Controllers
             _carService = carService;
             _userService = userService;
             _logger = logger;
+        }
+
+        [HttpGet("Search")]
+        public async Task<ActionResult<IEnumerable<CarModel>>> Search(string carName, CarType? carType)
+        {
+            try
+            {
+                var result = await _carService.SearchAsync(carName, carType);
+
+                if (result.Any())
+                {
+                    return Ok(result);
+                }
+
+                return NotFound();
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "Error retrieving data from the database");
+            }
         }
 
         [HttpGet("GetCars")]
@@ -68,7 +90,7 @@ namespace CarMarket.Server.Controllers
         }
 
         [HttpDelete]
-        [Route("DeleteCar/{carId}")]
+        [Route("DeleteCar/{carId:long}")]
         [Authorize]
         public async Task<IActionResult> DeleteCar(long carId)
         {
@@ -79,10 +101,22 @@ namespace CarMarket.Server.Controllers
             if ((user != null) && ((user.Id == (await _carService.GetAsync(carId)).Owner.Id) ||
                 currentUser.IsInRole("Admin")))
             {
-                await _carService.DeleteAsync(carId);
+                try
+                {
+                    await _carService.DeleteAsync(carId);
+                }
+                catch (CarNotFoundException e)
+                {
+                    return NotFound(e.Message);
+                }
+                catch (Exception)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError,
+                        "Error deleting car record");
+                }
                 return Ok();
             }
-            
+
             return BadRequest("Access denied.");
         }
 
@@ -117,17 +151,27 @@ namespace CarMarket.Server.Controllers
             return await Task.FromResult(carModelList);
         }
 
-        [HttpPut("UpdateCar/{carId}")]
-        public async Task<IActionResult> UpdateCar(long carId, CarModel car)
+        [HttpPut("UpdateCar/{carId:long}")]
+        public async Task<ActionResult<CarModel>> UpdateCar(long carId, CarModel car)
         {
             if (carId != car.Id)
             {
-                return BadRequest();
+                return BadRequest("Car ID mismatch");
             }
 
-            await _carService.UpdateCar(carId, car);
-
-            return NoContent();
+            try
+            {
+                return await _carService.UpdateCar(carId, car);
+            }
+            catch (CarNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "Error updating car record");
+            }
         }
 
         //private async Task<IDictionary<string, string>> GetCarImages(CarModel car)

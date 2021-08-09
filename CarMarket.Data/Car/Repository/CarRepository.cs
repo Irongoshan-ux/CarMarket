@@ -41,7 +41,7 @@ namespace CarMarket.Data.Car.Repository
             return _mapper.Map<List<CarModel>>(carEntities);
         }
 
-        public async Task<CarModel> SaveAsync(CarModel carModel)
+        public async Task<CarModel> AddAsync(CarModel carModel)
         {
             var newCarEntity = _mapper.Map<CarEntity>(carModel);
 
@@ -86,13 +86,15 @@ namespace CarMarket.Data.Car.Repository
 
             return _mapper.Map<List<CarModel>>(carEntities);
         }
-        public async Task UpdateAsync(long carId, CarModel car)
+        public async Task<CarModel> UpdateAsync(long carId, CarModel car)
         {
             var carEntity = _mapper.Map<CarEntity>(car);
 
             _context.Update(carEntity);
 
             await _context.SaveChangesAsync();
+
+            return await FindByIdAsync(carId);
         }
 
         public async Task<IEnumerable<CarModel>> FindAllUserCarsAsync(long userId)
