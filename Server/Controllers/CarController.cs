@@ -147,11 +147,11 @@ namespace CarMarket.Server.Controllers
             return Ok(carModelList);
         }
 
-        [HttpGet("GetAllUserCars/{userId:long}")]
-        public async Task<ActionResult<IEnumerable<CarModel>>> GetAllUserCars(long userId)
-        {
-            return Ok(await _carService.GetAllUserCarsAsync(userId));
-        }
+        //[HttpGet("GetAllUserCars/{userId:long}")]
+        //public async Task<ActionResult<IEnumerable<CarModel>>> GetAllUserCars(string userId)
+        //{
+        //    return Ok(await _carService.GetAllUserCarsAsync(userId));
+        //}
 
         [HttpPut("UpdateCar/{carId:long}")]
         public async Task<ActionResult<CarModel>> UpdateCar(long carId, CarModel car)

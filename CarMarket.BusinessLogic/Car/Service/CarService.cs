@@ -64,7 +64,7 @@ namespace CarMarket.BusinessLogic.Car.Service
             return await _carRepository.UpdateAsync(carId, car);
         }
 
-        public Task<IEnumerable<CarModel>> GetAllUserCarsAsync(long userId)
+        public Task<IEnumerable<CarModel>> GetAllUserCarsAsync(string userId)
         {
             return _carRepository.FindAllUserCarsAsync(userId);
         }

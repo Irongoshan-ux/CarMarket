@@ -27,6 +27,7 @@ namespace CarMarket.Data.Car.Repository
             var carEntity = await _context.Cars
                 .AsNoTracking()
                 .Include(x => x.CarImages)
+                .Include(x => x.Owner)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             return _mapper.Map<CarModel>(carEntity);
@@ -37,6 +38,7 @@ namespace CarMarket.Data.Car.Repository
             var carEntities = await _context.Cars
                 .AsNoTracking()
                 .Include(x => x.CarImages)
+                .Include(x => x.Owner)
                 .ToListAsync();
 
             return _mapper.Map<List<CarModel>>(carEntities);
@@ -81,7 +83,7 @@ namespace CarMarket.Data.Car.Repository
             return await FindByIdAsync(carId);
         }
 
-        public async Task<IEnumerable<CarModel>> FindAllUserCarsAsync(long userId)
+        public async Task<IEnumerable<CarModel>> FindAllUserCarsAsync(string userId)
         {
             var carEntities = await _context.Cars
                 .AsNoTracking()
