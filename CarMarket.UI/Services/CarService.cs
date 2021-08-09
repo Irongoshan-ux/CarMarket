@@ -54,7 +54,8 @@ namespace CarMarket.UI.Services
 
         public async Task<IEnumerable<CarModel>> SearchAsync(string carName, CarType? carType)
         {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<CarModel>>("/api/Car/Search/" + carName, carType);
+            // temporarily not working
+            return await _httpClient.GetFromJsonAsync<IEnumerable<CarModel>>("/api/Car/Search/" + carName);
         }
 
         public async Task<CarModel> UpdateCar(long carId, CarModel car)
