@@ -1,7 +1,9 @@
 ﻿using CarMarket.Core.Car.Domain;
+using CarMarket.Core.Car.Exceptions;
 using CarMarket.Core.Car.Repository;
 using CarMarket.Core.Car.Service;
 using CarMarket.Core.User.Domain;
+using CarMarket.Core.User.Service;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -11,20 +13,21 @@ namespace CarMarket.BusinessLogic.Car.Service
     public class CarService : ICarService
     {
         private readonly ICarRepository _carRepository;
+        private readonly IUserService _userService;
 
-        public CarService(ICarRepository carRepository)
+        public CarService(ICarRepository carRepository, IUserService userService)
         {
             _carRepository = carRepository;
+            _userService = userService;
         }
 
-        public async Task<long> CreateAsync(CarModel carModel)
+        public async Task<CarModel> CreateAsync(CarModel carModel)
         {
-            if (carModel is null)
-            {
-                throw new ArgumentNullException(nameof(carModel));
-            }
+            var owner = await _userService.GetAsync(carModel.Owner.Id);
 
-            return await _carRepository.SaveAsync(carModel);
+            carModel.Owner = owner;
+
+            return await _carRepository.AddAsync(carModel);
         }
 
         public async Task<CarModel> GetAsync(long carId)
@@ -32,7 +35,7 @@ namespace CarMarket.BusinessLogic.Car.Service
             return await _carRepository.FindByIdAsync(carId);
         }
 
-        public async Task<List<CarModel>> GetAllAsync()
+        public async Task<IEnumerable<CarModel>> GetAllAsync()
         {
             return await _carRepository.FindAllAsync();
         }
@@ -43,25 +46,32 @@ namespace CarMarket.BusinessLogic.Car.Service
 
             if (carModel is null)
             {
-                throw new ArgumentException(nameof(carModel) + " shouldn't be null");
+                throw new CarNotFoundException($"Car with id = {carId} not found");
             }
 
             await _carRepository.DeleteAsync(carModel.Id);
         }
 
-        public async Task<CarModel> GetByName(string carName)
+        public async Task<CarModel> UpdateCar(long carId, CarModel car)
         {
-            return await _carRepository.FindOneByNameAsync(carName);
+            var carToUpdate = await _carRepository.FindByIdAsync(carId);
+
+            if (carToUpdate is null)
+            {
+                throw new CarNotFoundException($"Car with id = {carId} not found");
+            }
+
+            return await _carRepository.UpdateAsync(carId, car);
         }
 
-        public async Task<IEnumerable<CarModel>> GetByNameAsync(string carName)
+        public Task<IEnumerable<CarModel>> GetAllUserCarsAsync(long userId)
         {
-            return await _carRepository.FindAllByNameAsync(carName);
+            return _carRepository.FindAllUserCarsAsync(userId);
         }
 
-        public async Task UpdateCar(long carId, CarModel car)
-{
-            await _carRepository.UpdateAsync(carId, car);
+        public async Task<IEnumerable<CarModel>> SearchAsync(string carName, CarType? carType)
+        {
+            return await _carRepository.SearchAsync(carName, carType);
         }
     }
 }

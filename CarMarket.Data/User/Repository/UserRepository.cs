@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CarMarket.Core.Car.Domain;
 using CarMarket.Core.User.Domain;
 using CarMarket.Core.User.Repository;
 using CarMarket.Data.User.Domain;
@@ -13,6 +14,7 @@ namespace CarMarket.Data.User.Repository
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
+
         public UserRepository(ApplicationDbContext userContext, IMapper mapper)
         {
             _context = userContext;
@@ -22,6 +24,7 @@ namespace CarMarket.Data.User.Repository
         public async Task<UserModel> FindUserModelAsync(string email, string password)
         {
             var userEntity = await _context.Users
+                .AsNoTracking()
                 //.Include(u => u.Role)
                 .FirstOrDefaultAsync(x => (x.Email == email) && (x.PasswordHash == password));
 
@@ -30,7 +33,10 @@ namespace CarMarket.Data.User.Repository
 
         public async Task<UserModel> FindByIdAsync(string id)
         {
-            var userEntity = await _context.Users.FindAsync(id);
+            var userEntity = await _context.Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id);
+
             return _mapper.Map<UserModel>(userEntity);
         }
 
@@ -65,7 +71,9 @@ namespace CarMarket.Data.User.Repository
 
         public async Task<UserModel> FindByEmailAsync(string email)
         {
-            var userEntity = await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
+            var userEntity = await _context.Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Email == email);
 
             return _mapper.Map<UserModel>(userEntity);
         }

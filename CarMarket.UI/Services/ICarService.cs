@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace CarMarket.Core.Car.Service
+namespace CarMarket.UI.Services
 {
     public interface ICarService
     {

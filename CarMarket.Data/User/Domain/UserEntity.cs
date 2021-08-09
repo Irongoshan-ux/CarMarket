@@ -1,4 +1,3 @@
-﻿using CarMarket.Core.User.Domain;
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
