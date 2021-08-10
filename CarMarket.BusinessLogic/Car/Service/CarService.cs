@@ -23,7 +23,7 @@ namespace CarMarket.BusinessLogic.Car.Service
 
         public async Task<CarModel> CreateAsync(CarModel carModel)
         {
-            var owner = await _userService.GetAsync(carModel.Owner.Id);
+            var owner = await _userService.GetByEmailAsync(carModel.Owner.Email);
 
             carModel.Owner = owner;
 

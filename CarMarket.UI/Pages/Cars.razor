@@ -2,29 +2,31 @@
 @using BlazorInputFile
 @using CarMarket.BusinessLogic.Image.Service
 @using CarMarket.Core.Car.Domain
-@inject HttpClient Http
 @using CarMarket.Core.Image.Domain
 @using System.IO
 
-<AuthorizeView Roles="Admin">
 <h1>Cars Controller</h1>
-    </AuthorizeView>
-<p>Add car</p>
 
-<BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
-<br>
-<BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
-<br>
-<BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
-<br>
+<AuthorizeView>
+    <Authorized>
+        <p>Add car</p>
 
-<input @bind="newCarName" placeholder="Enter car name" />
-<input @bind="newCarDescription" placeholder="Enter description" />
-<input @bind="newCarPrice" placeholder="Enter price" />
-<input @bind="newCarOwnerId" placeholder="Enter owner Id" />
-<input @bind="newCarType" placeholder="Enter car type name" />
+        <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
+        <br>
+        <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
+        <br>
+        <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
+        <br>
 
-<button @onclick="AddCarAsync">Add car</button>
+        <input @bind="newCarName" placeholder="Enter car name" />
+        <input @bind="newCarDescription" placeholder="Enter description" />
+        <input @bind="newCarPrice" placeholder="Enter price" />
+        <input @bind="newCarType" placeholder="Enter car type name" />
+        <input @bind="newCarOwner" placeholder=@context.User.Identity.Name />
+        
+        <button @onclick="AddCarAsync">Add car</button>
+    </Authorized>
+</AuthorizeView>
 
 <p>All cars</p>
 
@@ -44,10 +46,9 @@ else
             <GridColumn ColumnTitle="Owner"></GridColumn>
             <GridColumn ColumnTitle="Price"></GridColumn>
             <AuthorizeView>
-                @* Roles="Admin" Policy="Admin">*@
-            <Authorized>
-                <GridColumn ColumnTitle="Actions"></GridColumn>
-            </Authorized>
+                <Authorized>
+                    <GridColumn ColumnTitle="Actions"></GridColumn>
+                </Authorized>
         </AuthorizeView>
     </GridColumns>
 
@@ -64,15 +65,17 @@ else
         <td>@car.Owner.Email</td>
         <td>@car.Price</td>
         <AuthorizeView>
-            @* Roles="Admin" Policy="Admin">*@
-        <Authorized>
-            <th>
-                <a style="text-underline-position:below; cursor:pointer; color:blue" @onclick="(() => EditCar(car))">Edit</a> |
-                <a style="text-underline-position:below; cursor:pointer; color:blue" @onclick="(() => DeleteCar(car.Id))">Delete</a>
-            </th>
-        </Authorized>
-    </AuthorizeView>
-</GridRow>
+            <Authorized>
+                @if (car.Owner.Email.Equals(context.User.Identity.Name) || context.User.IsInRole("Admin"))
+                {
+                    <th>
+                        <a style="text-underline-position:below; cursor:pointer; color:blue" @onclick="(() => EditCar(car))">Edit</a> |
+                        <a style="text-underline-position:below; cursor:pointer; color:blue" @onclick="(() => DeleteCar(car.Id))">Delete</a>
+                    </th>
+                }
+            </Authorized>
+        </AuthorizeView>
+    </GridRow>
 </GridView>
 }
 
@@ -84,7 +87,7 @@ else
     private CarModel car;
     private string newCarName;
     private string newCarDescription;
-    private string newCarOwnerId;
+    private string newCarOwner;
     private int newCarPrice;
     private CarType newCarType;
 
@@ -129,12 +132,12 @@ else
             Name = newCarName,
             Description = newCarDescription,
             CarImages = newCarImages,
-            Owner = new Core.User.Domain.UserModel { Id = newCarOwnerId },
+            Owner = new Core.User.Domain.UserModel { Email = newCarOwner },
             Price = newCarPrice,
             CarType = newCarType
         };
 
-        await CarService.CreateAsync(newCar);
+        cars.Add(await CarService.CreateAsync(newCar));
         await GetCarModelList();
     }
 
