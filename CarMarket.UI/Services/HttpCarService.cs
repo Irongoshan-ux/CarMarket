@@ -1,4 +1,6 @@
 ﻿using CarMarket.Core.Car.Domain;
+using CarMarket.Core.DataResult;
+using CarMarket.UI.Pages;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -6,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace CarMarket.UI.Services
 {
-    public class CarService : ICarService
+    public class HttpCarService : IHttpCarService
     {
         private readonly HttpClient _httpClient;
 
-        public CarService(HttpClient httpClient)
+        public HttpCarService(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }
@@ -40,6 +42,11 @@ namespace CarMarket.UI.Services
         public async Task<CarModel> GetAsync(long id)
         {
             return await _httpClient.GetFromJsonAsync<CarModel>("/api/Car/GetCar/" + id);
+        }
+
+        public async Task<DataResult<CarModel>> GetByPageAsync(int skip, int take)
+{
+            return await _httpClient.GetFromJsonAsync<DataResult<CarModel>>($"/api/Car/GetCarsByPage?skip={skip}&take={take}");
         }
 
         public async Task<IEnumerable<CarModel>> SearchAsync(string carName, CarType? carType)

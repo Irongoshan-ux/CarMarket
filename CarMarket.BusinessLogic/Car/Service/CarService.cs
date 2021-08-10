@@ -2,6 +2,7 @@
 using CarMarket.Core.Car.Exceptions;
 using CarMarket.Core.Car.Repository;
 using CarMarket.Core.Car.Service;
+using CarMarket.Core.DataResult;
 using CarMarket.Core.User.Domain;
 using CarMarket.Core.User.Service;
 using System;
@@ -38,6 +39,11 @@ namespace CarMarket.BusinessLogic.Car.Service
         public async Task<IEnumerable<CarModel>> GetAllAsync()
         {
             return await _carRepository.FindAllAsync();
+        }
+
+        public async Task<DataResult<CarModel>> GetByPageAsync(int skip = 0, int take = 5)
+        {
+            return await _carRepository.FindByPageAsync(skip, take);
         }
 
         public async Task DeleteAsync(long carId)

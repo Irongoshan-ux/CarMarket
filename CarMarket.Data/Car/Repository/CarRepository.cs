@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CarMarket.Core.Car.Domain;
 using CarMarket.Core.Car.Repository;
+using CarMarket.Core.DataResult;
 using CarMarket.Data.Car.Domain;
 using CarMarket.Data.User.Domain;
 using Microsoft.EntityFrameworkCore;
@@ -98,7 +99,10 @@ namespace CarMarket.Data.Car.Repository
 
         public async Task<IEnumerable<CarModel>> SearchAsync(string carName, CarType? carType)
         {
-            IQueryable<CarEntity> query = _context.Cars.AsNoTracking();
+            IQueryable<CarEntity> query = _context.Cars
+                .AsNoTracking()
+                .Include(x => x.CarImages)
+                .Include(x => x.Owner);
 
             if (!string.IsNullOrEmpty(carName))
             {
@@ -111,6 +115,25 @@ namespace CarMarket.Data.Car.Repository
             }
 
             return _mapper.Map<IEnumerable<CarModel>>(await query.ToListAsync());
+        }
+
+        public async Task<DataResult<CarModel>> FindByPageAsync(int skip = 0, int take = 5)
+        {
+            var carEntities = await _context.Cars
+                .AsNoTracking()
+                .Include(x => x.CarImages)
+                .Include(x => x.Owner)
+                .Skip(skip)
+                .Take(take)
+                .ToListAsync();
+
+            var result = new DataResult<CarModel>
+            {
+                Data = _mapper.Map<IEnumerable<CarModel>>(carEntities),
+                Count = await _context.Cars.CountAsync()
+            };
+
+            return result;
         }
     }
 }

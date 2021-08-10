@@ -16,7 +16,7 @@ namespace CarMarket.UI
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("#app");
 
-            builder.Services.AddHttpClient<ICarService, CarService>(client =>
+            builder.Services.AddHttpClient<IHttpCarService, HttpCarService>(client =>
             {
                 client.BaseAddress = new Uri(API_BASE_ADDRESS);
             });

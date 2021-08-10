@@ -63,6 +63,20 @@ namespace CarMarket.Server.Controllers
             }
         }
 
+        [HttpGet("GetCarsByPage")]
+        public async Task<IActionResult> GetCarsByPage(int skip = 0, int take = 5)
+        {
+            try
+            {
+                return Ok(await _carService.GetByPageAsync(skip, take));
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "Error retrieving data from the database");
+            }
+        }
+
         [HttpGet]
         [Route("GetCar/{carId:long}")]
         public async Task<ActionResult<CarModel>> GetCar(long carId)
@@ -135,15 +149,6 @@ namespace CarMarket.Server.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     "Error creating new car record");
             }
-        }
-
-        [HttpGet("GetCarsByPage")]
-        public async Task<ActionResult<IEnumerable<CarModel>>> GetCarsByPage(int pageSize, int pageNumber)
-        {
-            var carModelList = await _carService.GetAllAsync();
-            carModelList = carModelList.Skip(pageNumber * pageSize).Take(pageSize).ToList();
-
-            return Ok(carModelList);
         }
 
         //[HttpGet("GetAllUserCars/{userId:long}")]

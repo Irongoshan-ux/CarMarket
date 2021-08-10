@@ -37,51 +37,51 @@
 else
 {
     <GridView Items="cars">
-        <GridColumns>
-            <GridColumn ColumnTitle="Image"></GridColumn>
-            <GridColumn ColumnTitle="Id"></GridColumn>
-            <GridColumn ColumnTitle="Title"></GridColumn>
-            <GridColumn ColumnTitle="Car type"></GridColumn>
-            <GridColumn ColumnTitle="Description"></GridColumn>
-            <GridColumn ColumnTitle="Owner"></GridColumn>
-            <GridColumn ColumnTitle="Price"></GridColumn>
+            <GridColumns>
+                <GridColumn ColumnTitle="Image"></GridColumn>
+                <GridColumn ColumnTitle="Id"></GridColumn>
+                <GridColumn ColumnTitle="Title"></GridColumn>
+                <GridColumn ColumnTitle="Car type"></GridColumn>
+                <GridColumn ColumnTitle="Description"></GridColumn>
+                <GridColumn ColumnTitle="Owner"></GridColumn>
+                <GridColumn ColumnTitle="Price"></GridColumn>
+                <AuthorizeView>
+                    <Authorized>
+                        <GridColumn ColumnTitle="Actions"></GridColumn>
+                    </Authorized>
+                </AuthorizeView>
+            </GridColumns>
+
+        <GridRow Context="car">
+            <td>
+                <NavLink href=@string.Format("/cars/cardetail/{0}", car.Id)>
+                    <img src="@ImageService.ConvertImageToDisplay(car.CarImages.FirstOrDefault())" width="200px" />
+                </NavLink>
+            </td>
+            <td>@car.Id</td>
+            <td>@car.Name</td>
+            <td>@car.CarType</td>
+            <td>@car.Description</td>
+            <td>@car.Owner.Email</td>
+            <td>@car.Price</td>
             <AuthorizeView>
                 <Authorized>
-                    <GridColumn ColumnTitle="Actions"></GridColumn>
+                    @if (car.Owner.Email.Equals(context.User.Identity.Name) || context.User.IsInRole("Admin"))
+                    {
+                        <th>
+                            <a style="text-underline-position:below; cursor:pointer; color:blue" @onclick="(() => EditCar(car))">Edit</a> |
+                            <a style="text-underline-position:below; cursor:pointer; color:blue" @onclick="(() => DeleteCar(car.Id))">Delete</a>
+                        </th>
+                    }
                 </Authorized>
-        </AuthorizeView>
-    </GridColumns>
-
-    <GridRow Context="car">
-        <td>
-            <NavLink href=@string.Format("/cars/cardetail/{0}", car.Id)>
-                <img src="@ImageService.ConvertImageToDisplay(car.CarImages.FirstOrDefault())" width="200px" />
-            </NavLink>
-        </td>
-        <td>@car.Id</td>
-        <td>@car.Name</td>
-        <td>@car.CarType</td>
-        <td>@car.Description</td>
-        <td>@car.Owner.Email</td>
-        <td>@car.Price</td>
-        <AuthorizeView>
-            <Authorized>
-                @if (car.Owner.Email.Equals(context.User.Identity.Name) || context.User.IsInRole("Admin"))
-                {
-                    <th>
-                        <a style="text-underline-position:below; cursor:pointer; color:blue" @onclick="(() => EditCar(car))">Edit</a> |
-                        <a style="text-underline-position:below; cursor:pointer; color:blue" @onclick="(() => DeleteCar(car.Id))">Delete</a>
-                    </th>
-                }
-            </Authorized>
-        </AuthorizeView>
-    </GridRow>
-</GridView>
+            </AuthorizeView>
+        </GridRow>
+    </GridView>
 }
 
 @code {
     [Inject]
-    public ICarService CarService { get; set; }
+    public IHttpCarService CarService { get; set; }
 
     private List<CarModel> cars;
     private CarModel car;
