@@ -1,5 +1,11 @@
-﻿@typeparam TItem
+﻿@using CarMarket.Core.DataResult
+@typeparam TItem
 
+@if(Items is null)
+{
+    <p><em>Loading cars...</em></p>
+}
+else{
 <div class="col-12 row">
     <table class="table table-bordered table-striped mb-0">
         <thead class="bg-info">
@@ -8,7 +14,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in ItemList)
+            @foreach (var item in Items)
             {
                 <tr>
                     @GridRow(item)
@@ -33,8 +39,13 @@
     <button class="btn btn-secondary" @onclick="@(e => NavigateTo("next"))">Next</button>
     <button class="btn btn-secondary" @onclick="@(e => NavigateTo("last"))">@(">>")</button>
 </div>
-
+}
 @code {
+    [Inject]
+    public HttpClient Http { get; set; }
+
+    [Parameter]
+    public TItem ItemType { get; set; }
 
     [Parameter]
     public RenderFragment GridColumns { get; set; }
@@ -43,9 +54,10 @@
     public RenderFragment<TItem> GridRow { get; set; }
 
     [Parameter]
-    public List<TItem> Items { get; set; }
+    public string ApiGetDataLink { get; set; }
 
-    public List<TItem> ItemList { get; set; }
+    public List<TItem> Items { get; set; } = new List<TItem>();
+    public int TotalItems { get; set; }
 
     public int PageSize { get; set; }
     public int TotalPages { get; set; }
@@ -54,24 +66,24 @@
     [Parameter]
     public bool ReloadList { get; set; }
 
-    protected override void OnInitialized()
+    protected async override Task OnInitializedAsync()
     {
         PageSize = 5;
+        CurrentPage = 0;
 
-        if (Items != null)
-        {
-            ItemList = Items.Take(PageSize).ToList();
-            TotalPages = (int)Math.Ceiling(Items.Count() / (decimal)PageSize);
-        }
+        var result = await Http.GetFromJsonAsync<DataResult<TItem>>(ApiGetDataLink + "?skip=" + (CurrentPage * PageSize) + "&take=" + PageSize);
 
-        base.OnInitialized();
+        Items = result.Data.ToList();
+        TotalItems = result.Count;
+
+        TotalPages = (int)Math.Ceiling(TotalItems / (decimal)PageSize);
     }
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender && ReloadList)
         {
-            UpdateList();
+            await UpdateList();
             ReloadList = false;
 
             StateHasChanged();
@@ -80,17 +92,19 @@
         base.OnAfterRender(firstRender);
     }
 
-    private void UpdateList(int pageNumber = 0)
+    private async Task UpdateList(int pageNumber = 0)
     {
-        if (Items != null)
-        {
-            ItemList = Items.Skip(pageNumber * PageSize).Take(PageSize).ToList();
-            TotalPages = (int)Math.Ceiling(Items.Count() / (decimal)PageSize);
-            CurrentPage = pageNumber;
-        }
+        CurrentPage = pageNumber;
+
+        var result = await Http.GetFromJsonAsync<DataResult<TItem>>(ApiGetDataLink + "?skip=" + (CurrentPage * PageSize) + "&take=" + PageSize);
+        Items = result.Data.ToList();
+
+        ReloadList = true;
+        this.StateHasChanged();
+        await OnAfterRenderAsync(false);
     }
 
-    private void NavigateTo(string direction)
+    private async Task NavigateTo(string direction)
     {
         if (direction == "prev" && CurrentPage != 0)
             CurrentPage -= 1;
@@ -101,6 +115,6 @@
         if (direction == "last")
             CurrentPage = TotalPages - 1;
 
-        UpdateList(CurrentPage);
+        await UpdateList(CurrentPage);
     }
 }

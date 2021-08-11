@@ -29,14 +29,7 @@
 </AuthorizeView>
 
 <p>All cars</p>
-
-@if (cars == null)
-{
-    <p><em>Loading cars...</em></p>
-}
-else
-{
-    <GridView Items="cars">
+    <GridView ItemType="car" ApiGetDataLink="https://localhost:10001/api/Car/GetCarsByPage">
             <GridColumns>
                 <GridColumn ColumnTitle="Image"></GridColumn>
                 <GridColumn ColumnTitle="Id"></GridColumn>
@@ -77,13 +70,11 @@ else
             </AuthorizeView>
         </GridRow>
     </GridView>
-}
 
 @code {
     [Inject]
     public IHttpCarService CarService { get; set; }
 
-    private List<CarModel> cars;
     private CarModel car;
     private string newCarName;
     private string newCarDescription;
@@ -103,8 +94,6 @@ else
     private async Task DeleteCar(long deletedCarId)
     {
         await CarService.DeleteAsync(deletedCarId);
-
-        await GetCarModelList();
     }
 
     async Task HandleFilesSelected(IFileListEntry[] files)
@@ -137,17 +126,6 @@ else
             CarType = newCarType
         };
 
-        cars.Add(await CarService.CreateAsync(newCar));
-        await GetCarModelList();
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        await GetCarModelList();
-    }
-
-    private async Task GetCarModelList()
-    {
-        cars = (await CarService.GetAllAsync()).ToList();
+        await CarService.CreateAsync(newCar);
     }
 }
