@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using CarMarket.Core.Car.Domain;
 using CarMarket.Core.User.Domain;
 using CarMarket.Core.User.Repository;
 using CarMarket.Data.User.Domain;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;

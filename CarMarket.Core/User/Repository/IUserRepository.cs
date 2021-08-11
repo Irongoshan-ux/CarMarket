@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using CarMarket.Core.Car.Domain;
 using CarMarket.Core.User.Domain;
+using Microsoft.AspNetCore.Identity;
 
 namespace CarMarket.Core.User.Repository
 {

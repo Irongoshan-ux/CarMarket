@@ -1,11 +1,6 @@
 ﻿@using CarMarket.Core.DataResult
 @typeparam TItem
 
-@if(Items is null)
-{
-    <p><em>Loading cars...</em></p>
-}
-else{
 <div class="col-12 row">
     <table class="table table-bordered table-striped mb-0">
         <thead class="bg-info">
@@ -39,7 +34,7 @@ else{
     <button class="btn btn-secondary" @onclick="@(e => NavigateTo("next"))">Next</button>
     <button class="btn btn-secondary" @onclick="@(e => NavigateTo("last"))">@(">>")</button>
 </div>
-}
+
 @code {
     [Inject]
     public HttpClient Http { get; set; }
@@ -99,9 +94,7 @@ else{
         var result = await Http.GetFromJsonAsync<DataResult<TItem>>(ApiGetDataLink + "?skip=" + (CurrentPage * PageSize) + "&take=" + PageSize);
         Items = result.Data.ToList();
 
-        ReloadList = true;
         this.StateHasChanged();
-        await OnAfterRenderAsync(false);
     }
 
     private async Task NavigateTo(string direction)

@@ -1,5 +1,7 @@
+using CarMarket.Core.User.Domain;
 using CarMarket.UI.Services;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
