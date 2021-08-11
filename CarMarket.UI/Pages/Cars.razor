@@ -241,6 +241,25 @@
             Owner = new Core.User.Domain.UserModel { Email = newCarOwner },
             Price = newCarPrice,
             CarType = newCarType
+        };*@
+
+        //await CarService.CreateAsync(newCar);
+    }
+
+    async Task SaveCar()
+    {
+        ShowPopup = false;
+    }
+    async Task EditCar(CarModel editedCar)
+    {
+        TitleContext = "Edit car";
+
+        objCar = new CarModel()
+        {
+            Name = "qq",
+            Id = 5,
+            Owner = new Core.User.Domain.UserModel() { Id = "qwe" },
+            Description = "qwe",
         };
         
         await CarService.CreateAsync(newCar);
