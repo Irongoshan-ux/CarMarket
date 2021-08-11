@@ -1,5 +1,6 @@
 ﻿using CarMarket.Core.Car.Domain;
 using CarMarket.Core.User.Domain;
+using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -10,6 +11,7 @@ namespace CarMarket.Core.User.Service
         Task AddPermissionAsync(string userId, params Permission[] permissions);
         Task ChangePermissionAsync(string userId, Permission replaceablePermission, Permission substitutePermission);
         Task<string> CreateAsync(UserModel userModel);
+        Task AddToRoleAsync(UserModel userModel, string role);
         Task<UserModel> GetAsync(string userId);
         Task<UserModel> GetByEmailAsync(string email);
         Task<List<UserModel>> GetAllAsync();

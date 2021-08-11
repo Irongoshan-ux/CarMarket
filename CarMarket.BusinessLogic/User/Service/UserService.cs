@@ -12,10 +12,12 @@ namespace CarMarket.BusinessLogic.User.Service
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly UserManager<UserModel> _userManager;
 
-        public UserService(IUserRepository userRepository)
+        public UserService(IUserRepository userRepository, UserManager<UserModel> userManager)
         {
             _userRepository = userRepository;
+            _userManager = userManager;
         }
 
         public async Task<UserModel> AuthenticateAsync(string email, string password)
@@ -118,6 +120,11 @@ namespace CarMarket.BusinessLogic.User.Service
         public async Task UpdateUser(string userId, UserModel userModel)
         {
             await _userRepository.UpdateAsync(userId, userModel);
+        }
+
+        public async Task AddToRoleAsync(UserModel userModel, string role)
+        {
+            await _userManager.AddToRoleAsync(userModel, role);
         }
 
         private static bool IsUserContainsPermission(UserModel user, Permission permission) => false;/*user.Permissions.Contains(permission);*/

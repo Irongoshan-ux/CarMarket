@@ -61,15 +61,92 @@
                 <Authorized>
                     @if (car.Owner.Email.Equals(context.User.Identity.Name) || context.User.IsInRole("Admin"))
                     {
-                        <th>
+                        <button class="btn btn-primary"
+                            @onclick="(() => EditCar(car))">
+                            Edit
+                        </button>
+
+                        <button class="btn btn-danger"
+                            @onclick="(() => DeleteCar())">
+                            Delete
+                        </button>
+
+                        @*<th>
                             <a style="text-underline-position:below; cursor:pointer; color:blue" @onclick="(() => EditCar(car))">Edit</a> |
                             <a style="text-underline-position:below; cursor:pointer; color:blue" @onclick="(() => DeleteCar(car.Id))">Delete</a>
-                        </th>
+                        </th>*@
                     }
                 </Authorized>
             </AuthorizeView>
         </GridRow>
     </GridView>
+
+    @if (ShowPopup)
+{
+    <!-- This is the popup to create or edit a car -->
+    <div class="modal" tabindex="-1" style="display:block" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">@TitleContext</h3>
+                    <!-- Button to close the popup -->
+                    <button type="button" class="close"
+                            @onclick="ClosePopup">
+                        <span aria-hidden="true">X</span>
+                    </button>
+                </div>
+                <!-- Edit form for the current car -->
+                <div class="modal-body">
+                    <!-- Only show Id if not a new car -->
+                    @if (objCar.Id != 0)
+                    {
+                        <p>@objCar.Id</p>
+                    }
+                    
+                    <input class="form-control" type="text"
+                                placeholder="Name"
+                                @bind="objCar.Name" />
+                    <input class="form-control" type="text"
+                            placeholder="Description"
+                            @bind="objCar.Description" />
+                    <input class="form-control" type="number"
+                            placeholder="Price"
+                            @bind="objCar.Price" />
+                    <input class="form-control" type="email"
+                            placeholder="Owner Email"
+                            @bind="objCar.Owner.Email" />
+                    <select class="form-control"
+                            @bind="@CurrentCarType">
+                        @foreach (var option in Options)
+                        {
+                            <option value="@option">
+                                @option
+                            </option>
+                        }
+                    </select>
+                    <br /><br />
+                    <!-- Button to save the user -->
+                    <button class="btn btn-primary"
+                            @onclick="SaveCar">
+                        Save
+                    </button>
+                    <!-- Only show delete button if not a new record -->
+                    @if (objCar.Id != default)
+                    {
+                        <!-- Button to delete the forecast -->
+                        <button class="btn btn-danger"
+                                @onclick="DeleteCar">
+                            Delete
+                        </button>
+                    }
+                    <br />
+                    <span style="color:red">@strError</span>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<button class="btn btn-success" @onclick="AddCarAsync">Add Car</button>
 
 @code {
     [Inject]
@@ -84,12 +161,26 @@
 
     private List<ImageModel> newCarImages = new List<ImageModel>();
 
-    private async Task EditCar(CarModel editedCar)
+        // Property used to add or edit the currently selected user
+    CarModel objCar = new()
+    {
+        Name = "test"
+    };
+    // Options to display in the roles dropdown when editing a user
+    List<string> Options = new() { "SportCar", "Hatchback" }; // car types
+    // To hold any possible errors
+    string strError = "";
+    // To enable showing the Popup
+    bool ShowPopup = false;
+    string TitleContext { get; set; }
+    string CurrentCarType { get; set; }
+
+    @*private async Task EditCar(CarModel editedCar)
     {
         car = editedCar;
 
         await CarService.UpdateCarAsync(editedCar.Id, car);
-    }
+    }*@
 
     private async Task DeleteCar(long deletedCarId)
     {
@@ -116,7 +207,18 @@
 
     private async Task AddCarAsync()
     {
-        var newCar = new CarModel
+        TitleContext = "Add new car";
+        ShowPopup = true;
+
+        objCar = new CarModel()
+        {
+            Name = "qq",
+            Id = 5,
+            Owner = new Core.User.Domain.UserModel() { Id = "qwe" },
+            Description = "qwe",
+        };
+
+        @*var newCar = new CarModel
         {
             Name = newCarName,
             Description = newCarDescription,
@@ -124,8 +226,40 @@
             Owner = new Core.User.Domain.UserModel { Email = newCarOwner },
             Price = newCarPrice,
             CarType = newCarType
+        };*@
+
+        //await CarService.CreateAsync(newCar);
+    }
+
+    async Task SaveCar()
+    {
+        ShowPopup = false;
+    }
+    async Task EditCar(CarModel editedCar)
+    {
+        TitleContext = "Edit car";
+
+        objCar = new CarModel()
+        {
+            Name = "qq",
+            Id = 5,
+            Owner = new Core.User.Domain.UserModel() { Id = "qwe" },
+            Description = "qwe",
         };
 
-        await CarService.CreateAsync(newCar);
+        ShowPopup = true;
+
+
+        await CarService.UpdateCarAsync(editedCar.Id, car);
+    }
+    async Task DeleteCar()
+    {
+        // Close the Popup
+        ShowPopup = false;
+        // Get the user to delete
+    }
+    void ClosePopup()
+    {
+        ShowPopup = false;
     }
 }
