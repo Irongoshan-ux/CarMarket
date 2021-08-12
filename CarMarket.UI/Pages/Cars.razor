@@ -30,6 +30,19 @@
     </Authorized>
 </AuthorizeView>
 
+@*<AbstractionGridView TItem="CarModel" TKey="long">
+<GridColumns>
+                <GridColumn ColumnTitle="Image"></GridColumn>
+                </GridColumns>
+                <GridRow Context="car">
+            <td>
+                <NavLink href=@string.Format("/cars/cardetail/{0}", car.Id)>
+                    <img src="@ImageService.ConvertImageToDisplay(car.CarImages.FirstOrDefault())" width="200px" />
+                </NavLink>
+            </td>
+             </GridRow>
+             </AbstractionGridView>*@
+
 <p>All cars</p>
     <GridView ItemType="car" ApiGetDataLink="https://localhost:10001/api/Car/GetCarsByPage">
             <GridColumns>

@@ -41,7 +41,19 @@
 
 @code {
     [Inject]
-    public IHttpService<TItem, TKey> HttpService { get; set; }
+    public IServiceProvider ServiceProvider { get; set; }
+
+    public IHttpService<TItem, TKey> HttpService
+    {
+        get
+        {
+            return this.HttpService;
+        }
+        set
+        {
+            this.HttpService = GetHttpService();
+        }
+    }
 
     [Parameter]
     public RenderFragment GridColumns { get; set; }
@@ -113,5 +125,12 @@
         TotalItems = result.Count;
 
         TotalPages = (int)Math.Ceiling(TotalItems / (decimal)PageSize);
+    }
+
+    private IHttpService<TItem, TKey> GetHttpService()
+    {
+        var services = ServiceProvider.GetServices<IHttpService<TItem, TKey>>();
+
+        return services.First(o => o.GetType() == HttpService.GetType());
     }
 }
