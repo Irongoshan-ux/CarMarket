@@ -73,6 +73,8 @@ namespace CarMarket.BusinessLogic.User.Service
                 throw new ArgumentNullException(nameof(userModel));
             }
 
+            userModel.Id = Guid.NewGuid().ToString();
+
             return await _userRepository.SaveAsync(userModel);
         }
 

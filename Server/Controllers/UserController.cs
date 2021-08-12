@@ -4,10 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Security.Claims;
-using CarMarket.Server.Infrastructure.Identification.Models;
-using Microsoft.AspNetCore.Authorization;
-using CarMarket.Core.Car.Domain;
 using Microsoft.AspNetCore.Http;
 using System;
 
