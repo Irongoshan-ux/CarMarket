@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using CarMarket.Core.Car.Domain;
+using CarMarket.Core.DataResult;
 using CarMarket.Core.User.Domain;
 using Microsoft.AspNetCore.Identity;
 
@@ -16,5 +17,6 @@ namespace CarMarket.Core.User.Repository
         Task<UserModel> FindByEmailAsync(string email);
         Task<Role> FindUserRoleAsync(string roleName);
         Task UpdateAsync(string userId, UserModel userModel);
+        Task<DataResult<UserModel>> FindByPageAsync(int skip, int take);
     }
 }

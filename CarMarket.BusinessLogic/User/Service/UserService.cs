@@ -1,4 +1,5 @@
 ﻿using CarMarket.Core.Car.Domain;
+using CarMarket.Core.DataResult;
 using CarMarket.Core.User.Domain;
 using CarMarket.Core.User.Repository;
 using CarMarket.Core.User.Service;
@@ -128,5 +129,10 @@ namespace CarMarket.BusinessLogic.User.Service
         }
 
         private static bool IsUserContainsPermission(UserModel user, Permission permission) => false;/*user.Permissions.Contains(permission);*/
+
+        public async Task<DataResult<UserModel>> GetByPageAsync(int skip = 0, int take = 5)
+        {
+            return await _userRepository.FindByPageAsync(skip, take);
+        }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using CarMarket.Core.Car.Domain;
+using CarMarket.Core.DataResult;
 using CarMarket.Core.User.Domain;
 using CarMarket.Core.User.Repository;
 using CarMarket.Data.User.Domain;
@@ -91,6 +93,23 @@ namespace CarMarket.Data.User.Repository
             _context.Update(userEntity);
 
             await _context.SaveChangesAsync();            
+        }
+
+        public async Task<DataResult<UserModel>> FindByPageAsync(int skip, int take)
+        {
+            var userEntities = await _context.Users
+                .AsNoTracking()
+                .Skip(skip)
+                .Take(take)
+                .ToListAsync();
+
+            var result = new DataResult<UserModel>
+            {
+                Data = _mapper.Map<IEnumerable<UserModel>>(userEntities),
+                Count = await _context.Users.CountAsync()
+            };
+
+            return result;
         }
     }
 }

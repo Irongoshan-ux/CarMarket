@@ -8,6 +8,8 @@ using System.Security.Claims;
 using CarMarket.Server.Infrastructure.Identification.Models;
 using Microsoft.AspNetCore.Authorization;
 using CarMarket.Core.Car.Domain;
+using Microsoft.AspNetCore.Http;
+using System;
 
 namespace CarMarket.Server.Controllers
 {
@@ -36,6 +38,26 @@ namespace CarMarket.Server.Controllers
             return await _userService.GetAsync(userId);
         }
 
+        [HttpGet("GetUserByEmail")]
+        public async Task<UserModel> GetUserByEmail(string email)
+        {
+            return await _userService.GetByEmailAsync(email);
+        }
+
+        [HttpGet("GetUsersByPage")]
+        public async Task<IActionResult> GetUsersByPage(int skip = 0, int take = 5)
+        {
+            try
+            {
+                return Ok(await _userService.GetByPageAsync(skip, take));
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "Error retrieving data from the database");
+            }
+        }
+
         [HttpDelete("DeleteUser/{userId}")]
         public async Task DeleteUser(string userId)
         {
@@ -43,7 +65,6 @@ namespace CarMarket.Server.Controllers
         }
 
         [HttpPost("ChangeUserPermission")]
-        [Authorize(Policy = "")]
         public async Task ChangeUserPermission(string userId, [FromQuery] Permission replaceablePermission, [FromQuery] Permission substitutePermission)
         {
             await _userService.ChangePermissionAsync(userId, replaceablePermission, substitutePermission);
@@ -53,6 +74,12 @@ namespace CarMarket.Server.Controllers
         public async Task AddUserPermission(string userId, [FromBody] Permission[] permissions)
         {
             await _userService.AddPermissionAsync(userId, permissions);
+        }
+
+        [HttpDelete("DeleteUserPermission")]
+        public async Task DeleteUserPermission(string userId, [FromBody] Permission permission)
+        {
+            await _userService.DeletePermissionAsync(userId, permission);
         }
 
         [HttpPost("CreateUser")]
