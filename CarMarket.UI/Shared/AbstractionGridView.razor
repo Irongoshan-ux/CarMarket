@@ -1,0 +1,117 @@
+﻿@*Not working Dependency injection IHttpService :(*@
+
+@using CarMarket.Core.DataResult
+@using CarMarket.UI.Services.Car
+@typeparam TItem
+@typeparam TKey
+
+<div class="col-12 row">
+    <table class="table table-bordered table-striped mb-0">
+        <thead class="bg-info">
+            <tr>
+                @GridColumns
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Items)
+            {
+                <tr>
+                    @GridRow(item)
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<br />
+<div>
+    <button class="btn btn-secondary" @onclick="@(e => NavigateTo("first"))">@("<<")</button>
+    <button class="btn btn-secondary" @onclick="@(e => NavigateTo("prev"))">Prev</button>
+    @for (int i = 0; i < TotalPages; i++)
+    {
+        var pageNumber = i;
+        <button class="btn @(CurrentPage == pageNumber? "btn-dark":"btn-info")"
+                @onclick="@(e => UpdateList(pageNumber))">
+            @(i + 1)
+        </button>
+    }
+    <button class="btn btn-secondary" @onclick="@(e => NavigateTo("next"))">Next</button>
+    <button class="btn btn-secondary" @onclick="@(e => NavigateTo("last"))">@(">>")</button>
+</div>
+
+@code {
+    [Inject]
+    public IHttpService<TItem, TKey> HttpService { get; set; }
+
+    [Parameter]
+    public RenderFragment GridColumns { get; set; }
+
+    [Parameter]
+    public RenderFragment<TItem> GridRow { get; set; }
+
+    public List<TItem> Items { get; set; } = new List<TItem>();
+    public int TotalItems { get; set; }
+
+    public int PageSize { get; set; }
+    public int TotalPages { get; set; }
+    public int CurrentPage { get; set; }
+
+    [Parameter]
+    public bool ReloadList { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        PageSize = 5;
+        CurrentPage = 0;
+
+        var result = await HttpService.GetByPageAsync(CurrentPage * PageSize, PageSize);
+
+        ParseDataFromResponse(result);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender && ReloadList)
+        {
+            await UpdateList();
+            ReloadList = false;
+
+            StateHasChanged();
+        }
+
+        base.OnAfterRender(firstRender);
+    }
+
+    private async Task UpdateList(int pageNumber = 0)
+    {
+        CurrentPage = pageNumber;
+
+        var result = await HttpService.GetByPageAsync(CurrentPage * PageSize, PageSize);
+
+        ParseDataFromResponse(result);
+
+        this.StateHasChanged();
+    }
+
+    private async Task NavigateTo(string direction)
+    {
+        if (direction == "prev" && CurrentPage != 0)
+            CurrentPage -= 1;
+        if (direction == "next" && CurrentPage != TotalPages - 1)
+            CurrentPage += 1;
+        if (direction == "first")
+            CurrentPage = 0;
+        if (direction == "last")
+            CurrentPage = TotalPages - 1;
+
+        await UpdateList(CurrentPage);
+    }
+
+    private void ParseDataFromResponse(DataResult<TItem> result)
+    {
+        Items = result.Data.ToList();
+        TotalItems = result.Count;
+
+        TotalPages = (int)Math.Ceiling(TotalItems / (decimal)PageSize);
+    }
+}

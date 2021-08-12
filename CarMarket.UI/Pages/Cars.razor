@@ -4,6 +4,8 @@
 @using CarMarket.Core.Car.Domain
 @using CarMarket.Core.Image.Domain
 @using System.IO
+@using CarMarket.Core.User.Domain
+@using CarMarket.UI.Services.Car
 
 <h1>Cars Controller</h1>
 
@@ -81,7 +83,7 @@
         </GridRow>
     </GridView>
 
-    @if (ShowPopup)
+@if (ShowPopup)
 {
     <!-- This is the popup to create or edit a car -->
     <div class="modal" tabindex="-1" style="display:block" role="dialog">
@@ -162,10 +164,7 @@
     private List<ImageModel> newCarImages = new List<ImageModel>();
 
         // Property used to add or edit the currently selected user
-    CarModel objCar = new()
-    {
-        Name = "test"
-    };
+    CarModel objCar = new();
     // Options to display in the roles dropdown when editing a user
     List<string> Options = new() { "SportCar", "Hatchback" }; // car types
     // To hold any possible errors
@@ -212,10 +211,12 @@
 
         objCar = new CarModel()
         {
-            Name = "qq",
-            Id = 5,
-            Owner = new Core.User.Domain.UserModel() { Id = "qwe" },
-            Description = "qwe",
+            Id = 0,
+        };
+
+        var carOwner = new UserModel()
+        {
+            Email = ""
         };
 
         @*var newCar = new CarModel

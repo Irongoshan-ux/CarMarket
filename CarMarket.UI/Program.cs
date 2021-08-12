@@ -1,10 +1,13 @@
+using CarMarket.Core.Car.Domain;
 using CarMarket.Core.User.Domain;
 using CarMarket.UI.Services;
+using CarMarket.UI.Services.Car;
+using CarMarket.UI.Services.User;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace CarMarket.UI
@@ -18,10 +21,22 @@ namespace CarMarket.UI
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("#app");
 
+            //builder.Services.AddScoped<IHttpCarService, HttpCarService>();
+
             builder.Services.AddHttpClient<IHttpCarService, HttpCarService>(client =>
             {
                 client.BaseAddress = new Uri(API_BASE_ADDRESS);
             });
+
+            //builder.Services.AddScoped<IHttpService<UserModel, string>, HttpUserService>();
+            //builder.Services.AddScoped<IHttpService<CarModel, long>, HttpCarService>();
+
+            //builder.Services.AddScoped<IHttpUserService, HttpUserService>();
+
+
+            //builder.Services.AddHttpClient<>
+
+            //builder.Services.AddScoped<IHttpService<CarModel, long>, HttpCarService>();
 
             builder.Services.AddOidcAuthentication(options =>
             {
