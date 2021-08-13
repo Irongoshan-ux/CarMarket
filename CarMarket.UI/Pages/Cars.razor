@@ -30,19 +30,6 @@
     </Authorized>
 </AuthorizeView>
 
-@*<AbstractionGridView TItem="CarModel" TKey="long">
-<GridColumns>
-                <GridColumn ColumnTitle="Image"></GridColumn>
-                </GridColumns>
-                <GridRow Context="car">
-            <td>
-                <NavLink href=@string.Format("/cars/cardetail/{0}", car.Id)>
-                    <img src="@ImageService.ConvertImageToDisplay(car.CarImages.FirstOrDefault())" width="200px" />
-                </NavLink>
-            </td>
-             </GridRow>
-             </AbstractionGridView>*@
-
 <p>All cars</p>
     <GridView ItemType="car" ApiGetDataLink="https://localhost:10001/api/Car/GetCarsByPage">
             <GridColumns>
@@ -82,7 +69,7 @@
                         </button>
 
                         <button class="btn btn-danger"
-                            @onclick="(() => DeleteCar())">
+                            @onclick="(() => DeleteCar(car))">
                             Delete
                         </button>
 
@@ -96,6 +83,8 @@
         </GridRow>
     </GridView>
 
+<AuthorizeView>
+<Authorized>
 @if (ShowPopup)
 {
     <!-- This is the popup to create or edit a car -->
@@ -112,24 +101,29 @@
                 </div>
                 <!-- Edit form for the current car -->
                 <div class="modal-body">
-                    <!-- Only show Id if not a new car -->
-                    @if (objCar.Id != 0)
-                    {
-                        <p>@objCar.Id</p>
-                    }
-                    
                     <input class="form-control" type="text"
                                 placeholder="Name"
-                                @bind="objCar.Name" />
+                                @bind="editedCar.Name" />
                     <input class="form-control" type="text"
                             placeholder="Description"
-                            @bind="objCar.Description" />
+                            @bind="editedCar.Description" />
                     <input class="form-control" type="number"
                             placeholder="Price"
-                            @bind="objCar.Price" />
-                    <input class="form-control" type="email"
+                            @bind="editedCar.Price" />
+                    @*<input class="form-control" type="email"
                             placeholder="Owner Email"
-                            @bind="objCar.Owner.Email" />
+                            @bind="editedCar.Owner.Email"/>*@
+                        
+                        @* email always null *@
+                            <select class="form-control"
+                            @bind="currentUserEmail">
+                            <option value="@context.User.Identity.Name">
+                                @context.User.Identity.Name
+                            </option>
+                        </select>
+                          
+
+
                     <select class="form-control"
                             @bind="@CurrentCarType">
                         @foreach (var option in Options)
@@ -139,29 +133,40 @@
                             </option>
                         }
                     </select>
+                    <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
+                    <br>
+                    <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
+                    <br>
+                    <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
+                    <br>
                     <br /><br />
-                    <!-- Button to save the user -->
-                    <button class="btn btn-primary"
-                            @onclick="SaveCar">
-                        Save
-                    </button>
-                    <!-- Only show delete button if not a new record -->
-                    @if (objCar.Id != default)
+
+                    @if (string.IsNullOrWhiteSpace(strError))
                     {
-                        <!-- Button to delete the forecast -->
-                        <button class="btn btn-danger"
-                                @onclick="DeleteCar">
-                            Delete
-                        </button>
+                        @if (editedCar.Id == 0)
+                        {
+                            <button class="btn btn-primary"
+                            @onclick="CreateCar">
+                                Save
+                            </button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-secondary"
+                            @onclick="UpdateCar">
+                                Update
+                            </button>
+                        }
                     }
-                    <br />
                     <span style="color:red">@strError</span>
                 </div>
             </div>
         </div>
     </div>
 }
-<button class="btn btn-success" @onclick="AddCarAsync">Add Car</button>
+<button class="btn btn-success" @onclick="AddCar">Add Car</button>
+</Authorized>
+</AuthorizeView>
 
 @code {
     [Inject]
@@ -173,33 +178,17 @@
     private string newCarOwner;
     private int newCarPrice;
     private CarType newCarType;
+    private string currentUserEmail;
 
-    private List<ImageModel> newCarImages = new List<ImageModel>();
+    private CarModel editedCar = new();
+    private List<string> Options = GetCarTypes();
 
-        // Property used to add or edit the currently selected user
-    CarModel objCar = new();
-    // Options to display in the roles dropdown when editing a user
-    List<string> Options = new() { "SportCar", "Hatchback" }; // car types
-    // To hold any possible errors
-    string strError = "";
-    // To enable showing the Popup
-    bool ShowPopup = false;
-    string TitleContext { get; set; }
-    string CurrentCarType { get; set; }
+    private string strError = "";
+    private bool ShowPopup = false;
+    private string TitleContext { get; set; }
+    private string CurrentCarType { get; set; }
 
-    @*private async Task EditCar(CarModel editedCar)
-    {
-        car = editedCar;
-
-        await CarService.UpdateCarAsync(editedCar.Id, car);
-    }*@
-
-    private async Task DeleteCar(long deletedCarId)
-    {
-        await CarService.DeleteAsync(deletedCarId);
-    }
-
-    async Task HandleFilesSelected(IFileListEntry[] files)
+    private async Task HandleFilesSelected(IFileListEntry[] files)
     {
         var file = files.FirstOrDefault();
 
@@ -208,88 +197,88 @@
             var ms = new MemoryStream();
             await file.Data.CopyToAsync(ms);
 
-            newCarImages.Add(new ImageModel
+            editedCar.CarImages.Add(new ImageModel
             {
                 ImageData = ms.ToArray(),
                 ImageTitle = file.Name
             });
         }
-        else throw new ArgumentException("File type " + file.Type + " not supported.");
+        else strError += $"File {file.Name} not supported.\n";
     }
 
-    private async Task AddCarAsync()
+    private void AddCar()
     {
+        editedCar = new()
+        {
+            Owner = new(),
+            CarImages = new List<ImageModel>()
+        };
+
         TitleContext = "Add new car";
         ShowPopup = true;
-
-        objCar = new CarModel()
-        {
-            Id = 0,
-        };
-
-        var carOwner = new UserModel()
-        {
-            Email = ""
-        };
-
-        @*var newCar = new CarModel
-        {
-            Name = newCarName,
-            Description = newCarDescription,
-            CarImages = newCarImages,
-            Owner = new Core.User.Domain.UserModel { Email = newCarOwner },
-            Price = newCarPrice,
-            CarType = newCarType
-        };*@
-
-        //await CarService.CreateAsync(newCar);
     }
 
-    private async Task AddCar()
+    private async Task CreateCar()
     {
-        var newCar = new CarModel
-        {
-            Name = newCarName,
-            Description = newCarDescription,
-            CarImages = newCarImages,
-            Owner = new Core.User.Domain.UserModel { Email = newCarOwner },
-            Price = newCarPrice,
-            CarType = newCarType
-        };
+        SetCarType(CurrentCarType);
+        editedCar.Owner.Email = currentUserEmail;
 
-        await CarService.CreateAsync(newCar);
-    }
-
-    async Task SaveCar()
-    {
         ShowPopup = false;
+
+        await CarService.CreateAsync(editedCar);
     }
     
-    async Task EditCar(CarModel editedCar)
+    private void EditCar(CarModel updatedCar)
     {
         TitleContext = "Edit car";
 
-        objCar = new CarModel()
-        {
-            Name = "qq",
-            Id = 5,
-            Owner = new Core.User.Domain.UserModel() { Id = "qwe" },
-            Description = "qwe",
-        };
+        editedCar = updatedCar;
 
         ShowPopup = true;
-
-
-        await CarService.UpdateAsync(editedCar.Id, car);
     }
-    async Task DeleteCar()
+
+    private async Task UpdateCar()
     {
-        // Close the Popup
+        SetCarType(CurrentCarType);
+        editedCar.Owner.Email = currentUserEmail;
+
         ShowPopup = false;
-        // Get the user to delete
+
+        await CarService.UpdateAsync(editedCar.Id, editedCar);
     }
-    void ClosePopup()
+
+    private async Task DeleteCar(CarModel car)
     {
         ShowPopup = false;
+
+        await CarService.DeleteAsync(car.Id);
+    }
+
+    private void ClosePopup()
+    {
+        ShowPopup = false;
+    }
+
+    private static List<string> GetCarTypes()
+    {
+        var names = string.Join(",", Enum.GetNames(typeof(CarType)));
+        
+        return names.Split(',').ToList();
+    }
+
+    private void SetCarType(string carTypeName)
+    {
+        if(!Enum.TryParse(typeof(CarType), carTypeName, out object result))
+        {
+            strError += "Select car type";
+            return;
+        }
+
+        editedCar.CarType = (CarType)result;
+    }
+
+    private void SetOwnerEmail(string email)
+    {
+        
     }
 }

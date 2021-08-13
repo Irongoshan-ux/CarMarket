@@ -9,6 +9,7 @@ namespace CarMarket.Data.Car.Domain
     {
         public long Id { get; set; }
         public string Name { get; set; }
+        public string Description { get; set; }
         public CarType CarType { get; set; }
         public ICollection<ImageModel> CarImages { get; set; }
         public UserEntity Owner { get; set; }

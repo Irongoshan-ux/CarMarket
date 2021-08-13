@@ -67,6 +67,13 @@ namespace CarMarket.BusinessLogic.Car.Service
                 throw new CarNotFoundException($"Car with id = {carId} not found");
             }
 
+            if (car.Owner.Email != carToUpdate.Owner.Email)
+            {
+                var newOwner = await _userService.GetByEmailAsync(car.Owner.Email);
+                car.Owner = newOwner;
+            }
+            else car.Owner = null;
+
             return await _carRepository.UpdateAsync(carId, car);
         }
 
