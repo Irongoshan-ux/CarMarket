@@ -64,12 +64,12 @@
                     @if (car.Owner.Email.Equals(context.User.Identity.Name) || context.User.IsInRole("Admin"))
                     {
                         <button class="btn btn-primary"
-                            @onclick="(() => EditCar(car))">
+                            @onclick="() => EditCar(car)">
                             Edit
                         </button>
 
                         <button class="btn btn-danger"
-                            @onclick="(() => DeleteCar(car))">
+                            @onclick="(() => DeleteCar(car, context))">
                             Delete
                         </button>
 
@@ -113,16 +113,6 @@
                     @*<input class="form-control" type="email"
                             placeholder="Owner Email"
                             @bind="editedCar.Owner.Email"/>*@
-                        
-                        @* email always null *@
-                            <select class="form-control"
-                            @bind="currentUserEmail">
-                            <option value="@context.User.Identity.Name">
-                                @context.User.Identity.Name
-                            </option>
-                        </select>
-                          
-
 
                     <select class="form-control"
                             @bind="@CurrentCarType">
@@ -141,23 +131,20 @@
                     <br>
                     <br /><br />
 
-                    @if (string.IsNullOrWhiteSpace(strError))
-                    {
                         @if (editedCar.Id == 0)
                         {
                             <button class="btn btn-primary"
-                            @onclick="CreateCar">
+                            @onclick="() => CreateCar(context)">
                                 Save
                             </button>
                         }
                         else
                         {
                             <button class="btn btn-secondary"
-                            @onclick="UpdateCar">
+                            @onclick="() => UpdateCar(context)">
                                 Update
                             </button>
                         }
-                    }
                     <span style="color:red">@strError</span>
                 </div>
             </div>
@@ -218,14 +205,20 @@
         ShowPopup = true;
     }
 
-    private async Task CreateCar()
+    private async Task CreateCar(AuthenticationState context)
     {
-        SetCarType(CurrentCarType);
-        editedCar.Owner.Email = currentUserEmail;
+        if(!SetCarType(CurrentCarType)) return;
+        if (string.IsNullOrWhiteSpace(editedCar.Name)) strError += "Enter car title";
+        if (editedCar.Price == 0) strError += "Enter price";
 
-        ShowPopup = false;
+        editedCar.Owner.Email = context.User.Identity.Name;
 
-        await CarService.CreateAsync(editedCar);
+        if (string.IsNullOrWhiteSpace(strError))
+        {
+            ShowPopup = false;
+
+            await CarService.CreateAsync(editedCar, context);
+        }
     }
     
     private void EditCar(CarModel updatedCar)
@@ -237,21 +230,25 @@
         ShowPopup = true;
     }
 
-    private async Task UpdateCar()
+    private async Task UpdateCar(AuthenticationState context)
     {
-        SetCarType(CurrentCarType);
-        editedCar.Owner.Email = currentUserEmail;
+        if(!SetCarType(CurrentCarType)) return;
 
-        ShowPopup = false;
+        //editedCar.Owner.Email = ;
 
-        await CarService.UpdateAsync(editedCar.Id, editedCar);
+        if (string.IsNullOrWhiteSpace(strError))
+        {
+            ShowPopup = false;
+
+            await CarService.UpdateAsync(editedCar.Id, editedCar, context);
+        }
     }
 
-    private async Task DeleteCar(CarModel car)
+    private async Task DeleteCar(CarModel car, AuthenticationState context)
     {
         ShowPopup = false;
 
-        await CarService.DeleteAsync(car.Id);
+        await CarService.DeleteAsync(car.Id, context);
     }
 
     private void ClosePopup()
@@ -266,15 +263,19 @@
         return names.Split(',').ToList();
     }
 
-    private void SetCarType(string carTypeName)
+    private bool SetCarType(string carTypeName)
     {
-        if(!Enum.TryParse(typeof(CarType), carTypeName, out object result))
+        strError = string.Empty;
+
+        if (!Enum.TryParse(typeof(CarType), carTypeName, out object result))
         {
             strError += "Select car type";
-            return;
+            return false;
         }
 
         editedCar.CarType = (CarType)result;
+
+        return true;
     }
 
     private void SetOwnerEmail(string email)

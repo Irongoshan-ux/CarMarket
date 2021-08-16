@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using CarMarket.UI.Services.Extensions;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace CarMarket.UI.Services.Car
 {
@@ -16,17 +18,18 @@ namespace CarMarket.UI.Services.Car
             _httpClient = httpClient;
         }
 
-        public async Task<CarModel> CreateAsync(CarModel userModel)
+        public async Task<CarModel> CreateAsync(CarModel userModel, AuthenticationState authorization)
         {
             var response = await _httpClient.PostAsJsonAsync("/api/Car/CreateCar", userModel);
 
             return response.Content.ReadFromJsonAsync<CarModel>().Result;
         }
 
-        public async Task DeleteAsync(long carId)
+        public async Task DeleteAsync(long carId, AuthenticationState authorization)
         {
-            await _httpClient.DeleteAsync("/api/Car/DeleteCar/" + carId);
+            await _httpClient.DeleteAsync("/api/Car/DeleteCar/" + carId, authorization);
         }
+
 
         public async Task<IEnumerable<CarModel>> GetAllAsync()
         {
@@ -53,7 +56,7 @@ namespace CarMarket.UI.Services.Car
             return await _httpClient.GetFromJsonAsync<IEnumerable<CarModel>>($"/api/Car/Search?carName={carName}&carType={carType}");
         }
 
-        public async Task<CarModel> UpdateAsync(long carId, CarModel car)
+        public async Task<CarModel> UpdateAsync(long carId, CarModel car, AuthenticationState authorization)
         {
             var response = await _httpClient.PutAsJsonAsync("/api/Car/UpdateCar/" + carId, car);
 

@@ -1,9 +1,11 @@
 ﻿using CarMarket.Core.User.Domain;
+using CarMarket.Core.User.Service;
 using CarMarket.Server.Infrastructure.Identification.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,12 +20,15 @@ namespace CarMarket.Server.Controllers
         private readonly ILogger<CarController> _logger;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserManager<UserModel> _userManager;
+        private readonly IUserService _userService;
 
         public AdministrationController(
+            IUserService userService,
             RoleManager<IdentityRole> roleManager,
             UserManager<UserModel> userManager,
             ILogger<CarController> logger)
         {
+            _userService = userService;
             _roleManager = roleManager;
             _userManager = userManager;
             _logger = logger;
@@ -32,6 +37,11 @@ namespace CarMarket.Server.Controllers
         [HttpPost("CreateRole")]
         public async Task<IActionResult> CreateRole(CreateRoleViewModel model)
         {
+            if (!await UserIsInAdminRole())
+            {
+                return BadRequest("Access denied");
+            }
+
             if (ModelState.IsValid)
             {
                 var identityRole = new IdentityRole
@@ -55,17 +65,25 @@ namespace CarMarket.Server.Controllers
             return BadRequest($"Role {model.RoleName} already exists.");
         }
 
-        [AllowAnonymous]
         [HttpGet("GetRoles")]
-        public IList<IdentityRole> GetRoles()
+        public async Task<IActionResult> GetRoles()
         {
-            return _roleManager.Roles.ToList();
+            if (!await UserIsInAdminRole())
+            {
+                return BadRequest("Access denied");
+            }
+
+            return Ok(_roleManager.Roles.ToList());
         }
 
-        [AllowAnonymous]
         [HttpGet("GetUsersInRole")]
         public async Task<IActionResult> GetUsersInRole(string roleId)
         {
+            if (!await UserIsInAdminRole())
+            {
+                return BadRequest("Access denied");
+            }
+
             var role = await _roleManager.FindByIdAsync(roleId);
 
             if (role is null)
@@ -95,6 +113,11 @@ namespace CarMarket.Server.Controllers
         [HttpPost("EditUsersInRole")]
         public async Task<IActionResult> EditUsersInRole(List<UserRoleViewModel> model, string roleId)
         {
+            if (!await UserIsInAdminRole())
+            {
+                return BadRequest("Access denied");
+            }
+
             var role = await _roleManager.FindByIdAsync(roleId);
 
             if (role is null)
@@ -122,6 +145,22 @@ namespace CarMarket.Server.Controllers
             }
 
             return Ok(result);
+        }
+
+        private async Task<bool> UserIsInAdminRole()
+        {
+            var currentUser = await GetCurrentUserAsync();
+
+            return await _userManager.IsInRoleAsync(currentUser, "Admin");
+        }
+
+        private Task<UserModel> GetCurrentUserAsync()
+        {
+            HttpContext.Request.Headers.TryGetValue("Authorization", out StringValues userValues);
+
+            var userEmail = userValues.FirstOrDefault().Replace("Bearer ", "");
+
+            return _userService.GetByEmailAsync(userEmail);
         }
     }
 }

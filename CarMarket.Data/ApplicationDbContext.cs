@@ -4,13 +4,14 @@ using CarMarket.Data.Car.Domain;
 using CarMarket.Data.Configuration;
 using CarMarket.Data.User.Domain;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace CarMarket.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext
     {
-        public DbSet<UserEntity> Users { get; set; }
+        //public DbSet<UserEntity> Users { get; set; }
         public DbSet<CarEntity> Cars { get; set; }
         //public DbSet<Role> Roles { get; set; }
         public DbSet<Permission> Permissions { get; set; }
@@ -28,12 +29,12 @@ namespace CarMarket.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfiguration(new UserConfiguration());
-            modelBuilder.ApplyConfiguration(new UserModelConfiguration());
+            //modelBuilder.ApplyConfiguration(new UserConfiguration());
+            //modelBuilder.ApplyConfiguration(new UserModelConfiguration());
             modelBuilder.ApplyConfiguration(new RoleConfiguration());
             modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
-            modelBuilder.ApplyConfiguration(new UserClaimsConfiguration());
-            modelBuilder.ApplyConfiguration(new RoleClaimConfiguration());
+            //modelBuilder.ApplyConfiguration(new UserClaimsConfiguration());
+            //modelBuilder.ApplyConfiguration(new RoleClaimConfiguration());
             modelBuilder.ApplyConfiguration(new PermissonConfiguration());
 
             InitializeUserTable(modelBuilder);

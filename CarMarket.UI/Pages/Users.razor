@@ -5,13 +5,16 @@
 
 @attribute [Authorize(Roles = "Admin")]
 
+<AuthorizeView Context="auth" Roles = "Admin">
+<Authorized>
+
 <h1>Users Controller</h1>
 
 <div class="col-12">
     <h3><b>Add User</b></h3>
     <hr />
 
-<EditForm Model="@newUser" OnValidSubmit="@AddUserAsync">
+<EditForm Model="@newUser" OnValidSubmit="@(() => AddUserAsync(auth))">
         <div class="col-12 row">
             <label class="col-2 font-weight-bold">first name :</label>
             <InputText class="form-control col-3" @bind-Value="newUser.FirstName" placeholder="first name" />
@@ -138,6 +141,8 @@ else
     </div>
 }
 <button class="btn btn-success" @onclick="AddNewUser">Add User</button>
+</Authorized>
+</AuthorizeView>
 
 @code {
 
@@ -161,7 +166,7 @@ else
 
     //private List<Permission> newUserPermissions; TODO: How to get list of permissions and select there?
 
-    private async Task AddUserAsync()
+    private async Task AddUserAsync(AuthenticationState context)
     {
         await Http.PostAsJsonAsync("https://localhost:10001/api/User/CreateUser", newUser);
         await GetUserModelList();

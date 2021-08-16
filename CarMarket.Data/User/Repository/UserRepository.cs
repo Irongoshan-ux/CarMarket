@@ -27,7 +27,6 @@ namespace CarMarket.Data.User.Repository
         {
             var userEntity = await _context.Users
                 .AsNoTracking()
-                //.Include(u => u.Role)
                 .FirstOrDefaultAsync(x => (x.Email == email) && (x.PasswordHash == password));
 
             return _mapper.Map<UserModel>(userEntity);
@@ -80,10 +79,20 @@ namespace CarMarket.Data.User.Repository
             return _mapper.Map<UserModel>(userEntity);
         }
 
-        public async Task<Role> FindUserRoleAsync(string roleName)
+        public async Task<IdentityRole> FindRoleAsync(string roleName)
         {
-            return default;
-            //return await _context.Roles.FirstOrDefaultAsync(r => r.RoleName == roleName);
+            return await _context.Roles.FirstOrDefaultAsync(x => x.Name == roleName);
+        }
+
+        public async Task AddUserToRoleAsync(UserModel user, IdentityRole role)
+        {
+            _context.UserRoles.Add(new IdentityUserRole<string>
+            {
+                RoleId = role.Id,
+                UserId = user.Id
+            });
+
+            await _context.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(string userId, UserModel userModel)

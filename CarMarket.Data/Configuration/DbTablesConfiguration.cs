@@ -16,21 +16,21 @@ namespace CarMarket.Data.Configuration
         }
     }
 
-    public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
-    {
-        public void Configure(EntityTypeBuilder<UserEntity> builder)
-        {
-            builder.HasKey(p => p.Id);
-        }
-    }
+    //public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
+    //{
+    //    public void Configure(EntityTypeBuilder<UserEntity> builder)
+    //    {
+    //        builder.HasKey(p => p.Id);
+    //    }
+    //}
 
-    public class UserModelConfiguration : IEntityTypeConfiguration<UserModel>
-    {
-        public void Configure(EntityTypeBuilder<UserModel> builder)
-        {
-            builder.HasKey(p => p.Id);
-        }
-    }
+    //public class UserModelConfiguration : IEntityTypeConfiguration<UserModel>
+    //{
+    //    public void Configure(EntityTypeBuilder<UserModel> builder)
+    //    {
+    //        builder.HasKey(p => p.Id);
+    //    }
+    //}
 
     public class PermissonConfiguration : IEntityTypeConfiguration<Permission>
     {
@@ -52,7 +52,7 @@ namespace CarMarket.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<IdentityUserRole<string>> builder)
         {
-            builder.HasKey(keys => new { keys.UserId, keys.RoleId });
+            //builder.HasKey(keys => new { keys.UserId, keys.RoleId });
 
             builder.HasData(
                 new IdentityUserRole<string>
@@ -63,21 +63,21 @@ namespace CarMarket.Data.Configuration
         }
     }
 
-    public class RoleClaimConfiguration : IEntityTypeConfiguration<IdentityRoleClaim<string>>
-    {
-        public void Configure(EntityTypeBuilder<IdentityRoleClaim<string>> builder)
-        {
-            builder.HasKey(key => key.Id);
-        }
-    }
+    //public class RoleClaimConfiguration : IEntityTypeConfiguration<IdentityRoleClaim<string>>
+    //{
+    //    public void Configure(EntityTypeBuilder<IdentityRoleClaim<string>> builder)
+    //    {
+    //        builder.HasKey(key => key.Id);
+    //    }
+    //}
 
-    public class UserClaimsConfiguration : IEntityTypeConfiguration<IdentityUserClaim<string>>
-    {
-        public void Configure(EntityTypeBuilder<IdentityUserClaim<string>> builder)
-        {
-            builder.HasKey(p => p.Id);
-        }
-    }
+    //public class UserClaimsConfiguration : IEntityTypeConfiguration<IdentityUserClaim<string>>
+    //{
+    //    public void Configure(EntityTypeBuilder<IdentityUserClaim<string>> builder)
+    //    {
+    //        builder.HasKey(p => p.Id);
+    //    }
+    //}
 
     public class RoleConfiguration : IEntityTypeConfiguration<IdentityRole>
     {

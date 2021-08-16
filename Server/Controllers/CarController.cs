@@ -1,11 +1,13 @@
 using CarMarket.Core.Car.Domain;
 using CarMarket.Core.Car.Exceptions;
 using CarMarket.Core.Car.Service;
+using CarMarket.Core.User.Domain;
 using CarMarket.Core.User.Service;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,11 +22,13 @@ namespace CarMarket.Server.Controllers
         private readonly ILogger<CarController> _logger;
         private readonly ICarService _carService;
         private readonly IUserService _userService;
+        private readonly UserManager<UserModel> _userManager;
 
-        public CarController(ICarService carService, IUserService userService, ILogger<CarController> logger)
+        public CarController(ICarService carService, IUserService userService, UserManager<UserModel> userManager, ILogger<CarController> logger)
         {
             _carService = carService;
             _userService = userService;
+            _userManager = userManager;
             _logger = logger;
         }
 
@@ -103,12 +107,10 @@ namespace CarMarket.Server.Controllers
         [Route("DeleteCar/{carId:long}")]
         public async Task<IActionResult> DeleteCar(long carId)
         {
-            var currentUser = HttpContext.User;
-
-            var user = await _userService.GetByEmailAsync(currentUser.Identity.Name);
+            var user = await GetCurrentUserAsync();
 
             if ((user != null) && ((user.Id == (await _carService.GetAsync(carId)).Owner.Id) ||
-                currentUser.IsInRole("Admin")))
+                await _userManager.IsInRoleAsync(user, "Admin")))
             {
                 try
                 {
@@ -133,7 +135,7 @@ namespace CarMarket.Server.Controllers
         [Route("CreateCar")]
         public async Task<IActionResult> CreateCar([FromBody] CarModel carModel)
         {
-            if (carModel is null)
+            if (carModel is null || carModel.Owner is null)
             {
                 return BadRequest();
             }
@@ -160,9 +162,16 @@ namespace CarMarket.Server.Controllers
         [HttpPut("UpdateCar/{carId:long}")]
         public async Task<ActionResult<CarModel>> UpdateCar(long carId, CarModel car)
         {
+            var user = await GetCurrentUserAsync();
+
             if (carId != car.Id)
             {
                 return BadRequest("Car ID mismatch");
+            }
+
+            if((user != null) && (car.Owner.Email != user.Email || !await _userManager.IsInRoleAsync(user, "Admin")))
+            {
+                return BadRequest("Access denied.");
             }
 
             try
@@ -178,6 +187,15 @@ namespace CarMarket.Server.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     "Error updating car record");
             }
+        }
+
+        private Task<UserModel> GetCurrentUserAsync()
+        {
+            HttpContext.Request.Headers.TryGetValue("Authorization", out StringValues userValues);
+
+            var userEmail = userValues.FirstOrDefault().Replace("Bearer ", "");
+
+            return _userService.GetByEmailAsync(userEmail);
         }
     }
 }

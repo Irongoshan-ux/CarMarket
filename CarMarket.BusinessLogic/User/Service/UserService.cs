@@ -115,9 +115,9 @@ namespace CarMarket.BusinessLogic.User.Service
             return user;
         }
 
-        public async Task<Role> GetUserRoleAsync(string roleName)
+        public async Task<IdentityRole> GetRoleAsync(string roleName)
         {
-            return await _userRepository.FindUserRoleAsync(roleName);
+            return await _userRepository.FindRoleAsync(roleName);
         }
 
         public async Task UpdateUser(string userId, UserModel userModel)
@@ -135,6 +135,19 @@ namespace CarMarket.BusinessLogic.User.Service
         public async Task<DataResult<UserModel>> GetByPageAsync(int skip = 0, int take = 5)
         {
             return await _userRepository.FindByPageAsync(skip, take);
+        }
+
+        public async Task AddUserToRoleAsync(UserModel user, string roleName)
+        {
+            if (string.IsNullOrEmpty(user.Id))
+            {
+                var tempUser = await _userRepository.FindByEmailAsync(user.Email);
+                user.Id = tempUser.Id;
+            }
+
+            var role = await _userRepository.FindRoleAsync(roleName);
+
+            await _userRepository.AddUserToRoleAsync(user, role);
         }
     }
 }

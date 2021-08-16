@@ -83,7 +83,7 @@ namespace CarMarket.Server.Controllers
 
                 await _userService.CreateAsync(user);
 
-                var result = await _userManager.AddToRoleAsync(user, "User"); // Description: "Optimistic concurrency failure, object has been modified."
+                await _userService.AddUserToRoleAsync(user, "User"); // Description: "Optimistic concurrency failure, object has been modified."
 
                 await AuthorizeAsync(user);
             }
