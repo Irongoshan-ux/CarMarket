@@ -1,5 +1,7 @@
 ﻿@page "/admin/users"
+@using CarMarket.UI.Pages
 @using CarMarket.Core.User.Domain
+@using CarMarket.UI.Data
 @using Microsoft.AspNetCore.Authorization
 @inject HttpClient Http
 
@@ -144,8 +146,9 @@ else
 </Authorized>
 </AuthorizeView>
 
-@code {
+<BreadCrumb BreadCrumbData="Index.BreadCrumbDatas"></BreadCrumb>
 
+@code {
     private List<UserModel> users;
     private UserModel user;
     private UserModel newUser = new UserModel();
@@ -174,6 +177,12 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        Index.BreadCrumbDatas.Add(new BreadCrumbData()
+        {
+            Text = "Users",
+            Url = "/admin/users"
+        });
+
         await GetUserModelList();
     }
 
