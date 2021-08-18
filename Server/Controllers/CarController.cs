@@ -3,6 +3,7 @@ using CarMarket.Core.Car.Exceptions;
 using CarMarket.Core.Car.Service;
 using CarMarket.Core.User.Domain;
 using CarMarket.Core.User.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -189,13 +192,21 @@ namespace CarMarket.Server.Controllers
             }
         }
 
-        private Task<UserModel> GetCurrentUserAsync()
+        private Task<UserModel> GetCurrentUserAsync() => _userService.GetByEmailAsync(GetCurrentUserEmailAsync());
+
+        private string GetCurrentUserEmailAsync()
         {
-            HttpContext.Request.Headers.TryGetValue("Authorization", out StringValues userValues);
+            HttpContext.Request.Headers.TryGetValue("Authorization", out StringValues values);
 
-            var userEmail = userValues.FirstOrDefault().Replace("Bearer ", "");
+            var token = values.FirstOrDefault().Replace("Bearer ", "");
 
-            return _userService.GetByEmailAsync(userEmail);
+            var handler = new JwtSecurityTokenHandler();
+            var jsonToken = handler.ReadToken(token);
+            var tokenS = jsonToken as JwtSecurityToken;
+
+            var userEmail = tokenS.Claims.First(claim => claim.Type == "sub").Value;
+
+            return userEmail;
         }
     }
 }

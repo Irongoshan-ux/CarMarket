@@ -1,4 +1,6 @@
+using CarMarket.UI.Services;
 using CarMarket.UI.Services.Car;
+using CarMarket.UI.Services.User;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,7 +21,19 @@ namespace CarMarket.UI
             //builder.Services.AddScoped<IHttpService<CarModel, long>, HttpCarService>();
             //builder.Services.AddScoped<IHttpService<UserModel, string>, HttpUserService>();
 
+            builder.Services.AddScoped<HttpAccessTokenSetter>();
+
+            builder.Services.AddHttpClient("API", client =>
+            {
+                client.BaseAddress = new Uri(API_BASE_ADDRESS);
+            });
+
             builder.Services.AddHttpClient<IHttpCarService, HttpCarService>(client =>
+            {
+                client.BaseAddress = new Uri(API_BASE_ADDRESS);
+            });
+
+            builder.Services.AddHttpClient<IHttpUserService, HttpUserService>(client =>
             {
                 client.BaseAddress = new Uri(API_BASE_ADDRESS);
             });

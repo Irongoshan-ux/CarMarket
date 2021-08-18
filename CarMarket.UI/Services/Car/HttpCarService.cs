@@ -5,29 +5,34 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using CarMarket.UI.Services.Extensions;
-using Microsoft.AspNetCore.Components.Authorization;
-
 namespace CarMarket.UI.Services.Car
 {
     public class HttpCarService : IHttpCarService
     {
         private readonly HttpClient _httpClient;
+        private readonly HttpAccessTokenSetter _httpAccessTokenSetter;
 
-        public HttpCarService(HttpClient httpClient)
+        public HttpCarService(HttpClient httpClient, HttpAccessTokenSetter httpAccessTokenSetter)
         {
             _httpClient = httpClient;
+            _httpAccessTokenSetter = httpAccessTokenSetter;
+            _httpAccessTokenSetter.HttpClient = _httpClient;
         }
 
-        public async Task<CarModel> CreateAsync(CarModel userModel, AuthenticationState authorization)
+        public async Task<CarModel> CreateAsync(CarModel userModel)
         {
+            await _httpAccessTokenSetter.AddAccessTokenAsync();
+
             var response = await _httpClient.PostAsJsonAsync("/api/Car/CreateCar", userModel);
 
             return response.Content.ReadFromJsonAsync<CarModel>().Result;
         }
 
-        public async Task DeleteAsync(long carId, AuthenticationState authorization)
+        public async Task DeleteAsync(long carId)
         {
-            await _httpClient.DeleteAsync("/api/Car/DeleteCar/" + carId, authorization);
+            await _httpAccessTokenSetter.AddAccessTokenAsync();
+
+            await _httpClient.DeleteAsync("/api/Car/DeleteCar/" + carId);
         }
 
 
@@ -56,8 +61,10 @@ namespace CarMarket.UI.Services.Car
             return await _httpClient.GetFromJsonAsync<IEnumerable<CarModel>>($"/api/Car/Search?carName={carName}&carType={carType}");
         }
 
-        public async Task<CarModel> UpdateAsync(long carId, CarModel car, AuthenticationState authorization)
+        public async Task<CarModel> UpdateAsync(long carId, CarModel car)
         {
+            await _httpAccessTokenSetter.AddAccessTokenAsync();
+
             var response = await _httpClient.PutAsJsonAsync("/api/Car/UpdateCar/" + carId, car);
 
             return response.Content.ReadFromJsonAsync<CarModel>().Result;

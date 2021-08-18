@@ -1,6 +1,5 @@
 ﻿using CarMarket.Core.DataResult;
 using CarMarket.Core.User.Domain;
-using Microsoft.AspNetCore.Components.Authorization;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -12,37 +11,49 @@ namespace CarMarket.UI.Services.User
     public class HttpUserService : IHttpUserService
     {
         private readonly HttpClient _httpClient;
+        private readonly HttpAccessTokenSetter _httpAccessTokenSetter;
 
-        public HttpUserService(HttpClient httpClient)
+        public HttpUserService(HttpClient httpClient, HttpAccessTokenSetter httpAccessTokenSetter)
         {
             _httpClient = httpClient;
+            _httpAccessTokenSetter = httpAccessTokenSetter;
+            _httpAccessTokenSetter.HttpClient = _httpClient;
         }
 
         public async Task AddPermissionAsync(string userId, params Permission[] permissions)
         {
+            await _httpAccessTokenSetter.AddAccessTokenAsync();
+
             await _httpClient.PostAsJsonAsync($"/api/User/ChangeUserPermission?userId={userId}", permissions);
         }
 
         public async Task ChangePermissionAsync(string userId, Permission replaceablePermission, Permission substitutePermission)
         {
-            await _httpClient.PostAsJsonAsync($"/api/User/ChangeUserPermission?userId={userId}&replaceablePermission={replaceablePermission}&substitutePermission={substitutePermission}", userId);
+            await _httpAccessTokenSetter.AddAccessTokenAsync();
 
+            await _httpClient.PostAsJsonAsync($"/api/User/ChangeUserPermission?userId={userId}&replaceablePermission={replaceablePermission}&substitutePermission={substitutePermission}", userId);
         }
 
-        public async Task<UserModel> CreateAsync(UserModel model, AuthenticationState authorization)
+        public async Task<UserModel> CreateAsync(UserModel model)
         {
+            await _httpAccessTokenSetter.AddAccessTokenAsync();
+
             var response = await _httpClient.PostAsJsonAsync("/api/User/CreateUser", model);
 
             return response.Content.ReadFromJsonAsync<UserModel>().Result;
         }
 
-        public async Task DeleteAsync(string id, AuthenticationState authorization)
+        public async Task DeleteAsync(string id)
         {
-            await _httpClient.DeleteAsync($"/api/User/DeleteUser/{id}", authorization);
+            await _httpAccessTokenSetter.AddAccessTokenAsync();
+
+            await _httpClient.DeleteAsync($"/api/User/DeleteUser/{id}");
         }
 
         public async Task DeletePermissionAsync(string userId, Permission permission)
         {
+            await _httpAccessTokenSetter.AddAccessTokenAsync();
+
             await _httpClient.DeleteAsync($"/api/User/DeleteUserPermission/{userId}");
         }
 
@@ -63,11 +74,13 @@ namespace CarMarket.UI.Services.User
 
         public async Task<DataResult<UserModel>> GetByPageAsync(int skip, int take)
         {
-            return await _httpClient.GetFromJsonAsync<DataResult<UserModel>>($"/api/User/GetCarsByPage?skip={skip}&take={take}");
+            return await _httpClient.GetFromJsonAsync<DataResult<UserModel>>($"/api/User/GetUsersByPage?skip={skip}&take={take}");
         }
 
-        public async Task<UserModel> UpdateAsync(string id, UserModel updatedModel, AuthenticationState authorization)
+        public async Task<UserModel> UpdateAsync(string id, UserModel updatedModel)
         {
+            await _httpAccessTokenSetter.AddAccessTokenAsync();
+
             var response = await _httpClient.PutAsJsonAsync("/api/User/UpdateUser/" + id, updatedModel);
 
             return response.Content.ReadFromJsonAsync<UserModel>().Result;

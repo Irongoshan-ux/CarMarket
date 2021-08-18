@@ -69,7 +69,7 @@
                         </button>
 
                         <button class="btn btn-danger"
-                            @onclick="(() => DeleteCar(car, context))">
+                            @onclick="(() => DeleteCar(car))">
                             Delete
                         </button>
 
@@ -141,7 +141,7 @@
                         else
                         {
                             <button class="btn btn-secondary"
-                            @onclick="() => UpdateCar(context)">
+                            @onclick="() => UpdateCar()">
                                 Update
                             </button>
                         }
@@ -217,7 +217,7 @@
         {
             ShowPopup = false;
 
-            await CarService.CreateAsync(editedCar, context);
+            await CarService.CreateAsync(editedCar);
         }
     }
     
@@ -230,7 +230,7 @@
         ShowPopup = true;
     }
 
-    private async Task UpdateCar(AuthenticationState context)
+    private async Task UpdateCar()
     {
         if(!SetCarType(CurrentCarType)) return;
 
@@ -240,15 +240,15 @@
         {
             ShowPopup = false;
 
-            await CarService.UpdateAsync(editedCar.Id, editedCar, context);
+            await CarService.UpdateAsync(editedCar.Id, editedCar);
         }
     }
 
-    private async Task DeleteCar(CarModel car, AuthenticationState context)
+    private async Task DeleteCar(CarModel car)
     {
         ShowPopup = false;
 
-        await CarService.DeleteAsync(car.Id, context);
+        await CarService.DeleteAsync(car.Id);
     }
 
     private void ClosePopup()
@@ -276,10 +276,5 @@
         editedCar.CarType = (CarType)result;
 
         return true;
-    }
-
-    private void SetOwnerEmail(string email)
-    {
-        
     }
 }
