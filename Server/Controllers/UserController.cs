@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using System;
+using CarMarket.Server.Services;
 
 namespace CarMarket.Server.Controllers
 {
@@ -105,5 +106,7 @@ namespace CarMarket.Server.Controllers
         }
 
         private string EncryptPassword(string password) => Utility.Encrypt(password);
+
+        private async Task<UserModel> GetCurrentUserAsync() => await UserHelper.GetCurrentUserAsync(_userService, HttpContext);
     }
 }

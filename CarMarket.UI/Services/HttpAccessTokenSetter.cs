@@ -16,6 +16,9 @@ namespace CarMarket.UI.Services
 
         public async Task AddAccessTokenAsync()
         {
+            if (HttpClient.DefaultRequestHeaders.Contains("Authorization"))
+                return;
+
             var tokenResult = await _tokenProvider.RequestAccessToken(new AccessTokenRequestOptions());
 
             if (tokenResult.TryGetToken(out var token))

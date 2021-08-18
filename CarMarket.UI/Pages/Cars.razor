@@ -9,26 +9,7 @@
 
 <h1>Cars Controller</h1>
 
-<AuthorizeView>
-    <Authorized>
-        <p>Add car</p>
-
-        <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
-        <br>
-        <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
-        <br>
-        <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
-        <br>
-
-        <input @bind="newCarName" placeholder="Enter car name" />
-        <input @bind="newCarDescription" placeholder="Enter description" />
-        <input @bind="newCarPrice" placeholder="Enter price" />
-        <input @bind="newCarType" placeholder="Enter car type name" />
-        <input @bind="newCarOwner" placeholder=@context.User.Identity.Name />
-        
-        <button @onclick="AddCar">Add car</button>
-    </Authorized>
-</AuthorizeView>
+<button class="btn btn-success" @onclick="AddCar">Add Car</button>
 
 <p>All cars</p>
     <GridView ItemType="car" ApiGetDataLink="https://localhost:10001/api/Car/GetCarsByPage">
@@ -50,7 +31,14 @@
         <GridRow Context="car">
             <td>
                 <NavLink href=@string.Format("/cars/cardetail/{0}", car.Id)>
-                    <img src="@ImageService.ConvertImageToDisplay(car.CarImages.FirstOrDefault())" width="200px" />
+                @if (car.CarImages.Count > 0)
+                {
+                    <img src="@ImageService.ConvertImageToDisplay(car.CarImages.FirstOrDefault())" height ="150px" />
+                }
+                else
+                {
+                    <img src="https://thumbs.dreamstime.com/z/no-image-available-icon-flat-vector-no-image-available-icon-flat-vector-illustration-132482953.jpg" height="150px" />
+                }
                 </NavLink>
             </td>
             <td>@car.Id</td>
@@ -72,11 +60,6 @@
                             @onclick="(() => DeleteCar(car))">
                             Delete
                         </button>
-
-                        @*<th>
-                            <a style="text-underline-position:below; cursor:pointer; color:blue" @onclick="(() => EditCar(car))">Edit</a> |
-                            <a style="text-underline-position:below; cursor:pointer; color:blue" @onclick="(() => DeleteCar(car.Id))">Delete</a>
-                        </th>*@
                     }
                 </Authorized>
             </AuthorizeView>
@@ -87,6 +70,7 @@
 <Authorized>
 @if (ShowPopup)
 {
+        @SetUpUserEmail(context);
     <!-- This is the popup to create or edit a car -->
     <div class="modal" tabindex="-1" style="display:block" role="dialog">
         <div class="modal-dialog">
@@ -110,9 +94,9 @@
                     <input class="form-control" type="number"
                             placeholder="Price"
                             @bind="editedCar.Price" />
-                    @*<input class="form-control" type="email"
+                    <input class="form-control" type="email"
                             placeholder="Owner Email"
-                            @bind="editedCar.Owner.Email"/>*@
+                            @bind="@CurrentUserEmail"/>
 
                     <select class="form-control"
                             @bind="@CurrentCarType">
@@ -151,7 +135,6 @@
         </div>
     </div>
 }
-<button class="btn btn-success" @onclick="AddCar">Add Car</button>
 </Authorized>
 </AuthorizeView>
 
@@ -160,20 +143,21 @@
     public IHttpCarService CarService { get; set; }
 
     private CarModel car;
-    private string newCarName;
-    private string newCarDescription;
-    private string newCarOwner;
-    private int newCarPrice;
-    private CarType newCarType;
-    private string currentUserEmail;
-
     private CarModel editedCar = new();
     private List<string> Options = GetCarTypes();
 
     private string strError = "";
     private bool ShowPopup = false;
     private string TitleContext { get; set; }
-    private string CurrentCarType { get; set; }
+    private string CurrentCarType { get; set; } = "Sedan";
+    private string CurrentUserEmail { get; set; }
+
+    private object SetUpUserEmail(AuthenticationState context)
+    {
+        CurrentUserEmail = context.User.Identity.Name;
+
+        return CurrentUserEmail;
+    }
 
     private async Task HandleFilesSelected(IFileListEntry[] files)
     {
@@ -211,7 +195,7 @@
         if (string.IsNullOrWhiteSpace(editedCar.Name)) strError += "Enter car title";
         if (editedCar.Price == 0) strError += "Enter price";
 
-        editedCar.Owner.Email = context.User.Identity.Name;
+        editedCar.Owner.Email = CurrentUserEmail;
 
         if (string.IsNullOrWhiteSpace(strError))
         {
@@ -234,7 +218,7 @@
     {
         if(!SetCarType(CurrentCarType)) return;
 
-        //editedCar.Owner.Email = ;
+        editedCar.Owner.Email = CurrentUserEmail;
 
         if (string.IsNullOrWhiteSpace(strError))
         {

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-using CarMarket.UI.Services.Extensions;
 namespace CarMarket.UI.Services.Car
 {
     public class HttpCarService : IHttpCarService
@@ -41,9 +40,11 @@ namespace CarMarket.UI.Services.Car
             return await _httpClient.GetFromJsonAsync<IEnumerable<CarModel>>("/api/Car/GetCars");
         }
 
-        public async Task<IEnumerable<CarModel>> GetAllUserCarsAsync(long userId)
+        public async Task<IEnumerable<CarModel>> GetAllUserCarsByTokenAsync()
         {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<CarModel>>("/api/Car/GetAllUserCars/" + userId);
+            await _httpAccessTokenSetter.AddAccessTokenAsync();
+
+            return await _httpClient.GetFromJsonAsync<IEnumerable<CarModel>>("/api/Car/GetAllUserCars");
         }
 
         public async Task<CarModel> GetAsync(long id)

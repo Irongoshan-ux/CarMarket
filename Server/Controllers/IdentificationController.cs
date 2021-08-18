@@ -2,6 +2,7 @@
 using CarMarket.Core.User.Domain;
 using CarMarket.Core.User.Service;
 using CarMarket.Server.Infrastructure.Identification.Models;
+using CarMarket.Server.Services;
 using IdentityServer4;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Authentication;
@@ -111,5 +112,7 @@ namespace CarMarket.Server.Controllers
         }
         
         private string EncryptPassword(string password) => Utility.Encrypt(password);
+
+        private async Task<UserModel> GetCurrentUserAsync() => await UserHelper.GetCurrentUserAsync(_userService, HttpContext);
     }
 }

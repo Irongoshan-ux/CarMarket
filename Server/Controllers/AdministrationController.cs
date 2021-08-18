@@ -1,6 +1,7 @@
 ﻿using CarMarket.Core.User.Domain;
 using CarMarket.Core.User.Service;
 using CarMarket.Server.Infrastructure.Identification.Models;
+using CarMarket.Server.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -154,13 +155,6 @@ namespace CarMarket.Server.Controllers
             return await _userManager.IsInRoleAsync(currentUser, "Admin");
         }
 
-        private Task<UserModel> GetCurrentUserAsync()
-        {
-            HttpContext.Request.Headers.TryGetValue("Authorization", out StringValues userValues);
-
-            var userEmail = userValues.FirstOrDefault().Replace("Bearer ", "");
-
-            return _userService.GetByEmailAsync(userEmail);
-        }
+        private async Task<UserModel> GetCurrentUserAsync() => await UserHelper.GetCurrentUserAsync(_userService, HttpContext);
     }
 }

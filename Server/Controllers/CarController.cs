@@ -3,6 +3,7 @@ using CarMarket.Core.Car.Exceptions;
 using CarMarket.Core.Car.Service;
 using CarMarket.Core.User.Domain;
 using CarMarket.Core.User.Service;
+using CarMarket.Server.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -156,57 +157,61 @@ namespace CarMarket.Server.Controllers
             }
         }
 
-        //[HttpGet("GetAllUserCars/{userId:long}")]
-        //public async Task<ActionResult<IEnumerable<CarModel>>> GetAllUserCars(string userId)
-        //{
-        //    return Ok(await _carService.GetAllUserCarsAsync(userId));
-        //}
+        [HttpGet("GetAllUserCars")]
+        public async Task<ActionResult<IEnumerable<CarModel>>> GetAllUserCars()
+        {
+            var user = await GetCurrentUserAsync();
+
+            try
+            {
+                var result = await _carService.GetAllUserCarsAsync(user.Id);
+
+                if (result is null)
+                {
+                    return NotFound($"Specified user with email={user.Email} haven't any cars.");
+                }
+
+                return Ok(result);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "Error retrieving data from the database");
+            }
+
+        }
 
         [HttpPut("UpdateCar/{carId:long}")]
         public async Task<ActionResult<CarModel>> UpdateCar(long carId, CarModel car)
         {
-            var user = await GetCurrentUserAsync();
+            var user = await GetCurrentUserAsync(); 
 
             if (carId != car.Id)
             {
                 return BadRequest("Car ID mismatch");
             }
 
-            if((user != null) && (car.Owner.Email != user.Email || !await _userManager.IsInRoleAsync(user, "Admin")))
+            if ((user != null) && ((user.Id == (await _carService.GetAsync(carId)).Owner.Id) ||
+                await _userManager.IsInRoleAsync(user, "Admin")))
             {
-                return BadRequest("Access denied.");
+                try
+                {
+                    return await _carService.UpdateCarAsync(carId, car);
+                }
+                catch (CarNotFoundException e)
+                {
+                    return NotFound(e.Message);
+                }
+                catch (Exception)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError,
+                        "Error updating car record");
+                }
             }
 
-            try
-            {
-                return await _carService.UpdateCarAsync(carId, car);
-            }
-            catch (CarNotFoundException e)
-            {
-                return NotFound(e.Message);
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                    "Error updating car record");
-            }
+            return BadRequest("Access denied.");
         }
 
-        private Task<UserModel> GetCurrentUserAsync() => _userService.GetByEmailAsync(GetCurrentUserEmailAsync());
-
-        private string GetCurrentUserEmailAsync()
-        {
-            HttpContext.Request.Headers.TryGetValue("Authorization", out StringValues values);
-
-            var token = values.FirstOrDefault().Replace("Bearer ", "");
-
-            var handler = new JwtSecurityTokenHandler();
-            var jsonToken = handler.ReadToken(token);
-            var tokenS = jsonToken as JwtSecurityToken;
-
-            var userEmail = tokenS.Claims.First(claim => claim.Type == "sub").Value;
-
-            return userEmail;
-        }
+        private async Task<UserModel> GetCurrentUserAsync() => await UserHelper.GetCurrentUserAsync(_userService, HttpContext);
     }
 }

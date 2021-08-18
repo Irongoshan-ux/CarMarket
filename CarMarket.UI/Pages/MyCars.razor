@@ -1,0 +1,46 @@
+﻿@page "/myCars"
+@using CarMarket.BusinessLogic.Image.Service
+@using CarMarket.Core.Car.Domain
+@using CarMarket.UI.Services.Car
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize(Roles = "Admin,User")]
+
+<p>My cars</p>
+    <GridView ItemType="car" ApiGetDataLink="https://localhost:10001/api/Car/GetAllUserCars">
+            <GridColumns>
+                <GridColumn ColumnTitle="Image"></GridColumn>
+                <GridColumn ColumnTitle="Title"></GridColumn>
+                <GridColumn ColumnTitle="Car type"></GridColumn>
+                <GridColumn ColumnTitle="Description"></GridColumn>
+                <GridColumn ColumnTitle="Price"></GridColumn>
+            </GridColumns>
+
+        <GridRow Context="car">
+            <td>
+                <NavLink href=@string.Format("/cars/cardetail/{0}", car.Id)>
+                @if (car.CarImages.Count > 0)
+                {
+                    <img src="@ImageService.ConvertImageToDisplay(car.CarImages.FirstOrDefault())" height ="150px" />
+                }
+                else
+                {
+                    <img src="https://thumbs.dreamstime.com/z/no-image-available-icon-flat-vector-no-image-available-icon-flat-vector-illustration-132482953.jpg" height="150px" />
+                }
+                </NavLink>
+            </td>
+            <td>@car.Id</td>
+            <td>@car.Name</td>
+            <td>@car.CarType</td>
+            <td>@car.Description</td>
+            <td>@car.Owner.Email</td>
+            <td>@car.Price</td>
+        </GridRow>
+    </GridView>
+
+@code {
+    [Inject]
+    public IHttpCarService CarService { get; set; }
+
+    private CarModel car;
+}
