@@ -11,9 +11,9 @@ namespace CarMarket.Server.Services
     public class UserHelper
     {
         public static Task<UserModel> GetCurrentUserAsync(IUserService userService, HttpContext context) =>
-            userService.GetByEmailAsync(GetCurrentUserEmailAsync(context));
+            userService.GetByEmailAsync(GetCurrentUserEmail(context));
 
-        private static string GetCurrentUserEmailAsync(HttpContext context)
+        private static string GetCurrentUserEmail(HttpContext context)
         {
             context.Request.Headers.TryGetValue("Authorization", out StringValues values);
 

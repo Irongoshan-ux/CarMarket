@@ -22,7 +22,6 @@
             <GridColumn ColumnTitle="FirstName"></GridColumn>
             <GridColumn ColumnTitle="LastName"></GridColumn>
             <GridColumn ColumnTitle="Email"></GridColumn>
-            <GridColumn ColumnTitle="Role"></GridColumn>
             <GridColumn ColumnTitle="Encrypted Password"></GridColumn>
         </GridColumns>
 
@@ -66,10 +65,10 @@
 
                     <select class="form-control"
                             @bind="@CurrentUserRole">
-                        @foreach (var option in Options)
+                        @foreach (var role in UserRoles)
                         {
-                            <option value="@option">
-                                @option
+                            <option value="@role">
+                                @role
                             </option>
                         }
                     </select>
@@ -112,13 +111,13 @@
     private UserModel newUser = new UserModel();
 
     UserModel editedUser = new();
-    string CurrentUserRole { get; set; } = "User";
-    List<string> Options = new() { "User", "Admin" };
+    static List<string> UserRoles = GetUserRolesSelection();
+    string CurrentUserRole { get; set; } = UserRoles.FirstOrDefault();
     string strError = "";
     bool ShowPopup = false;
     string TitleContext { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         BreadCrumbDatas = new List<BreadCrumbData>();
 
@@ -133,7 +132,8 @@
     {
         editedUser = new()
         {
-            Id = null
+            Id = null,
+            Role = new()
         };
 
         TitleContext = "Add new user";
@@ -144,10 +144,11 @@
     {
         strError = string.Empty;
 
-        if (string.IsNullOrWhiteSpace(editedUser.FirstName)) strError += "Enter user firstname";
-        if (string.IsNullOrWhiteSpace(editedUser.LastName)) strError += "Enter user lastname";
-        if (string.IsNullOrWhiteSpace(editedUser.Email)) strError += "Enter user email";
-        if (string.IsNullOrWhiteSpace(editedUser.PasswordHash)) strError += "Enter user password";
+        if(!SetUserRole(CurrentUserRole)) return;
+        if (string.IsNullOrWhiteSpace(editedUser.FirstName)) strError += "\nEnter user firstname";
+        if (string.IsNullOrWhiteSpace(editedUser.LastName)) strError += "\nEnter user lastname";
+        if (string.IsNullOrWhiteSpace(editedUser.Email)) strError += "\nEnter user email";
+        if (string.IsNullOrWhiteSpace(editedUser.PasswordHash)) strError += "\nEnter user password";
 
         if (string.IsNullOrWhiteSpace(strError))
         {
@@ -168,6 +169,9 @@
 
     private async Task UpdateUser()
     {
+        strError = string.Empty;
+
+        if(!SetUserRole(CurrentUserRole)) return;
         if (string.IsNullOrWhiteSpace(strError))
         {
             ShowPopup = false;
@@ -186,5 +190,32 @@
     private void ClosePopup()
     {
         ShowPopup = false;
+    }
+
+    private static List<string> GetUserRolesSelection()
+    {
+        var names = string.Join(",", Enum.GetNames(typeof(UserRole)));
+
+        var userRoles = new List<string>()
+        {
+            "Select user role",
+        };
+
+        userRoles.AddRange(names.Split(',').ToList());
+
+        return userRoles;
+    }
+
+    private bool SetUserRole(string userRoleName)
+    {
+        if (!Enum.TryParse(typeof(UserRole), userRoleName, out object result))
+        {
+            strError += "\nSelect user role";
+            return false;
+        }
+
+        editedUser.Role.Name = ((UserRole)result).ToString();
+
+        return true;
     }
 }

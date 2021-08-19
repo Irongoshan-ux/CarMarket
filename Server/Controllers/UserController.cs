@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using System;
 using CarMarket.Server.Services;
+using Microsoft.AspNetCore.Identity;
 
 namespace CarMarket.Server.Controllers
 {
@@ -16,10 +17,12 @@ namespace CarMarket.Server.Controllers
     {
         private readonly ILogger<UserController> _logger;
         private readonly IUserService _userService;
+        private readonly UserManager<UserModel> _userManager;
 
-        public UserController(IUserService userService, ILogger<UserController> logger)
+        public UserController(IUserService userService, UserManager<UserModel> userManager, ILogger<UserController> logger)
         {
             _userService = userService;
+            _userManager = userManager;
             _logger = logger;
         }
 
@@ -89,7 +92,11 @@ namespace CarMarket.Server.Controllers
             if (userId == default)
                 return BadRequest(userModel + " is invalid");
 
-            return Ok(userModel);
+            var createdUser = await _userService.GetAsync(userId);
+
+            await _userService.AddUserToRoleAsync(createdUser, userModel.Role.Name);
+
+            return Ok(createdUser);
         }
 
         [HttpPut("UpdateUser/{userId}")]

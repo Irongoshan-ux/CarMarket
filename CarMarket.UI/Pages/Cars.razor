@@ -9,7 +9,9 @@
 
 <h1>Cars Controller</h1>
 
+<AuthorizeView>
 <button class="btn btn-success" @onclick="AddCar">Add Car</button>
+</AuthorizeView>
 
 <p>All cars</p>
     <GridView ItemType="car" ApiGetDataLink="https://localhost:10001/api/Car/GetCarsByPage">
@@ -144,12 +146,12 @@
 
     private CarModel car;
     private CarModel editedCar = new();
-    private List<string> Options = GetCarTypes();
+    private static List<string> Options = GetCarTypesSelection();
 
     private string strError = "";
     private bool ShowPopup = false;
     private string TitleContext { get; set; }
-    private string CurrentCarType { get; set; } = "Sedan";
+    private string CurrentCarType { get; set; } = Options.FirstOrDefault();
     private string CurrentUserEmail { get; set; }
 
     private object SetUpUserEmail(AuthenticationState context)
@@ -174,7 +176,7 @@
                 ImageTitle = file.Name
             });
         }
-        else strError += $"File {file.Name} not supported.\n";
+        else strError += $"\nFile {file.Name} is not supported.\n";
     }
 
     private void AddCar()
@@ -191,9 +193,11 @@
 
     private async Task CreateCar(AuthenticationState context)
     {
+        strError = string.Empty;
+
         if(!SetCarType(CurrentCarType)) return;
-        if (string.IsNullOrWhiteSpace(editedCar.Name)) strError += "Enter car title";
-        if (editedCar.Price == 0) strError += "Enter price";
+        if (string.IsNullOrWhiteSpace(editedCar.Name)) strError += "\nEnter car title";
+        if (editedCar.Price == 0) strError += "\nEnter price";
 
         editedCar.Owner.Email = CurrentUserEmail;
 
@@ -216,6 +220,8 @@
 
     private async Task UpdateCar()
     {
+        strError = string.Empty;
+
         if(!SetCarType(CurrentCarType)) return;
 
         editedCar.Owner.Email = CurrentUserEmail;
@@ -240,20 +246,25 @@
         ShowPopup = false;
     }
 
-    private static List<string> GetCarTypes()
+    private static List<string> GetCarTypesSelection()
     {
         var names = string.Join(",", Enum.GetNames(typeof(CarType)));
-        
-        return names.Split(',').ToList();
+
+        var carTypes = new List<string>()
+        {
+            "Select car type",
+        };
+
+        carTypes.AddRange(names.Split(',').ToList());
+
+        return carTypes;
     }
 
     private bool SetCarType(string carTypeName)
     {
-        strError = string.Empty;
-
         if (!Enum.TryParse(typeof(CarType), carTypeName, out object result))
         {
-            strError += "Select car type";
+            strError += "\nSelect car type";
             return false;
         }
 
