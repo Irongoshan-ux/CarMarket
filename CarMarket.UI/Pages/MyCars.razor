@@ -7,18 +7,29 @@
 @attribute [Authorize(Roles = "Admin,User")]
 
 <p>My cars</p>
-    <GridView ItemType="car" ApiGetDataLink="https://localhost:10001/api/Car/GetAllUserCars">
-            <GridColumns>
-                <GridColumn ColumnTitle="Image"></GridColumn>
-                <GridColumn ColumnTitle="Title"></GridColumn>
-                <GridColumn ColumnTitle="Car type"></GridColumn>
-                <GridColumn ColumnTitle="Description"></GridColumn>
-                <GridColumn ColumnTitle="Price"></GridColumn>
-            </GridColumns>
 
-        <GridRow Context="car">
-            <td>
-                <NavLink href=@string.Format("/cars/cardetail/{0}", car.Id)>
+@if (cars == null)
+{
+    <p><em>Loading cars...</em></p>
+}
+else
+{
+<table class="table">
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>Title</th>
+                <th>Car type</th>
+                <th>Description</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var car in cars)
+            {
+                <tr>
+                    <td>
+                            <NavLink href=@string.Format("/cars/cardetail/{0}", car.Id)>
                 @if (car.CarImages.Count > 0)
                 {
                     <img src="@ImageService.ConvertImageToDisplay(car.CarImages.FirstOrDefault())" height ="150px" />
@@ -28,19 +39,24 @@
                     <img src="https://thumbs.dreamstime.com/z/no-image-available-icon-flat-vector-no-image-available-icon-flat-vector-illustration-132482953.jpg" height="150px" />
                 }
                 </NavLink>
-            </td>
-            <td>@car.Id</td>
-            <td>@car.Name</td>
-            <td>@car.CarType</td>
-            <td>@car.Description</td>
-            <td>@car.Owner.Email</td>
-            <td>@car.Price</td>
-        </GridRow>
-    </GridView>
-
+                        </td>
+                    <td>@car.Name</td>
+                    <td>@car.CarType</td>
+                    <td>@car.Description</td>
+                    <td>@car.Price</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
 @code {
     [Inject]
     public IHttpCarService CarService { get; set; }
 
-    private CarModel car;
+    private List<CarModel> cars { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        cars = (await CarService.GetAllUserCarsByTokenAsync()).ToList();
+    }
 }

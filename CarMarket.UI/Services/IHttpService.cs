@@ -10,7 +10,7 @@ namespace CarMarket.UI.Services
         Task<IEnumerable<TModel>> GetAllAsync();
         Task<DataResult<TModel>> GetByPageAsync(int skip, int take);
         Task<TModel> CreateAsync(TModel model);
-        Task<TModel> UpdateAsync(TKey id, TModel updatedModel);
+        Task UpdateAsync(TKey id, TModel updatedModel);
         Task DeleteAsync(TKey Id);
     }
 }

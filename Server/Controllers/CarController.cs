@@ -139,7 +139,9 @@ namespace CarMarket.Server.Controllers
         [Route("CreateCar")]
         public async Task<IActionResult> CreateCar([FromBody] CarModel carModel)
         {
-            if (carModel is null || carModel.Owner is null)
+            var user = await GetCurrentUserAsync();
+
+            if (carModel is null || carModel.Owner is null || user is null)
             {
                 return BadRequest();
             }

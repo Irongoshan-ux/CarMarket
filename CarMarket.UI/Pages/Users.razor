@@ -31,6 +31,14 @@
                     <td>@user.LastName</td>
                     <td>@user.Email</td>
                     <td>@user.PasswordHash</td>
+                    <button class="btn btn-primary"
+                        @onclick="() => EditUser(user)">
+                        Edit
+                    </button>
+                    <button class="btn btn-danger"
+                        @onclick="(() => DeleteUser(user))">
+                        Delete
+                    </button>
         </GridRow>
     </GridView>
 
@@ -106,7 +114,6 @@
 
     private List<BreadCrumbData> BreadCrumbDatas { get; set; }
 
-    private List<UserModel> users;
     private UserModel user;
     private UserModel newUser = new UserModel();
 
@@ -160,6 +167,12 @@
     
     private void EditUser(UserModel updatedUser)
     {
+        editedUser = new()
+        {
+            Id = null,
+            Role = new()
+        };
+
         TitleContext = "Edit user";
 
         editedUser = updatedUser;
@@ -180,7 +193,7 @@
         }
     }
 
-    private async Task DeleteCar(UserModel user)
+    private async Task DeleteUser(UserModel user)
     {
         ShowPopup = false;
 
@@ -214,7 +227,10 @@
             return false;
         }
 
-        editedUser.Role.Name = ((UserRole)result).ToString();
+        editedUser.Role = new()
+        {
+            Name = ((UserRole)result).ToString()
+        };
 
         return true;
     }

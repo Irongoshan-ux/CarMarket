@@ -76,13 +76,11 @@ namespace CarMarket.UI.Services.User
             return await _httpClient.GetFromJsonAsync<DataResult<UserModel>>($"/api/User/GetUsersByPage?skip={skip}&take={take}");
         }
 
-        public async Task<UserModel> UpdateAsync(string id, UserModel updatedModel)
+        public async Task UpdateAsync(string id, UserModel updatedModel)
         {
             await _httpAccessTokenSetter.AddAccessTokenAsync();
 
-            var response = await _httpClient.PutAsJsonAsync("/api/User/UpdateUser/" + id, updatedModel);
-
-            return response.Content.ReadFromJsonAsync<UserModel>().Result;
+            await _httpClient.PutAsJsonAsync("/api/User/UpdateUser/" + id, updatedModel);
         }
     }
 }

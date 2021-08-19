@@ -53,7 +53,7 @@ namespace CarMarket.UI.Services.Car
         }
 
         public async Task<DataResult<CarModel>> GetByPageAsync(int skip, int take)
-{
+        {
             return await _httpClient.GetFromJsonAsync<DataResult<CarModel>>($"/api/Car/GetCarsByPage?skip={skip}&take={take}");
         }
 
@@ -62,13 +62,11 @@ namespace CarMarket.UI.Services.Car
             return await _httpClient.GetFromJsonAsync<IEnumerable<CarModel>>($"/api/Car/Search?carName={carName}&carType={carType}");
         }
 
-        public async Task<CarModel> UpdateAsync(long carId, CarModel car)
+        public async Task UpdateAsync(long carId, CarModel car)
         {
             await _httpAccessTokenSetter.AddAccessTokenAsync();
 
-            var response = await _httpClient.PutAsJsonAsync("/api/Car/UpdateCar/" + carId, car);
-
-            return response.Content.ReadFromJsonAsync<CarModel>().Result;
+            await _httpClient.PutAsJsonAsync("/api/Car/UpdateCar/" + carId, car);
         }
     }
 }

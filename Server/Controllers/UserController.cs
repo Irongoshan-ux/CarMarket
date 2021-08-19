@@ -59,32 +59,65 @@ namespace CarMarket.Server.Controllers
         }
 
         [HttpDelete("DeleteUser/{userId}")]
-        public async Task DeleteUser(string userId)
+        public async Task<IActionResult> DeleteUser(string userId)
         {
+            if (!await IsUserAdminAsync())
+            {
+                return BadRequest();
+            }
+
             await _userService.DeleteAsync(userId);
+
+            return NoContent();
         }
 
         [HttpPost("ChangeUserPermission")]
-        public async Task ChangeUserPermission(string userId, [FromQuery] Permission replaceablePermission, [FromQuery] Permission substitutePermission)
+        public async Task<IActionResult> ChangeUserPermission(string userId, [FromQuery] Permission replaceablePermission, [FromQuery] Permission substitutePermission)
         {
+            if (!await IsUserAdminAsync())
+            {
+                return BadRequest();
+            }
+
             await _userService.ChangePermissionAsync(userId, replaceablePermission, substitutePermission);
+
+            return NoContent();
         }
 
         [HttpPost("AddUserPermission")]
-        public async Task AddUserPermission(string userId, [FromBody] Permission[] permissions)
+        public async Task<IActionResult> AddUserPermission(string userId, [FromBody] Permission[] permissions)
         {
+            if (!await IsUserAdminAsync())
+            {
+                return BadRequest();
+            }
+
             await _userService.AddPermissionAsync(userId, permissions);
+
+            return NoContent();
         }
 
         [HttpDelete("DeleteUserPermission")]
-        public async Task DeleteUserPermission(string userId, [FromBody] Permission permission)
+        public async Task<IActionResult> DeleteUserPermission(string userId, [FromBody] Permission permission)
         {
+            if (!await IsUserAdminAsync())
+            {
+                return BadRequest();
+            }
+
             await _userService.DeletePermissionAsync(userId, permission);
+
+            return NoContent();
         }
 
         [HttpPost("CreateUser")]
         public async Task<IActionResult> Create([FromBody] UserModel userModel)
         {
+            if (!await IsUserAdminAsync())
+            {
+                return BadRequest();
+            }
+
             userModel.PasswordHash = EncryptPassword(userModel.PasswordHash);
 
             var userId = await _userService.CreateAsync(userModel);
@@ -102,17 +135,37 @@ namespace CarMarket.Server.Controllers
         [HttpPut("UpdateUser/{userId}")]
         public async Task<IActionResult> UpdateUser(string userId, UserModel user)
         {
-            if (userId != user.Id)
+            if (userId != user.Id || !await IsUserAdminAsync())
             {
                 return BadRequest();
             }
 
             await _userService.UpdateUser(userId, user);
 
+            var updatedUser = await _userService.GetAsync(userId);
+            var userRoles = await _userManager.GetRolesAsync(updatedUser);
+
+            if (!string.IsNullOrWhiteSpace(user.Role.Name))
+            {
+                if (!userRoles.Contains(user.Role.Name))
+                {
+                    await _userManager.RemoveFromRolesAsync(updatedUser, userRoles);
+                   
+                    await _userService.AddUserToRoleAsync(updatedUser, user.Role.Name);
+                }
+            }
+
             return NoContent();
         }
 
         private string EncryptPassword(string password) => Utility.Encrypt(password);
+
+        private async Task<bool> IsUserAdminAsync()
+        {
+            var user = await GetCurrentUserAsync();
+
+            return await _userManager.IsInRoleAsync(user, "Admin");
+        }
 
         private async Task<UserModel> GetCurrentUserAsync() => await UserHelper.GetCurrentUserAsync(_userService, HttpContext);
     }
