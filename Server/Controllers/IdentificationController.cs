@@ -76,19 +76,28 @@ namespace CarMarket.Server.Controllers
 
                 if (user != null)
                 {
-                    ModelState.AddModelError("", "Invalid email or password");
-                    return View();
+                    ModelState.AddModelError("", "Sorry, this email is already registered");
+                    return View(model);
                 }
 
-                user = new UserModel { Email = model.Email, UserName = model.Email, PasswordHash = EncryptPassword(model.Password) };
+                user = new UserModel
+                {
+                    Email = model.Email,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    PhoneNumber = model.PhoneNumber,
+                    PasswordHash = EncryptPassword(model.Password)
+                };
 
                 await _userService.CreateAsync(user);
 
                 await _userService.AddUserToRoleAsync(user, "User");
 
                 await AuthorizeAsync(user);
+
+                return Redirect("https://localhost:5001");
             }
-            return Redirect("https://localhost:5001");
+            return View(model);
         }
 
         [HttpGet("[action]")]

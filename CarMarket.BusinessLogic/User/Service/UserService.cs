@@ -6,6 +6,7 @@ using CarMarket.Core.User.Service;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace CarMarket.BusinessLogic.User.Service
@@ -134,7 +135,17 @@ namespace CarMarket.BusinessLogic.User.Service
 
         public async Task<DataResult<UserModel>> GetByPageAsync(int skip = 0, int take = 5)
         {
-            return await _userRepository.FindByPageAsync(skip, take);
+            var users = await _userRepository.FindByPageAsync(skip, take);
+
+            foreach (var user in users.Data)
+            {
+                user.Role = new()
+                {
+                    Name = (await _userManager.GetRolesAsync(user)).FirstOrDefault()
+                };
+            }
+
+            return users;
         }
 
         public async Task AddUserToRoleAsync(UserModel user, string roleName)

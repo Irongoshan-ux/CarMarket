@@ -22,15 +22,23 @@
             <GridColumn ColumnTitle="FirstName"></GridColumn>
             <GridColumn ColumnTitle="LastName"></GridColumn>
             <GridColumn ColumnTitle="Email"></GridColumn>
-            <GridColumn ColumnTitle="Encrypted Password"></GridColumn>
+            <GridColumn ColumnTitle="Role"></GridColumn>
         </GridColumns>
 
         <GridRow Context="user">
-                    <td>@user.Id</td>
+                    
+                    @if (user.Id.Length > 20) 
+                    {
+                        <td>@(user.Id.Remove(20) + "...")</td>
+                    }
+                    else
+                    {
+                        <td>@user.Id</td>
+                    }
                     <td>@user.FirstName</td>
                     <td>@user.LastName</td>
                     <td>@user.Email</td>
-                    <td>@user.PasswordHash</td>
+                    <td>@user.Role.Name</td>
                     <button class="btn btn-primary"
                         @onclick="() => EditUser(user)">
                         Edit
@@ -176,6 +184,8 @@
         TitleContext = "Edit user";
 
         editedUser = updatedUser;
+
+        CurrentUserRole = editedUser.Role.Name;
 
         ShowPopup = true;
     }
