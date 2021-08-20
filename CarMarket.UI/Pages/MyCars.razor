@@ -1,76 +1,68 @@
-﻿@page "/cars"
-@using BlazorInputFile
+﻿@page "/myCars"
 @using CarMarket.BusinessLogic.Image.Service
 @using CarMarket.Core.Car.Domain
 @using CarMarket.Core.Image.Domain
-@using System.IO
-@using CarMarket.Core.User.Domain
 @using CarMarket.UI.Services.Car
+@using Microsoft.AspNetCore.Authorization
+@using System.IO
 
-<h1>Cars Controller</h1>
+@attribute [Authorize(Roles = "Admin,User")]
 
-<AuthorizeView>
-<button class="btn btn-success" @onclick="AddCar">Add Car</button>
-</AuthorizeView>
+<p>My cars</p>
 
-<p>All cars</p>
-    <GridView ItemType="car" ApiGetDataLink="https://localhost:10001/api/Car/GetCarsByPage">
-            <GridColumns>
-                <GridColumn ColumnTitle="Image"></GridColumn>
-                <GridColumn ColumnTitle="Id"></GridColumn>
-                <GridColumn ColumnTitle="Title"></GridColumn>
-                <GridColumn ColumnTitle="Car type"></GridColumn>
-                <GridColumn ColumnTitle="Description"></GridColumn>
-                <GridColumn ColumnTitle="Owner"></GridColumn>
-                <GridColumn ColumnTitle="Price"></GridColumn>
-                <AuthorizeView>
-                    <Authorized>
-                        <GridColumn ColumnTitle="Actions"></GridColumn>
-                    </Authorized>
-                </AuthorizeView>
-            </GridColumns>
-
-        <GridRow Context="car">
-            <td>
-                <NavLink href=@string.Format("/cars/cardetail/{0}", car.Id)>
-                @if (car.CarImages.Count > 0)
-                {
-                    <img src="@ImageService.ConvertImageToDisplay(car.CarImages.FirstOrDefault())" height ="150px" />
-                }
-                else
-                {
-                    <img src="https://thumbs.dreamstime.com/z/no-image-available-icon-flat-vector-no-image-available-icon-flat-vector-illustration-132482953.jpg" height="150px" />
-                }
-                </NavLink>
-            </td>
-            <td>@car.Id</td>
-            <td>@car.Name</td>
-            <td>@car.CarType</td>
-            <td>@car.Description</td>
-            <td>@car.Owner.Email</td>
-            <td>@car.Price</td>
-            <AuthorizeView>
-                <Authorized>
-                    @if (car.Owner.Email.Equals(context.User.Identity.Name) || context.User.IsInRole("Admin"))
-                    {
-                        <button class="btn btn-primary"
-                            @onclick="() => EditCar(car)">
-                            Edit
-                        </button>
-
-                        <button class="btn btn-danger"
-                            @onclick="(() => DeleteCar(car))">
-                            Delete
-                        </button>
-                    }
-                </Authorized>
-            </AuthorizeView>
-        </GridRow>
-    </GridView>
+@if (cars == null)
+{
+    <p><em>Loading cars...</em></p>
+}
+else
+{
+<table class="table">
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>Title</th>
+                <th>Car type</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var car in cars)
+            {
+                <tr>
+                    <td>
+                    <NavLink href=@string.Format("/cars/cardetail/{0}", car.Id)>
+                        @if (car.CarImages.Count > 0)
+                        {
+                            <img src="@ImageService.ConvertImageToDisplay(car.CarImages.FirstOrDefault())" height ="150px" />
+                        }
+                        else
+                        {
+                            <img src="https://thumbs.dreamstime.com/z/no-image-available-icon-flat-vector-no-image-available-icon-flat-vector-illustration-132482953.jpg" height="150px" />
+                        }
+                        </NavLink>
+                    </td>
+                    <td>@car.Name</td>
+                    <td>@car.CarType</td>
+                    <td>@car.Description</td>
+                    <td>@car.Price</td>
+                    <button class="btn btn-primary"
+                        @onclick="() => EditCar(car)">
+                        Edit
+                    </button>
+                    
+                    <button class="btn btn-danger"
+                        @onclick="(() => DeleteCar(car))">
+                        Delete
+                    </button>
+                </tr>
+            }
+        </tbody>
+    </table>
 
 <AuthorizeView>
-<Authorized>
-@if (ShowPopup)
+    @if (ShowPopup)
 {
         @SetUpUserEmail(context);
     <!-- This is the popup to create or edit a car -->
@@ -137,12 +129,18 @@
         </div>
     </div>
 }
-</Authorized>
 </AuthorizeView>
-
+}
 @code {
     [Inject]
     public IHttpCarService CarService { get; set; }
+
+    private List<CarModel> cars { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        cars = (await CarService.GetAllUserCarsByTokenAsync()).ToList();
+    }
 
     private CarModel car;
     private CarModel editedCar = new();
@@ -227,7 +225,7 @@
     {
         strError = string.Empty;
 
-        if(!SetCarType(CurrentCarType)) return;
+        if (!SetCarType(CurrentCarType)) return;
 
         editedCar.Owner = new()
         {

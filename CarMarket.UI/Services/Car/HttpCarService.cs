@@ -1,24 +1,27 @@
 ﻿using CarMarket.Core.Car.Domain;
 using CarMarket.Core.DataResult;
-using CarMarket.UI.Pages;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-
-namespace CarMarket.UI.Services
+namespace CarMarket.UI.Services.Car
 {
     public class HttpCarService : IHttpCarService
     {
         private readonly HttpClient _httpClient;
+        private readonly HttpAccessTokenSetter _httpAccessTokenSetter;
 
-        public HttpCarService(HttpClient httpClient)
+        public HttpCarService(HttpClient httpClient, HttpAccessTokenSetter httpAccessTokenSetter)
         {
             _httpClient = httpClient;
+            _httpAccessTokenSetter = httpAccessTokenSetter;
+            _httpAccessTokenSetter.HttpClient = _httpClient;
         }
 
         public async Task<CarModel> CreateAsync(CarModel userModel)
         {
+            await _httpAccessTokenSetter.AddAccessTokenAsync();
+
             var response = await _httpClient.PostAsJsonAsync("/api/Car/CreateCar", userModel);
 
             return response.Content.ReadFromJsonAsync<CarModel>().Result;
@@ -26,17 +29,22 @@ namespace CarMarket.UI.Services
 
         public async Task DeleteAsync(long carId)
         {
+            await _httpAccessTokenSetter.AddAccessTokenAsync();
+
             await _httpClient.DeleteAsync("/api/Car/DeleteCar/" + carId);
         }
+
 
         public async Task<IEnumerable<CarModel>> GetAllAsync()
         {
             return await _httpClient.GetFromJsonAsync<IEnumerable<CarModel>>("/api/Car/GetCars");
         }
 
-        public async Task<IEnumerable<CarModel>> GetAllUserCarsAsync(long userId)
+        public async Task<IEnumerable<CarModel>> GetAllUserCarsByTokenAsync()
         {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<CarModel>>("/api/Car/GetAllUserCars/" + userId);
+            await _httpAccessTokenSetter.AddAccessTokenAsync();
+
+            return await _httpClient.GetFromJsonAsync<IEnumerable<CarModel>>("/api/Car/GetAllUserCars");
         }
 
         public async Task<CarModel> GetAsync(long id)
@@ -45,21 +53,20 @@ namespace CarMarket.UI.Services
         }
 
         public async Task<DataResult<CarModel>> GetByPageAsync(int skip, int take)
-{
+        {
             return await _httpClient.GetFromJsonAsync<DataResult<CarModel>>($"/api/Car/GetCarsByPage?skip={skip}&take={take}");
         }
 
         public async Task<IEnumerable<CarModel>> SearchAsync(string carName, CarType? carType)
         {
-            // temporarily not working
-            return await _httpClient.GetFromJsonAsync<IEnumerable<CarModel>>("/api/Car/Search/" + carName);
+            return await _httpClient.GetFromJsonAsync<IEnumerable<CarModel>>($"/api/Car/Search?carName={carName}&carType={carType}");
         }
 
-        public async Task<CarModel> UpdateCarAsync(long carId, CarModel car)
+        public async Task UpdateAsync(long carId, CarModel car)
         {
-            var response = await _httpClient.PutAsJsonAsync("/api/Car/UpdateCar/" + carId, car);
+            await _httpAccessTokenSetter.AddAccessTokenAsync();
 
-            return response.Content.ReadFromJsonAsync<CarModel>().Result;
+            await _httpClient.PutAsJsonAsync("/api/Car/UpdateCar/" + carId, car);
         }
     }
 }

@@ -7,6 +7,7 @@ namespace CarMarket.Core.User.Domain
         //public string Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public IdentityRole<string> Role { get; set; }
         //public string Email { get; set; }
         //public string PasswordHash { get; set; }
         //public ICollection<Permission> Permissions { get; set; }

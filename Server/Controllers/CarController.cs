@@ -1,13 +1,19 @@
 using CarMarket.Core.Car.Domain;
 using CarMarket.Core.Car.Exceptions;
 using CarMarket.Core.Car.Service;
+using CarMarket.Core.User.Domain;
 using CarMarket.Core.User.Service;
+using CarMarket.Server.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -20,11 +26,13 @@ namespace CarMarket.Server.Controllers
         private readonly ILogger<CarController> _logger;
         private readonly ICarService _carService;
         private readonly IUserService _userService;
+        private readonly UserManager<UserModel> _userManager;
 
-        public CarController(ICarService carService, IUserService userService, ILogger<CarController> logger)
+        public CarController(ICarService carService, IUserService userService, UserManager<UserModel> userManager, ILogger<CarController> logger)
         {
             _carService = carService;
             _userService = userService;
+            _userManager = userManager;
             _logger = logger;
         }
 
@@ -103,12 +111,10 @@ namespace CarMarket.Server.Controllers
         [Route("DeleteCar/{carId:long}")]
         public async Task<IActionResult> DeleteCar(long carId)
         {
-            var currentUser = HttpContext.User;
-
-            var user = await _userService.GetByEmailAsync(currentUser.Identity.Name);
+            var user = await GetCurrentUserAsync();
 
             if ((user != null) && ((user.Id == (await _carService.GetAsync(carId)).Owner.Id) ||
-                currentUser.IsInRole("Admin")))
+                await _userManager.IsInRoleAsync(user, "Admin")))
             {
                 try
                 {
@@ -133,7 +139,9 @@ namespace CarMarket.Server.Controllers
         [Route("CreateCar")]
         public async Task<IActionResult> CreateCar([FromBody] CarModel carModel)
         {
-            if (carModel is null)
+            var user = await GetCurrentUserAsync();
+
+            if (carModel is null || carModel.Owner is null || user is null)
             {
                 return BadRequest();
             }
@@ -151,33 +159,61 @@ namespace CarMarket.Server.Controllers
             }
         }
 
-        //[HttpGet("GetAllUserCars/{userId:long}")]
-        //public async Task<ActionResult<IEnumerable<CarModel>>> GetAllUserCars(string userId)
-        //{
-        //    return Ok(await _carService.GetAllUserCarsAsync(userId));
-        //}
+        [HttpGet("GetAllUserCars")]
+        public async Task<ActionResult<IEnumerable<CarModel>>> GetAllUserCars()
+        {
+            var user = await GetCurrentUserAsync();
+
+            try
+            {
+                var result = await _carService.GetAllUserCarsAsync(user.Id);
+
+                if (result is null)
+                {
+                    return NotFound($"Specified user with email={user.Email} haven't any cars.");
+                }
+
+                return Ok(result);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "Error retrieving data from the database");
+            }
+
+        }
 
         [HttpPut("UpdateCar/{carId:long}")]
         public async Task<ActionResult<CarModel>> UpdateCar(long carId, CarModel car)
         {
+            var user = await GetCurrentUserAsync(); 
+
             if (carId != car.Id)
             {
                 return BadRequest("Car ID mismatch");
             }
 
-            try
+            if ((user != null) && ((user.Id == (await _carService.GetAsync(carId)).Owner.Id) ||
+                await _userManager.IsInRoleAsync(user, "Admin")))
             {
-                return await _carService.UpdateCarAsync(carId, car);
+                try
+                {
+                    return await _carService.UpdateCarAsync(carId, car);
+                }
+                catch (CarNotFoundException e)
+                {
+                    return NotFound(e.Message);
+                }
+                catch (Exception)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError,
+                        "Error updating car record");
+                }
             }
-            catch (CarNotFoundException e)
-            {
-                return NotFound(e.Message);
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                    "Error updating car record");
-            }
+
+            return BadRequest("Access denied.");
         }
+
+        private async Task<UserModel> GetCurrentUserAsync() => await UserHelper.GetCurrentUserAsync(_userService, HttpContext);
     }
 }

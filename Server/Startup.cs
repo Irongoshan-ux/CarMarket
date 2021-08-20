@@ -49,7 +49,7 @@ namespace CarMarket.Server
 
             services.AddAuthorization();
 
-            // This instruction ruins LOG OUT
+            //// This instruction ruins LOG OUT
             services.AddIdentity<UserModel, IdentityRole>(options =>
             {
                 options.Password.RequiredLength = 10;

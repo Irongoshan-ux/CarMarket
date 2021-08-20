@@ -1,4 +1,6 @@
 ﻿@page "/"
+@using CarMarket.UI.Data
+
 <h1>Hello, world!</h1>
 
 <div class="alert alert-warning" role="alert">
@@ -8,3 +10,17 @@
 Welcome to your new app.
 
 <SurveyPrompt Title="How is Blazor working for you?" />
+<BreadCrumb BreadCrumbData="BreadCrumbDatas"></BreadCrumb>
+
+@code{
+    public List<BreadCrumbData> BreadCrumbDatas = new List<BreadCrumbData>();
+
+    protected override void OnInitialized()
+    {
+        BreadCrumbDatas.Add(new BreadCrumbData()
+        {
+            Text = "Home",
+            Url = "/"
+        });
+    }
+}

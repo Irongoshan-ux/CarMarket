@@ -67,12 +67,19 @@ namespace CarMarket.BusinessLogic.Car.Service
                 throw new CarNotFoundException($"Car with id = {carId} not found");
             }
 
+            if (car.Owner.Email != carToUpdate.Owner.Email)
+            {
+                var newOwner = await _userService.GetByEmailAsync(car.Owner.Email);
+                car.Owner = newOwner;
+            }
+            else car.Owner = null;
+
             return await _carRepository.UpdateAsync(carId, car);
         }
 
-        public Task<IEnumerable<CarModel>> GetAllUserCarsAsync(string userId)
+        public async Task<IEnumerable<CarModel>> GetAllUserCarsAsync(string userId)
         {
-            return _carRepository.FindAllUserCarsAsync(userId);
+            return await _carRepository.FindAllUserCarsAsync(userId);
         }
 
         public async Task<IEnumerable<CarModel>> SearchAsync(string carName, CarType? carType)

@@ -2,6 +2,7 @@
 using CarMarket.Core.User.Domain;
 using CarMarket.Core.User.Service;
 using CarMarket.Server.Infrastructure.Identification.Models;
+using CarMarket.Server.Services;
 using IdentityServer4;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Authentication;
@@ -75,19 +76,28 @@ namespace CarMarket.Server.Controllers
 
                 if (user != null)
                 {
-                    ModelState.AddModelError("", "Invalid email or password");
-                    return View();
+                    ModelState.AddModelError("", "Sorry, this email is already registered");
+                    return View(model);
                 }
 
-                user = new UserModel { Email = model.Email, UserName = model.Email, PasswordHash = EncryptPassword(model.Password) };
+                user = new UserModel
+                {
+                    Email = model.Email,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    PhoneNumber = model.PhoneNumber,
+                    PasswordHash = EncryptPassword(model.Password)
+                };
 
                 await _userService.CreateAsync(user);
 
-                var result = await _userManager.AddToRoleAsync(user, "User"); // Description: "Optimistic concurrency failure, object has been modified."
+                await _userService.AddUserToRoleAsync(user, "User");
 
                 await AuthorizeAsync(user);
+
+                return Redirect("https://localhost:5001");
             }
-            return Redirect("https://localhost:5001");
+            return View(model);
         }
 
         [HttpGet("[action]")]
@@ -111,5 +121,7 @@ namespace CarMarket.Server.Controllers
         }
         
         private string EncryptPassword(string password) => Utility.Encrypt(password);
+
+        private async Task<UserModel> GetCurrentUserAsync() => await UserHelper.GetCurrentUserAsync(_userService, HttpContext);
     }
 }

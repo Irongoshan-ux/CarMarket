@@ -4,10 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Security.Claims;
-using CarMarket.Server.Infrastructure.Identification.Models;
-using Microsoft.AspNetCore.Authorization;
-using CarMarket.Core.Car.Domain;
+using Microsoft.AspNetCore.Http;
+using System;
+using CarMarket.Server.Services;
+using Microsoft.AspNetCore.Identity;
 
 namespace CarMarket.Server.Controllers
 {
@@ -17,10 +17,12 @@ namespace CarMarket.Server.Controllers
     {
         private readonly ILogger<UserController> _logger;
         private readonly IUserService _userService;
+        private readonly UserManager<UserModel> _userManager;
 
-        public UserController(IUserService userService, ILogger<UserController> logger)
+        public UserController(IUserService userService, UserManager<UserModel> userManager, ILogger<UserController> logger)
         {
             _userService = userService;
+            _userManager = userManager;
             _logger = logger;
         }
 
@@ -36,28 +38,86 @@ namespace CarMarket.Server.Controllers
             return await _userService.GetAsync(userId);
         }
 
-        [HttpDelete("DeleteUser/{userId}")]
-        public async Task DeleteUser(string userId)
+        [HttpGet("GetUserByEmail")]
+        public async Task<UserModel> GetUserByEmail(string email)
         {
+            return await _userService.GetByEmailAsync(email);
+        }
+
+        [HttpGet("GetUsersByPage")]
+        public async Task<IActionResult> GetUsersByPage(int skip = 0, int take = 5)
+        {
+            try
+            {
+                return Ok(await _userService.GetByPageAsync(skip, take));
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "Error retrieving data from the database");
+            }
+        }
+
+        [HttpDelete("DeleteUser/{userId}")]
+        public async Task<IActionResult> DeleteUser(string userId)
+        {
+            if (!await IsUserAdminAsync())
+            {
+                return BadRequest();
+            }
+
             await _userService.DeleteAsync(userId);
+
+            return NoContent();
         }
 
         [HttpPost("ChangeUserPermission")]
-        [Authorize(Policy = "")]
-        public async Task ChangeUserPermission(string userId, [FromQuery] Permission replaceablePermission, [FromQuery] Permission substitutePermission)
+        public async Task<IActionResult> ChangeUserPermission(string userId, [FromQuery] Permission replaceablePermission, [FromQuery] Permission substitutePermission)
         {
+            if (!await IsUserAdminAsync())
+            {
+                return BadRequest();
+            }
+
             await _userService.ChangePermissionAsync(userId, replaceablePermission, substitutePermission);
+
+            return NoContent();
         }
 
         [HttpPost("AddUserPermission")]
-        public async Task AddUserPermission(string userId, [FromBody] Permission[] permissions)
+        public async Task<IActionResult> AddUserPermission(string userId, [FromBody] Permission[] permissions)
         {
+            if (!await IsUserAdminAsync())
+            {
+                return BadRequest();
+            }
+
             await _userService.AddPermissionAsync(userId, permissions);
+
+            return NoContent();
+        }
+
+        [HttpDelete("DeleteUserPermission")]
+        public async Task<IActionResult> DeleteUserPermission(string userId, [FromBody] Permission permission)
+        {
+            if (!await IsUserAdminAsync())
+            {
+                return BadRequest();
+            }
+
+            await _userService.DeletePermissionAsync(userId, permission);
+
+            return NoContent();
         }
 
         [HttpPost("CreateUser")]
         public async Task<IActionResult> Create([FromBody] UserModel userModel)
         {
+            if (!await IsUserAdminAsync())
+            {
+                return BadRequest();
+            }
+
             userModel.PasswordHash = EncryptPassword(userModel.PasswordHash);
 
             var userId = await _userService.CreateAsync(userModel);
@@ -65,22 +125,48 @@ namespace CarMarket.Server.Controllers
             if (userId == default)
                 return BadRequest(userModel + " is invalid");
 
-            return Ok(userModel);
+            var createdUser = await _userService.GetAsync(userId);
+
+            await _userService.AddUserToRoleAsync(createdUser, userModel.Role.Name);
+
+            return Ok(createdUser);
         }
 
         [HttpPut("UpdateUser/{userId}")]
         public async Task<IActionResult> UpdateUser(string userId, UserModel user)
         {
-            if (userId != user.Id)
+            if (userId != user.Id || !await IsUserAdminAsync())
             {
                 return BadRequest();
             }
 
             await _userService.UpdateUser(userId, user);
 
+            var updatedUser = await _userService.GetAsync(userId);
+            var userRoles = await _userManager.GetRolesAsync(updatedUser);
+
+            if (!string.IsNullOrWhiteSpace(user.Role.Name))
+            {
+                if (!userRoles.Contains(user.Role.Name))
+                {
+                    await _userManager.RemoveFromRolesAsync(updatedUser, userRoles);
+                   
+                    await _userService.AddUserToRoleAsync(updatedUser, user.Role.Name);
+                }
+            }
+
             return NoContent();
         }
 
         private string EncryptPassword(string password) => Utility.Encrypt(password);
+
+        private async Task<bool> IsUserAdminAsync()
+        {
+            var user = await GetCurrentUserAsync();
+
+            return await _userManager.IsInRoleAsync(user, "Admin");
+        }
+
+        private async Task<UserModel> GetCurrentUserAsync() => await UserHelper.GetCurrentUserAsync(_userService, HttpContext);
     }
 }

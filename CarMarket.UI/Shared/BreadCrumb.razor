@@ -1,0 +1,26 @@
+﻿@using CarMarket.UI.Data
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        @if(BreadCrumbData != null)
+        {
+            @foreach(var item in BreadCrumbData)
+            {
+                @if(item == BreadCrumbData.Last())
+                {
+                   <li class="breadcrumb-item active" aria-current="page">@item.Text</li>
+                }
+                else
+                {
+                    <li class="breadcrumb-item"><a href="@item.Url">@item.Text</a></li>
+                }
+            }
+        }
+    </ol>
+</nav>
+
+@code {
+    [Parameter]
+    public List<BreadCrumbData> BreadCrumbData { get; set; }
+
+}

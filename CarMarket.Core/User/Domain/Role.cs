@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-namespace CarMarket.Core.User.Domain
+﻿namespace CarMarket.Core.User.Domain
 {
-    public class Role
+    public enum UserRole
     {
-        public int Id { get; set; }
-        public string RoleName { get; set; }
+        Admin,
+        User,
+        Guest
     }
 }

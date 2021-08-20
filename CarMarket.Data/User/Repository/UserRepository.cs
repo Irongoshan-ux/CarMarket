@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using CarMarket.Core.Car.Domain;
+using CarMarket.Core.DataResult;
 using CarMarket.Core.User.Domain;
 using CarMarket.Core.User.Repository;
 using CarMarket.Data.User.Domain;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +27,6 @@ namespace CarMarket.Data.User.Repository
         {
             var userEntity = await _context.Users
                 .AsNoTracking()
-                //.Include(u => u.Role)
                 .FirstOrDefaultAsync(x => (x.Email == email) && (x.PasswordHash == password));
 
             return _mapper.Map<UserModel>(userEntity);
@@ -78,10 +79,20 @@ namespace CarMarket.Data.User.Repository
             return _mapper.Map<UserModel>(userEntity);
         }
 
-        public async Task<Role> FindUserRoleAsync(string roleName)
+        public async Task<IdentityRole> FindRoleAsync(string roleName)
         {
-            return default;
-            //return await _context.Roles.FirstOrDefaultAsync(r => r.RoleName == roleName);
+            return await _context.Roles.FirstOrDefaultAsync(x => x.Name == roleName);
+        }
+
+        public async Task AddUserToRoleAsync(UserModel user, IdentityRole role)
+        {
+            _context.UserRoles.Add(new IdentityUserRole<string>
+            {
+                RoleId = role.Id,
+                UserId = user.Id
+            });
+
+            await _context.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(string userId, UserModel userModel)
@@ -91,6 +102,23 @@ namespace CarMarket.Data.User.Repository
             _context.Update(userEntity);
 
             await _context.SaveChangesAsync();            
+        }
+
+        public async Task<DataResult<UserModel>> FindByPageAsync(int skip, int take)
+        {
+            var userEntities = await _context.Users
+                .AsNoTracking()
+                .Skip(skip)
+                .Take(take)
+                .ToListAsync();
+
+            var result = new DataResult<UserModel>
+            {
+                Data = _mapper.Map<IEnumerable<UserModel>>(userEntities),
+                Count = await _context.Users.CountAsync()
+            };
+
+            return result;
         }
     }
 }
