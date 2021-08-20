@@ -1,0 +1,113 @@
+﻿@page "/cars/search"
+@using CarMarket.BusinessLogic.Image.Service
+@using CarMarket.Core.Car.Domain
+@using CarMarket.Core.Image.Domain
+@using System.IO
+@using CarMarket.Core.User.Domain
+@using CarMarket.UI.Services.Car
+
+<h1>Cars Controller</h1>
+
+<input class="form-control" type="text"
+    placeholder="Car title"
+    @bind="searchParameters.CarTitle" />
+<select class="form-control"
+    @bind="@CurrentCarType">
+    @foreach (var carType in CarTypes)
+    {
+        <option value="@carType">
+            @carType
+        </option>
+    }
+</select>
+<button class="btn btn-primary" @onclick="Search">Search</button>
+
+
+@if (cars == null)
+{
+    <p><em>Sorry, no results were found</em></p>
+}
+else
+{
+<table class="table">
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>Title</th>
+                <th>Car type</th>
+                <th>Description</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var car in cars)
+            {
+                <tr>
+                    <td>
+                    <NavLink href=@string.Format("/cars/cardetail/{0}", car.Id)>
+                        @if (car.CarImages.Count > 0)
+                        {
+                            <img src="@ImageService.ConvertImageToDisplay(car.CarImages.FirstOrDefault())" height ="150px" />
+                        }
+                        else
+                        {
+                            <img src="https://thumbs.dreamstime.com/z/no-image-available-icon-flat-vector-no-image-available-icon-flat-vector-illustration-132482953.jpg" height="150px" />
+                        }
+                        </NavLink>
+                    </td>
+                    <td>@car.Name</td>
+                    <td>@car.CarType</td>
+                    <td>@car.Description</td>
+                    <td>@car.Price</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@code {
+    [Inject]
+    public IHttpCarService CarService { get; set; }
+
+    public class SearchParameters
+    {
+        public string CarTitle { get; set; }
+        public CarType? CarType { get; set; }
+    }
+
+    private SearchParameters searchParameters = new();
+    private static List<string> CarTypes = GetCarTypesSelection();
+    private string CurrentCarType { get; set; } = "Select car type";
+
+    private IEnumerable<CarModel> cars = new List<CarModel>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        cars = await CarService.GetAllAsync();
+    }
+
+    private async Task Search()
+    {
+        if (TryParseCarType(CurrentCarType, out object carType))
+        {
+            searchParameters.CarType = (CarType)carType;
+        }
+
+        cars = await CarService.SearchAsync(searchParameters.CarTitle, searchParameters.CarType);
+    }
+
+    private static List<string> GetCarTypesSelection()
+    {
+        var names = string.Join(",", Enum.GetNames(typeof(CarType)));
+
+        var carTypes = new List<string>()
+        {
+            "Select car type",
+        };
+
+        carTypes.AddRange(names.Split(',').ToList());
+
+        return carTypes;
+    }
+
+    private bool TryParseCarType(string carTypeName, out object carType) => Enum.TryParse(typeof(CarType), carTypeName, out carType);
+}
