@@ -18,8 +18,10 @@
         </h5>
         <h6 class="col-12 row">Type: @CarDetails.CarType</h6>
         <h6 class="col-12 row">Description: @CarDetails.Description</h6>
+        <h5 class="col-12 row" style="font-weight:bold">Car owner contacts</h5>
         <h6 class="col-12 row">Owner: @($"{CarDetails.Owner.FirstName} {CarDetails.Owner.LastName}")
-        <br />Email: @CarDetails.Owner.Email</h6>
+        <br />Email: @CarDetails.Owner.Email
+        <br />Phone number: @CarDetails.Owner.PhoneNumber</h6>
 
         @foreach(var image in CarDetails.CarImages)
         {
