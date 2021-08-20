@@ -199,7 +199,10 @@
         if (string.IsNullOrWhiteSpace(editedCar.Name)) strError += "\nEnter car title";
         if (editedCar.Price == 0) strError += "\nEnter price";
 
-        editedCar.Owner.Email = CurrentUserEmail;
+        editedCar.Owner = new()
+        {
+            Email = CurrentUserEmail
+        };
 
         if (string.IsNullOrWhiteSpace(strError))
         {
@@ -215,6 +218,8 @@
 
         editedCar = updatedCar;
 
+        CurrentCarType = editedCar.CarType.ToString();
+
         ShowPopup = true;
     }
 
@@ -224,7 +229,10 @@
 
         if(!SetCarType(CurrentCarType)) return;
 
-        editedCar.Owner.Email = CurrentUserEmail;
+        editedCar.Owner = new()
+        {
+            Email = CurrentUserEmail
+        };
 
         if (string.IsNullOrWhiteSpace(strError))
         {
