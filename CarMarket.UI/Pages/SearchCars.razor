@@ -9,10 +9,11 @@
 <h1>Cars Controller</h1>
 
 <input class="form-control" type="text"
-    placeholder="Car title"
-    @bind="searchParameters.CarTitle" />
+    placeholder="Car title" 
+    @oninput ="SearchByTitle" />
+    
 <select class="form-control"
-    @bind="@CurrentCarType">
+    @onchange="SearchByType">
     @foreach (var carType in CarTypes)
     {
         <option value="@carType">
@@ -20,7 +21,7 @@
         </option>
     }
 </select>
-<button class="btn btn-primary" @onclick="Search">Search</button>
+<button class="btn btn-secondary" @onclick="ClearSearchParameters">Clear search parameters</button>
 
 
 @if (cars == null)
@@ -78,7 +79,7 @@ else
     private static List<string> CarTypes = GetCarTypesSelection();
     private string CurrentCarType { get; set; } = "Select car type";
 
-    private IEnumerable<CarModel> cars = new List<CarModel>();
+    public IEnumerable<CarModel> cars;
 
     protected override async Task OnInitializedAsync()
     {
@@ -87,12 +88,39 @@ else
 
     private async Task Search()
     {
-        if (TryParseCarType(CurrentCarType, out object carType))
-        {
-            searchParameters.CarType = (CarType)carType;
-        }
+        searchParameters.CarType = TryParseCarType(CurrentCarType, out object carType) ? (CarType)carType : null;
 
+        await GetCarsFromApiAsync();
+    }
+
+    private async void SearchByTitle(ChangeEventArgs e)
+    {
+        searchParameters.CarTitle = e.Value.ToString();
+
+        await Search();
+    }
+
+    private async void SearchByType(ChangeEventArgs e)
+    {
+        CurrentCarType = e.Value.ToString();
+
+        await Search();
+    }
+
+    private async Task ClearSearchParameters()
+    {
+        CurrentCarType = CarTypes.FirstOrDefault();
+        searchParameters.CarTitle = null;
+        searchParameters.CarType = null;
+
+        await GetCarsFromApiAsync();
+    }
+
+    private async Task GetCarsFromApiAsync()
+    {
         cars = await CarService.SearchAsync(searchParameters.CarTitle, searchParameters.CarType);
+
+        StateHasChanged();
     }
 
     private static List<string> GetCarTypesSelection()
