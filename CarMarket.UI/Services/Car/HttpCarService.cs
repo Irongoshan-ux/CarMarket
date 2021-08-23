@@ -1,5 +1,6 @@
 ﻿using CarMarket.Core.Car.Domain;
 using CarMarket.Core.DataResult;
+using CarMarket.Core.User.Domain;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -59,7 +60,15 @@ namespace CarMarket.UI.Services.Car
 
         public async Task<IEnumerable<CarModel>> SearchAsync(string carName, CarType? carType)
         {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<CarModel>>($"/api/Car/Search?carName={carName}&carType={carType}");
+            try
+            {
+                return await _httpClient.GetFromJsonAsync<IEnumerable<CarModel>>($"/api/Car/Search?carName={carName}&carType={carType}");
+            }
+            catch
+            {
+                return null;
+            }
+            
         }
 
         public async Task UpdateAsync(long carId, CarModel car)

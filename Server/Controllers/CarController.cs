@@ -37,7 +37,7 @@ namespace CarMarket.Server.Controllers
         }
 
         [HttpGet("Search")]
-        public async Task<ActionResult<IEnumerable<CarModel>>> Search(string carName, CarType? carType)
+        public async Task<IActionResult> Search(string carName, CarType? carType)
         {
             try
             {
