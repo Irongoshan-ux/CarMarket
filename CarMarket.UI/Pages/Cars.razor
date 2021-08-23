@@ -6,12 +6,15 @@
 @using System.IO
 @using CarMarket.Core.User.Domain
 @using CarMarket.UI.Services.Car
+@inject NavigationManager Navigation
 
 <h1>Cars Controller</h1>
 
 <AuthorizeView Roles="Admin,User">
 <button class="btn btn-success" @onclick="AddCar">Add Car</button>
 </AuthorizeView>
+
+<button class="btn-outline-primary" @onclick="SearchCars">Search</button>
 
 <p>All cars</p>
     <GridView ItemType="car" ApiGetDataLink="https://localhost:10001/api/Car/GetCarsByPage">
@@ -67,55 +70,54 @@
             </AuthorizeView>
         </GridRow>
     </GridView>
-
 <AuthorizeView>
 <Authorized>
 @if (ShowPopup)
 {
         @SetUpUserEmail(context);
-    <!-- This is the popup to create or edit a car -->
-    <div class="modal" tabindex="-1" style="display:block" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title">@TitleContext</h3>
-                    <!-- Button to close the popup -->
+        <!-- This is the popup to create or edit a car -->
+        <div class="modal" tabindex="-1" style="display:block" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title">@TitleContext</h3>
+                        <!-- Button to close the popup -->
                     <button type="button" class="close"
                             @onclick="ClosePopup">
-                        <span aria-hidden="true">X</span>
-                    </button>
-                </div>
-                <!-- Edit form for the current car -->
+                            <span aria-hidden="true">X</span>
+                        </button>
+                    </div>
+                    <!-- Edit form for the current car -->
                 <div class="modal-body">
-                    <input class="form-control" type="text"
+                        <input class="form-control" type="text"
                                 placeholder="Name"
                                 @bind="editedCar.Name" />
-                    <input class="form-control" type="text"
+                        <input class="form-control" type="text"
                             placeholder="Description"
                             @bind="editedCar.Description" />
-                    <input class="form-control" type="number"
+                        <input class="form-control" type="number"
                             placeholder="Price"
                             @bind="editedCar.Price" />
-                    <input class="form-control" type="email"
+                        <input class="form-control" type="email"
                             placeholder="Owner Email"
                             @bind="@CurrentUserEmail"/>
 
-                    <select class="form-control"
+                        <select class="form-control"
                             @bind="@CurrentCarType">
-                        @foreach (var option in Options)
-                        {
-                            <option value="@option">
-                                @option
-                            </option>
-                        }
-                    </select>
-                    <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
-                    <br>
-                    <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
-                    <br>
-                    <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
-                    <br>
-                    <br /><br />
+                            @foreach (var option in Options)
+                            {
+                                <option value="@option">
+                                    @option
+                                </option>
+                            }
+                        </select>
+                        <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
+                        <br>
+                        <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
+                        <br>
+                        <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
+                        <br>
+                        <br /><br />
 
                         @if (editedCar.Id == 0)
                         {
@@ -131,19 +133,25 @@
                                 Update
                             </button>
                         }
-                    <span style="color:red">@strError</span>
+                        <span style="color:red">@strError</span>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 }
 </Authorized>
 </AuthorizeView>
-
 @code {
     [Inject]
     public IHttpCarService CarService { get; set; }
 
+    public class SearchParameters
+    {
+        public string CarTitle { get; set; }
+        public CarType CarType { get; set; }
+    }
+
+    private SearchParameters searchParameters = new();
     private CarModel car;
     private CarModel editedCar = new();
     private static List<string> Options = GetCarTypesSelection();
@@ -153,6 +161,21 @@
     private string TitleContext { get; set; }
     private string CurrentCarType { get; set; } = Options.FirstOrDefault();
     private string CurrentUserEmail { get; set; }
+
+    private void SearchCars()
+    {
+        Navigation.NavigateTo("/cars/search");
+    }
+
+    private async Task Search()
+    {
+        if (TryParseCarType(CurrentCarType, out object carType))
+        {
+            searchParameters.CarType = (CarType)carType;
+        }
+
+        await CarService.SearchAsync(searchParameters.CarTitle, searchParameters.CarType);
+    }
 
     private object SetUpUserEmail(AuthenticationState context)
     {
@@ -270,7 +293,7 @@
 
     private bool SetCarType(string carTypeName)
     {
-        if (!Enum.TryParse(typeof(CarType), carTypeName, out object result))
+        if (!TryParseCarType(carTypeName, out object result))
         {
             strError += "\nSelect car type";
             return false;
@@ -279,5 +302,8 @@
         editedCar.CarType = (CarType)result;
 
         return true;
+    }
+
+    private bool TryParseCarType(string carTypeName, out object carType) => Enum.TryParse(typeof(CarType), carTypeName, out carType);
     }
 }

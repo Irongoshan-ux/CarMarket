@@ -145,14 +145,14 @@ namespace CarMarket.Server.Controllers
             var updatedUser = await _userService.GetAsync(userId);
             var userRoles = await _userManager.GetRolesAsync(updatedUser);
 
-            if (!string.IsNullOrWhiteSpace(user.Role.Name))
+            if ((!string.IsNullOrWhiteSpace(user.Role.Name)) && (!userRoles.Contains(user.Role.Name)))
             {
-                if (!userRoles.Contains(user.Role.Name))
+                if (userRoles.Count > 0)
                 {
                     await _userManager.RemoveFromRolesAsync(updatedUser, userRoles);
-                   
-                    await _userService.AddUserToRoleAsync(updatedUser, user.Role.Name);
                 }
+
+                await _userService.AddUserToRoleAsync(updatedUser, user.Role.Name);
             }
 
             return NoContent();
