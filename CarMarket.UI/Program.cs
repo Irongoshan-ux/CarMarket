@@ -18,9 +18,6 @@ namespace CarMarket.UI
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("#app");
 
-            //builder.Services.AddScoped<IHttpService<CarModel, long>, HttpCarService>();
-            //builder.Services.AddScoped<IHttpService<UserModel, string>, HttpUserService>();
-
             builder.Services.AddScoped<HttpAccessTokenSetter>();
 
             builder.Services.AddHttpClient("API", client =>
