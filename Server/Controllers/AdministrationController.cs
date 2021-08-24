@@ -1,12 +1,10 @@
 ﻿using CarMarket.Core.User.Domain;
 using CarMarket.Core.User.Service;
-using CarMarket.Server.Infrastructure.Identification.Models;
 using CarMarket.Server.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Primitives;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,7 +13,6 @@ namespace CarMarket.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin")]
     public class AdministrationController : ControllerBase
     {
         private readonly ILogger<CarController> _logger;
@@ -36,7 +33,7 @@ namespace CarMarket.Server.Controllers
         }
 
         [HttpPost("CreateRole")]
-        public async Task<IActionResult> CreateRole(CreateRoleViewModel model)
+        public async Task<IActionResult> CreateRole(string roleName)
         {
             if (!await UserIsInAdminRole())
             {
@@ -47,23 +44,18 @@ namespace CarMarket.Server.Controllers
             {
                 var identityRole = new IdentityRole
                 {
-                    Name = model.RoleName
+                    Name = roleName
                 };
 
                 IdentityResult result = await _roleManager.CreateAsync(identityRole);
 
                 if (result.Succeeded)
                 {
-                    return Ok(model);
-                }
-
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError("", error.Description);
+                    return Ok();
                 }
             }
 
-            return BadRequest($"Role {model.RoleName} already exists.");
+            return BadRequest($"Role {roleName} already exists.");
         }
 
         [HttpGet("GetRoles")]
@@ -78,74 +70,31 @@ namespace CarMarket.Server.Controllers
         }
 
         [HttpGet("GetUsersInRole")]
-        public async Task<IActionResult> GetUsersInRole(string roleId)
+        public async Task<IActionResult> GetUsersInRole(string roleName)
         {
             if (!await UserIsInAdminRole())
             {
                 return BadRequest("Access denied");
             }
 
-            var role = await _roleManager.FindByIdAsync(roleId);
+            var role = await _roleManager.FindByNameAsync(roleName);
 
             if (role is null)
             {
-                return NotFound($"Role with id={roleId} not found");
+                return NotFound($"Role with name={roleName} not found");
             }
 
-            var models = new List<UserRoleViewModel>();
+            var usersInRole = new List<UserModel>();
 
             foreach (var user in _userManager.Users)
             {
                 if (await _userManager.IsInRoleAsync(user, role.Name))
                 {
-                    var userRoleViewModel = new UserRoleViewModel
-                    {
-                        UserId = user.Id,
-                        UserName = user.UserName
-                    };
-
-                    models.Add(userRoleViewModel);
+                    usersInRole.Add(user);
                 }
             }
 
-            return Ok(models);
-        }
-
-        [HttpPost("EditUsersInRole")]
-        public async Task<IActionResult> EditUsersInRole(List<UserRoleViewModel> model, string roleId)
-        {
-            if (!await UserIsInAdminRole())
-            {
-                return BadRequest("Access denied");
-            }
-
-            var role = await _roleManager.FindByIdAsync(roleId);
-
-            if (role is null)
-            {
-                return NotFound($"Role with id={roleId} not found");
-            }
-
-            IdentityResult result = null;
-
-            foreach (var userRoleModel in model)
-            {
-                var user = await _userManager.FindByIdAsync(userRoleModel.UserId);
-
-                if ((userRoleModel.IsSelected) && !(await _userManager.IsInRoleAsync(user, role.Name)))
-                {
-                    result = await _userManager.AddToRoleAsync(user, role.Name);
-                }
-
-                if (!(userRoleModel.IsSelected) && (await _userManager.IsInRoleAsync(user, role.Name)))
-                {
-                    result = await _userManager.RemoveFromRoleAsync(user, role.Name);
-                }
-
-                else continue;
-            }
-
-            return Ok(result);
+            return Ok(usersInRole);
         }
 
         private async Task<bool> UserIsInAdminRole()

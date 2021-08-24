@@ -2,7 +2,6 @@
 using CarMarket.Core.User.Domain;
 using CarMarket.Core.User.Service;
 using CarMarket.Server.Infrastructure.Identification.Models;
-using CarMarket.Server.Services;
 using IdentityServer4;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Authentication;
@@ -21,7 +20,6 @@ namespace CarMarket.Server.Controllers
         private readonly ILogger<CarController> _logger;
         private readonly IIdentityServerInteractionService _interaction;
         private readonly IUserService _userService;
-        private readonly UserManager<UserModel> _userManager;
 
         public IdentificationController(
             IIdentityServerInteractionService interaction,
@@ -31,7 +29,6 @@ namespace CarMarket.Server.Controllers
         {
             _interaction = interaction;
             _userService = userService;
-            _userManager = userManager;
             _logger = logger;
         }
 
@@ -52,7 +49,7 @@ namespace CarMarket.Server.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await _userService.AuthenticateAsync(model.Email, EncryptPassword(model.Password));
+                var user = await _userService.AuthenticateAsync(model.Email, Utility.Encrypt(model.Password));
 
                 if (user != null)
                 {
@@ -86,7 +83,7 @@ namespace CarMarket.Server.Controllers
                     FirstName = model.FirstName,
                     LastName = model.LastName,
                     PhoneNumber = model.PhoneNumber,
-                    PasswordHash = EncryptPassword(model.Password)
+                    PasswordHash = Utility.Encrypt(model.Password)
                 };
 
                 await _userService.CreateAsync(user);
@@ -117,13 +114,9 @@ namespace CarMarket.Server.Controllers
 
         private async Task AuthorizeAsync(UserModel user)
         {
-            user.PasswordHash = EncryptPassword(user.PasswordHash);
+            user.PasswordHash = Utility.Encrypt(user.PasswordHash);
            
             await HttpContext.SignInAsync(new IdentityServerUser(user.Email));
         }
-        
-        private string EncryptPassword(string password) => Utility.Encrypt(password);
-
-        private async Task<UserModel> GetCurrentUserAsync() => await UserHelper.GetCurrentUserAsync(_userService, HttpContext);
     }
 }

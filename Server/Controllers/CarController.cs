@@ -4,16 +4,12 @@ using CarMarket.Core.Car.Service;
 using CarMarket.Core.User.Domain;
 using CarMarket.Core.User.Service;
 using CarMarket.Server.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -28,7 +24,10 @@ namespace CarMarket.Server.Controllers
         private readonly IUserService _userService;
         private readonly UserManager<UserModel> _userManager;
 
-        public CarController(ICarService carService, IUserService userService, UserManager<UserModel> userManager, ILogger<CarController> logger)
+        public CarController(ICarService carService,
+            IUserService userService,
+            UserManager<UserModel> userManager,
+            ILogger<CarController> logger)
         {
             _carService = carService;
             _userService = userService;
@@ -113,8 +112,7 @@ namespace CarMarket.Server.Controllers
         {
             var user = await GetCurrentUserAsync();
 
-            if ((user != null) && ((user.Id == (await _carService.GetAsync(carId)).Owner.Id) ||
-                await _userManager.IsInRoleAsync(user, "Admin")))
+            if (await CurrentUserIsCarOwner(user, carId))
             {
                 try
                 {
@@ -193,8 +191,7 @@ namespace CarMarket.Server.Controllers
                 return BadRequest("Car ID mismatch");
             }
 
-            if ((user != null) && ((user.Id == (await _carService.GetAsync(carId)).Owner.Id) ||
-                await _userManager.IsInRoleAsync(user, "Admin")))
+            if (await CurrentUserIsCarOwner(user, carId))
             {
                 try
                 {
@@ -212,6 +209,12 @@ namespace CarMarket.Server.Controllers
             }
 
             return BadRequest("Access denied.");
+        }
+
+        private async Task<bool> CurrentUserIsCarOwner(UserModel user, long carId)
+        {
+            return (user != null) && ((user.Id == (await _carService.GetAsync(carId)).Owner.Id) ||
+                await _userManager.IsInRoleAsync(user, "Admin"));
         }
 
         private async Task<UserModel> GetCurrentUserAsync() => await UserHelper.GetCurrentUserAsync(_userService, HttpContext);

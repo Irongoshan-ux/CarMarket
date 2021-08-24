@@ -20,7 +20,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Identity;
 using CarMarket.Core.User.Domain;
-using CarMarket.Data.User.Domain;
 
 namespace CarMarket.Server
 {
