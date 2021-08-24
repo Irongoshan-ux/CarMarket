@@ -114,13 +114,15 @@
 </Authorized>
 </AuthorizeView>
 
-<BreadCrumb BreadCrumbData="BreadCrumbDatas"></BreadCrumb>
+<BreadCrumb BreadCrumbData="BreadCrumbData"></BreadCrumb>
 
 @code {
     [Inject]
     public IHttpUserService UserService { get; set; }
 
-    private List<BreadCrumbData> BreadCrumbDatas { get; set; }
+    public bool DataUpdated { get; set; } = false;
+
+    public BreadCrumbData BreadCrumbData { get; set; }
 
     private UserModel user;
     private UserModel newUser = new UserModel();
@@ -134,13 +136,11 @@
 
     protected override void OnInitialized()
     {
-        BreadCrumbDatas = new List<BreadCrumbData>();
-
-        BreadCrumbDatas.Add(new BreadCrumbData()
+        BreadCrumbData = new BreadCrumbData()
         {
             Text = "Users",
             Url = "/admin/users"
-        });
+        };
     }
 
     private void AddUser()
@@ -170,6 +170,8 @@
             ShowPopup = false;
 
             await UserService.CreateAsync(editedUser);
+
+            DataUpdated = true;
         }
     }
     
@@ -200,6 +202,8 @@
             ShowPopup = false;
 
             await UserService.UpdateAsync(editedUser.Id, editedUser);
+
+            DataUpdated = true;
         }
     }
 
@@ -208,6 +212,8 @@
         ShowPopup = false;
 
         await UserService.DeleteAsync(user.Id);
+
+        DataUpdated = true;
     }
 
     private void ClosePopup()

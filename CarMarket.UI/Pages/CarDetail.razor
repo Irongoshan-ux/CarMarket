@@ -3,6 +3,7 @@
 @page "/car"
 @using CarMarket.Core.Car.Domain
 @using CarMarket.BusinessLogic.Image.Service
+@using CarMarket.UI.Data
 @inject HttpClient Http
 
 
@@ -31,7 +32,7 @@
     }
 
 </div>
-
+@*<BreadCrumb BreadCrumbData="BreadCrumbData"></BreadCrumb>*@
 @code {
 
     [Parameter]
@@ -39,8 +40,16 @@
 
     public CarModel CarDetails { get; set; }
 
+    public BreadCrumbData BreadCrumbData { get; set; }
+
     protected async override Task OnInitializedAsync()
     {
         CarDetails = await Http.GetFromJsonAsync<CarModel>("https://localhost:10001/api/Car/GetCar/" + CarId);
+
+        BreadCrumbData = new()
+        {
+            Text = CarDetails.Name,
+            Url = $"/cars/cardetail/{CarDetails.Id}"
+        };
     }
 }

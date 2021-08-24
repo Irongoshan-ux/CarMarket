@@ -10,17 +10,17 @@
 Welcome to your new app.
 
 <SurveyPrompt Title="How is Blazor working for you?" />
-<BreadCrumb BreadCrumbData="BreadCrumbDatas"></BreadCrumb>
+<BreadCrumb BreadCrumbData="BreadCrumbData"></BreadCrumb>
 
 @code{
-    public List<BreadCrumbData> BreadCrumbDatas = new List<BreadCrumbData>();
+    public BreadCrumbData BreadCrumbData { get; set; }
 
     protected override void OnInitialized()
     {
-        BreadCrumbDatas.Add(new BreadCrumbData()
+        BreadCrumbData = new BreadCrumbData()
         {
             Text = "Home",
             Url = "/"
-        });
+        };
     }
 }

@@ -2,11 +2,11 @@
 
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        @if(BreadCrumbData != null)
+        @if(BreadCrumbDatas != null)
         {
-            @foreach(var item in BreadCrumbData)
+            @foreach(var item in BreadCrumbDatas)
             {
-                @if(item == BreadCrumbData.Last())
+                @if(item == BreadCrumbDatas.Last())
                 {
                    <li class="breadcrumb-item active" aria-current="page">@item.Text</li>
                 }
@@ -21,6 +21,22 @@
 
 @code {
     [Parameter]
-    public List<BreadCrumbData> BreadCrumbData { get; set; }
+    public BreadCrumbData BreadCrumbData { get; set; }
 
+    public List<BreadCrumbData> BreadCrumbDatas { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if(BreadCrumbDatas is null)
+        {
+            BreadCrumbDatas = new List<BreadCrumbData>();
+        }
+
+        BreadCrumbDatas.Add(BreadCrumbData);
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        BreadCrumbDatas.Add(BreadCrumbData);
+    }
 }

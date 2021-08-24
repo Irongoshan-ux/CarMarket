@@ -89,10 +89,12 @@
 
     private async Task UpdateList(int pageNumber = 0)
     {
-        CurrentPage = pageNumber;
+        if ((CurrentPage != 0 || pageNumber != 0) && !ReloadList)
+            CurrentPage = pageNumber;
 
         var result = await Http.GetFromJsonAsync<DataResult<TItem>>(ApiGetDataLink + "?skip=" + (CurrentPage * PageSize) + "&take=" + PageSize);
         Items = result.Data.ToList();
+        TotalItems = result.Count;
 
         this.StateHasChanged();
     }
