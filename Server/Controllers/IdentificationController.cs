@@ -107,6 +107,8 @@ namespace CarMarket.Server.Controllers
 
             await HttpContext.SignOutAsync();
 
+            Response.Cookies.Delete(".AspNetCore.Identity.Application");
+
             if (logout.PostLogoutRedirectUri is null)
                 return Redirect("https://localhost:5001");
 
