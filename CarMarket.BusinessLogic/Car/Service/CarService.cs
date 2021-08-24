@@ -3,9 +3,7 @@ using CarMarket.Core.Car.Exceptions;
 using CarMarket.Core.Car.Repository;
 using CarMarket.Core.Car.Service;
 using CarMarket.Core.DataResult;
-using CarMarket.Core.User.Domain;
 using CarMarket.Core.User.Service;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

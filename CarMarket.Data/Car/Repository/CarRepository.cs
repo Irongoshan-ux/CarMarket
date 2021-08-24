@@ -3,12 +3,10 @@ using CarMarket.Core.Car.Domain;
 using CarMarket.Core.Car.Repository;
 using CarMarket.Core.DataResult;
 using CarMarket.Data.Car.Domain;
-using CarMarket.Data.User.Domain;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace CarMarket.Data.Car.Repository
 {

@@ -1,7 +1,6 @@
 ﻿using CarMarket.Core.Image.Domain;
 using CarMarket.Core.User.Domain;
 using CarMarket.Data.Car.Domain;
-using CarMarket.Data.User.Domain;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -15,22 +14,6 @@ namespace CarMarket.Data.Configuration
             builder.ToTable("Cars").HasKey(p => p.Id);
         }
     }
-
-    //public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
-    //{
-    //    public void Configure(EntityTypeBuilder<UserEntity> builder)
-    //    {
-    //        builder.HasKey(p => p.Id);
-    //    }
-    //}
-
-    //public class UserModelConfiguration : IEntityTypeConfiguration<UserModel>
-    //{
-    //    public void Configure(EntityTypeBuilder<UserModel> builder)
-    //    {
-    //        builder.HasKey(p => p.Id);
-    //    }
-    //}
 
     public class PermissonConfiguration : IEntityTypeConfiguration<Permission>
     {
@@ -62,22 +45,6 @@ namespace CarMarket.Data.Configuration
                 });
         }
     }
-
-    //public class RoleClaimConfiguration : IEntityTypeConfiguration<IdentityRoleClaim<string>>
-    //{
-    //    public void Configure(EntityTypeBuilder<IdentityRoleClaim<string>> builder)
-    //    {
-    //        builder.HasKey(key => key.Id);
-    //    }
-    //}
-
-    //public class UserClaimsConfiguration : IEntityTypeConfiguration<IdentityUserClaim<string>>
-    //{
-    //    public void Configure(EntityTypeBuilder<IdentityUserClaim<string>> builder)
-    //    {
-    //        builder.HasKey(p => p.Id);
-    //    }
-    //}
 
     public class RoleConfiguration : IEntityTypeConfiguration<IdentityRole>
     {

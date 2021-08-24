@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using CarMarket.Core.Car.Domain;
 using CarMarket.Core.DataResult;
 using CarMarket.Core.User.Domain;
 using CarMarket.Core.User.Repository;

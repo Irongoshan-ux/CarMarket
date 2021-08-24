@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using CarMarket.Core.Car.Domain;
 using CarMarket.Core.DataResult;
 using CarMarket.Core.User.Domain;
 using Microsoft.AspNetCore.Identity;
