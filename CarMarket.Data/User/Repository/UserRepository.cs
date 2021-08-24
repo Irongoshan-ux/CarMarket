@@ -108,6 +108,7 @@ namespace CarMarket.Data.User.Repository
         {
             var userEntities = await _context.Users
                 .AsNoTracking()
+                .OrderBy(x => x.Email)
                 .Skip(skip)
                 .Take(take)
                 .ToListAsync();

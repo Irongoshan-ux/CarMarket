@@ -121,6 +121,7 @@ namespace CarMarket.Data.Car.Repository
         {
             var carEntities = await _context.Cars
                 .AsNoTracking()
+                .OrderBy(x => x.Name)
                 .Include(x => x.CarImages)
                 .Include(x => x.Owner)
                 .Skip(skip)
