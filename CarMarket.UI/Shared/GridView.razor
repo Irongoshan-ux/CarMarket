@@ -71,7 +71,7 @@
         Items = result.Data.ToList();
         TotalItems = result.Count;
 
-        TotalPages = (int)Math.Ceiling(TotalItems / (decimal)PageSize);
+        TotalPages = CalculateTotalPages();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -94,7 +94,12 @@
 
         var result = await Http.GetFromJsonAsync<DataResult<TItem>>(ApiGetDataLink + "?skip=" + (CurrentPage * PageSize) + "&take=" + PageSize);
         Items = result.Data.ToList();
-        TotalItems = result.Count;
+
+        if (TotalItems != result.Count)
+        {
+            TotalItems = result.Count;
+            TotalPages = CalculateTotalPages();
+        }
 
         this.StateHasChanged();
     }
@@ -112,4 +117,6 @@
 
         await UpdateList(CurrentPage);
     }
+
+    private int CalculateTotalPages() => (int)Math.Ceiling(TotalItems / (decimal)PageSize);
 }
