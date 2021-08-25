@@ -3,6 +3,7 @@
 @using CarMarket.Core.Car.Domain
 @using CarMarket.Core.Image.Domain
 @using CarMarket.UI.Services.Car
+@using CarMarket.UI.Services.Image
 @using Microsoft.AspNetCore.Authorization
 @using System.IO
 
@@ -62,73 +63,8 @@ else
     </table>
 
 <AuthorizeView>
-    @if (ShowPopup)
-{
-        @SetUpUserEmail(context);
-    <!-- This is the popup to create or edit a car -->
-    <div class="modal" tabindex="-1" style="display:block" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title">@TitleContext</h3>
-                    <!-- Button to close the popup -->
-                    <button type="button" class="close"
-                            @onclick="ClosePopup">
-                        <span aria-hidden="true">X</span>
-                    </button>
-                </div>
-                <!-- Edit form for the current car -->
-                <div class="modal-body">
-                    <input class="form-control" type="text"
-                                placeholder="Name"
-                                @bind="editedCar.Name" />
-                    <input class="form-control" type="text"
-                            placeholder="Description"
-                            @bind="editedCar.Description" />
-                    <input class="form-control" type="number"
-                            placeholder="Price"
-                            @bind="editedCar.Price" />
-                    <input class="form-control" type="email"
-                            placeholder="Owner Email"
-                            @bind="@CurrentUserEmail"/>
-
-                    <select class="form-control"
-                            @bind="@CurrentCarType">
-                        @foreach (var option in Options)
-                        {
-                            <option value="@option">
-                                @option
-                            </option>
-                        }
-                    </select>
-                    <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
-                    <br>
-                    <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
-                    <br>
-                    <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
-                    <br>
-                    <br /><br />
-
-                        @if (editedCar.Id == 0)
-                        {
-                            <button class="btn btn-primary"
-                            @onclick="() => CreateCar(context)">
-                                Save
-                            </button>
-                        }
-                        else
-                        {
-                            <button class="btn btn-secondary"
-                            @onclick="() => UpdateCar()">
-                                Update
-                            </button>
-                        }
-                    <span style="color:red">@strError</span>
-                </div>
-            </div>
-        </div>
-    </div>
-}
+    <CarPopUp CarService="CarService" TitleContext="@TitleContext" context="context"
+            ShowPopup="ShowPopup" EditedCar="editedCar" CurrentCarType="@CurrentCarType"></CarPopUp>
 </AuthorizeView>
 }
 @code {
@@ -152,31 +88,6 @@ else
     private string CurrentCarType { get; set; } = Options.FirstOrDefault();
     private string CurrentUserEmail { get; set; }
 
-    private object SetUpUserEmail(AuthenticationState context)
-    {
-        CurrentUserEmail = context.User.Identity.Name;
-
-        return CurrentUserEmail;
-    }
-
-    private async Task HandleFilesSelected(IFileListEntry[] files)
-    {
-        var file = files.FirstOrDefault();
-
-        if ((file != null) && (ImageService.IsImage(file.Name)))
-        {
-            var ms = new MemoryStream();
-            await file.Data.CopyToAsync(ms);
-
-            editedCar.CarImages.Add(new ImageModel
-            {
-                ImageData = ms.ToArray(),
-                ImageTitle = file.Name
-            });
-        }
-        else strError += $"\nFile {file.Name} is not supported.\n";
-    }
-
     private void AddCar()
     {
         editedCar = new()
@@ -189,27 +100,6 @@ else
         ShowPopup = true;
     }
 
-    private async Task CreateCar(AuthenticationState context)
-    {
-        strError = string.Empty;
-
-        if(!SetCarType(CurrentCarType)) return;
-        if (string.IsNullOrWhiteSpace(editedCar.Name)) strError += "\nEnter car title";
-        if (editedCar.Price == 0) strError += "\nEnter price";
-
-        editedCar.Owner = new()
-        {
-            Email = CurrentUserEmail
-        };
-
-        if (string.IsNullOrWhiteSpace(strError))
-        {
-            ShowPopup = false;
-
-            await CarService.CreateAsync(editedCar);
-        }
-    }
-    
     private void EditCar(CarModel updatedCar)
     {
         TitleContext = "Edit car";
@@ -221,35 +111,9 @@ else
         ShowPopup = true;
     }
 
-    private async Task UpdateCar()
-    {
-        strError = string.Empty;
-
-        if (!SetCarType(CurrentCarType)) return;
-
-        editedCar.Owner = new()
-        {
-            Email = CurrentUserEmail
-        };
-
-        if (string.IsNullOrWhiteSpace(strError))
-        {
-            ShowPopup = false;
-
-            await CarService.UpdateAsync(editedCar.Id, editedCar);
-        }
-    }
-
     private async Task DeleteCar(CarModel car)
     {
-        ShowPopup = false;
-
         await CarService.DeleteAsync(car.Id);
-    }
-
-    private void ClosePopup()
-    {
-        ShowPopup = false;
     }
 
     private static List<string> GetCarTypesSelection()
@@ -264,18 +128,5 @@ else
         carTypes.AddRange(names.Split(',').ToList());
 
         return carTypes;
-    }
-
-    private bool SetCarType(string carTypeName)
-    {
-        if (!Enum.TryParse(typeof(CarType), carTypeName, out object result))
-        {
-            strError += "\nSelect car type";
-            return false;
-        }
-
-        editedCar.CarType = (CarType)result;
-
-        return true;
     }
 }
