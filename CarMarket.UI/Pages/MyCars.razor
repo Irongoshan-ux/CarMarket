@@ -113,6 +113,8 @@ else
 
     private async Task DeleteCar(CarModel car)
     {
+        ShowPopup = false;
+
         await CarService.DeleteAsync(car.Id);
     }
 

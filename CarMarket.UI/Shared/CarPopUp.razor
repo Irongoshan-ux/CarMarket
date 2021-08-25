@@ -1,4 +1,5 @@
 ﻿@using CarMarket.Core.Car.Domain
+@using CarMarket.UI.Data
 @using CarMarket.UI.Services.Car
 @using CarMarket.UI.Services.Image
 
@@ -78,9 +79,6 @@
     public AuthenticationState context { get; set; }
 
     [Parameter]
-    public bool DataUpdated { get; set; }
-
-    [Parameter]
     public bool ShowPopup { get; set; }
 
     [Parameter]
@@ -134,7 +132,7 @@
 
             await CarService.CreateAsync(EditedCar);
 
-            DataUpdated = true;
+            DataUpdated.IsDataUpdated = true;
         }
     }
 
@@ -155,7 +153,7 @@
 
             await CarService.UpdateAsync(EditedCar.Id, EditedCar);
 
-            DataUpdated = true;
+            DataUpdated.IsDataUpdated = true;
         }
     }
 
