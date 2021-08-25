@@ -19,7 +19,7 @@
 <button class="btn-outline-primary" @onclick="SearchCars">Search</button>
 
 <p>All cars</p>
-    <GridView ItemType="car" ApiGetDataLink="https://localhost:10001/api/Car/GetCarsByPage" ReloadList="DataUpdated.IsDataUpdated">
+    <GridView ItemType="car" ApiGetDataLink="https://localhost:10001/api/Car/GetCarsByPage" DataUpdated="IsDataUpdated">
             <GridColumns>
                 <GridColumn ColumnTitle="Image"></GridColumn>
                 <GridColumn ColumnTitle="Id"></GridColumn>
@@ -75,7 +75,7 @@
 <AuthorizeView>
     <Authorized>
         <CarPopUp CarService="CarService" TitleContext="@TitleContext" context="context"
-            ShowPopup="ShowPopup" EditedCar="editedCar" CurrentCarType="@CurrentCarType"></CarPopUp>
+            ShowPopup="ShowPopup" EditedCar="editedCar" CurrentCarType="@CurrentCarType" DataUpdated="IsDataUpdated"></CarPopUp>
     </Authorized>
 </AuthorizeView>
 
@@ -83,6 +83,10 @@
 @code {
     [Inject]
     public IHttpCarService CarService { get; set; }
+
+    public bool[] IsDataUpdated { get; set; } = { false };
+
+    //public DataUpdated DataUpdated { get; set; } = new() { IsDataUpdated = false };
 
     public string TitleContext { get; set; }
 
@@ -131,7 +135,7 @@
     {
         await CarService.DeleteAsync(car.Id);
 
-        DataUpdated.IsDataUpdated = true;
+        IsDataUpdated[0] = true;
     }
 
     private static List<string> GetCarTypesSelection()

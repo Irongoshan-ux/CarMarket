@@ -90,6 +90,9 @@
     [Parameter]
     public string CurrentCarType { get; set; }
 
+    [Parameter]
+    public bool[] DataUpdated{ get; set; }
+
     private static List<string> Options = GetCarTypesSelection();
     private string strError = "";
     private string CurrentUserEmail { get; set; }
@@ -132,7 +135,7 @@
 
             await CarService.CreateAsync(EditedCar);
 
-            DataUpdated.IsDataUpdated = true;
+            DataUpdated[0] = true;
         }
     }
 
@@ -153,7 +156,7 @@
 
             await CarService.UpdateAsync(EditedCar.Id, EditedCar);
 
-            DataUpdated.IsDataUpdated = true;
+            DataUpdated[0] = true;
         }
     }
 

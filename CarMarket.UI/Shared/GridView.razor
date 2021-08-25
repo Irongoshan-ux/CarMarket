@@ -1,4 +1,5 @@
 ﻿@using CarMarket.Core.DataResult
+@using CarMarket.UI.Data
 @typeparam TItem
 
 <div class="col-12 row">
@@ -51,15 +52,15 @@
     [Parameter]
     public string ApiGetDataLink { get; set; }
 
+    [Parameter]
+    public bool[] DataUpdated { get; set; }
+
     public List<TItem> Items { get; set; } = new List<TItem>();
     public int TotalItems { get; set; }
 
     public int PageSize { get; set; }
     public int TotalPages { get; set; }
     public int CurrentPage { get; set; }
-
-    [Parameter]
-    public bool ReloadList { get; set; }
 
     protected async override Task OnInitializedAsync()
     {
@@ -76,11 +77,11 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender && ReloadList)
+        if (!firstRender && DataUpdated[0])
         {
             await UpdateList();
-            ReloadList = false;
-
+            DataUpdated[0] = false;
+            
             StateHasChanged();
         }
 
@@ -89,7 +90,7 @@
 
     private async Task UpdateList(int pageNumber = 0)
     {
-        if ((CurrentPage != 0 || pageNumber != 0) && !ReloadList)
+        if ((CurrentPage != 0 || pageNumber != 0) && !DataUpdated[0])
             CurrentPage = pageNumber;
 
         var result = await Http.GetFromJsonAsync<DataResult<TItem>>(ApiGetDataLink + "?skip=" + (CurrentPage * PageSize) + "&take=" + PageSize);
