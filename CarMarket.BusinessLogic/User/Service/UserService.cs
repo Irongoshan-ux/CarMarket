@@ -1,5 +1,4 @@
-﻿using CarMarket.Core.Car.Domain;
-using CarMarket.Core.DataResult;
+﻿using CarMarket.Core.DataResult;
 using CarMarket.Core.User.Domain;
 using CarMarket.Core.User.Repository;
 using CarMarket.Core.User.Service;
@@ -25,46 +24,6 @@ namespace CarMarket.BusinessLogic.User.Service
         public async Task<UserModel> AuthenticateAsync(string email, string password)
         {
             return await _userRepository.FindUserModelAsync(email, password);
-        }
-
-        public async Task AddPermissionAsync(string userId, params Permission[] permissions)
-        {
-            var user = await GetAsync(userId);
-
-            foreach (var permission in permissions)
-            {
-                if (IsUserContainsPermission(user, permission))
-                    continue;
-
-                //user.Permissions.Add(permission);
-            }
-
-            await UpdateUser(userId, user);
-        }
-
-        public async Task ChangePermissionAsync(string userId, Permission replaceablePermission, Permission substitutePermission)
-        {
-            var user = await GetAsync(userId);
-
-            if (IsUserContainsPermission(user, replaceablePermission))
-            {
-                //user.Permissions.Remove(replaceablePermission);
-                //user.Permissions.Add(substitutePermission);
-
-                await UpdateUser(userId, user);
-            }
-        }
-
-        public async Task DeletePermissionAsync(string userId, Permission permission)
-        {
-            var user = await GetAsync(userId);
-
-            if (IsUserContainsPermission(user, permission))
-            {
-                //user.Permissions.Remove(permission);
-
-                await UpdateUser(userId, user);
-            }
         }
 
         public async Task<string> CreateAsync(UserModel userModel)
@@ -125,13 +84,6 @@ namespace CarMarket.BusinessLogic.User.Service
         {
             await _userRepository.UpdateAsync(userId, userModel);
         }
-
-        public async Task AddToRoleAsync(UserModel userModel, string role)
-        {
-            await _userManager.AddToRoleAsync(userModel, role);
-        }
-
-        private static bool IsUserContainsPermission(UserModel user, Permission permission) => false;/*user.Permissions.Contains(permission);*/
 
         public async Task<DataResult<UserModel>> GetByPageAsync(int skip = 0, int take = 5)
         {

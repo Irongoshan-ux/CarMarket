@@ -8,10 +8,7 @@ namespace CarMarket.Core.User.Service
 {
     public interface IUserService
     {
-        Task AddPermissionAsync(string userId, params Permission[] permissions);
-        Task ChangePermissionAsync(string userId, Permission replaceablePermission, Permission substitutePermission);
         Task<string> CreateAsync(UserModel userModel);
-        Task AddToRoleAsync(UserModel userModel, string role);
         Task<UserModel> GetAsync(string userId);
         Task<UserModel> GetByEmailAsync(string email);
         Task<DataResult<UserModel>> GetByPageAsync(int skip = 0, int take = 5);
@@ -20,7 +17,6 @@ namespace CarMarket.Core.User.Service
         Task<UserModel> AuthenticateAsync(string email, string password);
         Task<IdentityRole> GetRoleAsync(string roleName);
         Task UpdateUser(string userId, UserModel userModel);
-        Task DeletePermissionAsync(string userId, Permission permission);
         Task AddUserToRoleAsync(UserModel user, string roleName);
     }
 }

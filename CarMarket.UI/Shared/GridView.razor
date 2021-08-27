@@ -71,7 +71,7 @@
         Items = result.Data.ToList();
         TotalItems = result.Count;
 
-        TotalPages = (int)Math.Ceiling(TotalItems / (decimal)PageSize);
+        TotalPages = GetTotalPages();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -96,6 +96,8 @@
         Items = result.Data.ToList();
         TotalItems = result.Count;
 
+        TotalPages = GetTotalPages();
+
         this.StateHasChanged();
     }
 
@@ -112,4 +114,6 @@
 
         await UpdateList(CurrentPage);
     }
+
+    private int GetTotalPages() => (int)Math.Ceiling(TotalItems / (decimal)PageSize);
 }

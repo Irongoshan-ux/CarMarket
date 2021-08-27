@@ -71,45 +71,6 @@ namespace CarMarket.Server.Controllers
             return NoContent();
         }
 
-        [HttpPost("ChangeUserPermission")]
-        public async Task<IActionResult> ChangeUserPermission(string userId, [FromQuery] Permission replaceablePermission, [FromQuery] Permission substitutePermission)
-        {
-            if (!await IsUserAdminAsync())
-            {
-                return BadRequest();
-            }
-
-            await _userService.ChangePermissionAsync(userId, replaceablePermission, substitutePermission);
-
-            return NoContent();
-        }
-
-        [HttpPost("AddUserPermission")]
-        public async Task<IActionResult> AddUserPermission(string userId, [FromBody] Permission[] permissions)
-        {
-            if (!await IsUserAdminAsync())
-            {
-                return BadRequest();
-            }
-
-            await _userService.AddPermissionAsync(userId, permissions);
-
-            return NoContent();
-        }
-
-        [HttpDelete("DeleteUserPermission")]
-        public async Task<IActionResult> DeleteUserPermission(string userId, [FromBody] Permission permission)
-        {
-            if (!await IsUserAdminAsync())
-            {
-                return BadRequest();
-            }
-
-            await _userService.DeletePermissionAsync(userId, permission);
-
-            return NoContent();
-        }
-
         [HttpPost("CreateUser")]
         public async Task<IActionResult> Create([FromBody] UserModel userModel)
         {
