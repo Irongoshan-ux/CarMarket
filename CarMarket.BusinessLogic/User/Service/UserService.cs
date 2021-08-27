@@ -80,7 +80,7 @@ namespace CarMarket.BusinessLogic.User.Service
             return await _userRepository.FindRoleAsync(roleName);
         }
 
-        public async Task UpdateUser(string userId, UserModel userModel)
+        public async Task UpdateUserAsync(string userId, UserModel userModel)
         {
             await _userRepository.UpdateAsync(userId, userModel);
         }

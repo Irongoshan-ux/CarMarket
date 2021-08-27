@@ -163,7 +163,7 @@ namespace CarMarket.BusinessLogic.Tests
             // Act
             var exception = Assert.ThrowsAsync<CarNotFoundException>(async () =>
             {
-                await _userService.UpdateUser(userId, user);
+                await _userService.UpdateUserAsync(userId, user);
             });
 
             // Assert 

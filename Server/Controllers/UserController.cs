@@ -101,7 +101,7 @@ namespace CarMarket.Server.Controllers
                 return BadRequest();
             }
 
-            await _userService.UpdateUser(userId, user);
+            await _userService.UpdateUserAsync(userId, user);
 
             var updatedUser = await _userService.GetAsync(userId);
             var userRoles = await _userManager.GetRolesAsync(updatedUser);
