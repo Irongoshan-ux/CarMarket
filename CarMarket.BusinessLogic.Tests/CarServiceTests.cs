@@ -42,7 +42,7 @@ namespace CarMarket.BusinessLogic.Tests
         }
 
         [Fact]
-        public async void Get_CarIdIsValid_ShouldGetCar()
+        public async void Get_CarIdIsValid_ShouldReturnCar()
         {
             // Arrange
             var carId = 1L;
@@ -56,7 +56,7 @@ namespace CarMarket.BusinessLogic.Tests
         }
 
         [Fact]
-        public async void Get_ShouldGetAllCars()
+        public async void Get_ShouldReturnAllCars()
         {
             // Act
             var result = await _carService.GetAllAsync();
@@ -67,7 +67,7 @@ namespace CarMarket.BusinessLogic.Tests
         }
 
         [Fact]
-        public async void Get_CarOwnerIsValid_ShouldGetAllUserCars()
+        public async void Get_CarOwnerIsValid_ShouldReturnAllUserCars()
         {
             // Arrange
             var carOwner = CreateAdminUser();
@@ -81,7 +81,7 @@ namespace CarMarket.BusinessLogic.Tests
         }
 
         [Fact]
-        public async void Get_CarOwnerIsValid_ShouldGetCarsByPage()
+        public async void Get_CarOwnerIsValid_ShouldReturnCarsByPage()
         {
             // Arrange
             var random = new Random();
@@ -98,7 +98,7 @@ namespace CarMarket.BusinessLogic.Tests
         }
 
         [Fact]
-        public async void Search_CarNameIsValid_ShouldGetCarsWithCarName()
+        public async void Search_CarNameIsValid_ShouldReturnCarsWithCarName()
         {
             // Arrange
             var carName = "test";
