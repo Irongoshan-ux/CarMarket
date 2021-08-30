@@ -1,6 +1,6 @@
 ## CarMarket
 
-CarMarket is a project based on Blazor framework. It includes such important topics as Clean Architecture Layers, authorization and authentication using IdentityServer4, Claims-based authentication, Unit tests (xUnit). It also has some sample pages showing how you can link Database, API and UI in the solution.
+CarMarket is a project based on Blazor framework. It includes such important topics as Clean Architecture Layers, authorization and JWT authentication using IdentityServer4, Claims-based authentication, Unit tests (xUnit). It also has some sample pages showing how you can link Database, API and UI in the solution.
 
 ## Installation
 
