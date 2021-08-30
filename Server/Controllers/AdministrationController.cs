@@ -1,7 +1,6 @@
 ﻿using CarMarket.Core.User.Domain;
 using CarMarket.Core.User.Service;
 using CarMarket.Server.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -99,9 +98,16 @@ namespace CarMarket.Server.Controllers
 
         private async Task<bool> UserIsInAdminRole()
         {
-            var currentUser = await GetCurrentUserAsync();
+            try
+            {
+                var currentUser = await GetCurrentUserAsync();
 
-            return await _userManager.IsInRoleAsync(currentUser, "Admin");
+                return await _userManager.IsInRoleAsync(currentUser, "Admin");
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         private async Task<UserModel> GetCurrentUserAsync() => await HttpUserHelper.GetCurrentUserAsync(_userService, HttpContext);
