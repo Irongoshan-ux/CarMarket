@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CarMarket.Server.Services
 {
-    public class UserHelper
+    public class HttpUserHelper
     {
         public static Task<UserModel> GetCurrentUserAsync(IUserService userService, HttpContext context) =>
             userService.GetByEmailAsync(GetCurrentUserEmail(context));

@@ -104,6 +104,6 @@ namespace CarMarket.Server.Controllers
             return await _userManager.IsInRoleAsync(currentUser, "Admin");
         }
 
-        private async Task<UserModel> GetCurrentUserAsync() => await UserHelper.GetCurrentUserAsync(_userService, HttpContext);
+        private async Task<UserModel> GetCurrentUserAsync() => await HttpUserHelper.GetCurrentUserAsync(_userService, HttpContext);
     }
 }

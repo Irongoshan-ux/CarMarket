@@ -112,7 +112,7 @@ namespace CarMarket.Server.Controllers
         {
             var user = await GetCurrentUserAsync();
 
-            if (await CurrentUserIsCarOwner(user, carId))
+            if (await CurrentUserIsCarOwnerOrAdmin(user, carId))
             {
                 try
                 {
@@ -191,7 +191,7 @@ namespace CarMarket.Server.Controllers
                 return BadRequest("Car ID mismatch");
             }
 
-            if (await CurrentUserIsCarOwner(user, carId))
+            if (await CurrentUserIsCarOwnerOrAdmin(user, carId))
             {
                 try
                 {
@@ -211,12 +211,12 @@ namespace CarMarket.Server.Controllers
             return BadRequest("Access denied.");
         }
 
-        private async Task<bool> CurrentUserIsCarOwner(UserModel user, long carId)
+        private async Task<bool> CurrentUserIsCarOwnerOrAdmin(UserModel user, long carId)
         {
             return (user != null) && ((user.Id == (await _carService.GetAsync(carId)).Owner.Id) ||
                 await _userManager.IsInRoleAsync(user, "Admin"));
         }
 
-        private async Task<UserModel> GetCurrentUserAsync() => await UserHelper.GetCurrentUserAsync(_userService, HttpContext);
+        private async Task<UserModel> GetCurrentUserAsync() => await HttpUserHelper.GetCurrentUserAsync(_userService, HttpContext);
     }
 }
