@@ -20,10 +20,12 @@
         <h6 class="col-12 row">Type: @CarDetails.CarType</h6>
         <h6 class="col-12 row">Description: @CarDetails.Description</h6>
 
+        <ul style="list-style-type: none; margin: 0; padding: 0; overflow: hidden;">
         @foreach(var image in CarDetails.CarImages)
         {
-            <h6 class="col-12 row"><img src="@ImageService.ConvertImageToDisplay(image)" width="200px"/></h6>
+            <img src="@ImageService.ConvertImageToDisplay(image)" style="float: left; display: block; padding: 16px; text-decoration: none; width: 250px"/>
         }
+        </ul>
 
         <h5 class="col-12 row" style="font-weight:bold">Car owner contacts</h5>
         <h6 class="col-12 row">Owner: @($"{CarDetails.Owner.FirstName} {CarDetails.Owner.LastName}")

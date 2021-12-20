@@ -61,7 +61,7 @@ namespace CarMarket.Server.Controllers
         [HttpDelete("DeleteUser/{userId}")]
         public async Task<IActionResult> DeleteUser(string userId)
         {
-            if (!await IsUserAdminAsync())
+            if (!await IsCurrentUserAdminAsync())
             {
                 return BadRequest();
             }
@@ -74,7 +74,7 @@ namespace CarMarket.Server.Controllers
         [HttpPost("CreateUser")]
         public async Task<IActionResult> Create([FromBody] UserModel userModel)
         {
-            if (!await IsUserAdminAsync())
+            if (!await IsCurrentUserAdminAsync())
             {
                 return BadRequest();
             }
@@ -96,7 +96,7 @@ namespace CarMarket.Server.Controllers
         [HttpPut("UpdateUser/{userId}")]
         public async Task<IActionResult> UpdateUser(string userId, UserModel user)
         {
-            if (userId != user.Id || !await IsUserAdminAsync() || !await IsUserAdminAsync(await _userService.GetAsync(userId)))
+            if (userId != user.Id || !await IsCurrentUserAdminAsync() || await IsUserAdminAsync(user))
             {
                 return BadRequest();
             }
@@ -121,7 +121,7 @@ namespace CarMarket.Server.Controllers
 
         private string EncryptPassword(string password) => Utility.Encrypt(password);
 
-        private async Task<bool> IsUserAdminAsync()
+        private async Task<bool> IsCurrentUserAdminAsync()
         {
             var user = await GetCurrentUserAsync();
 
