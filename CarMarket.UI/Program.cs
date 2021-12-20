@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
+using CarMarket.UI.Polly;
 
 namespace CarMarket.UI
 {
@@ -33,7 +34,12 @@ namespace CarMarket.UI
             builder.Services.AddHttpClient<IHttpUserService, HttpUserService>(client =>
             {
                 client.BaseAddress = new Uri(API_BASE_ADDRESS);
-            });
+            })
+            .SetHandlerLifetime(TimeSpan.FromSeconds(10))
+            .AddPolicyHandler(PollyConfigurator.GetRetryPolicy());
+
+            builder.Services.AddHttpClient<IHttpUserService, HttpUserService>()
+                            .SetHandlerLifetime(TimeSpan.FromMinutes(5));
 
             builder.Services.AddOidcAuthentication(options =>
             {

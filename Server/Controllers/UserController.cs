@@ -96,7 +96,7 @@ namespace CarMarket.Server.Controllers
         [HttpPut("UpdateUser/{userId}")]
         public async Task<IActionResult> UpdateUser(string userId, UserModel user)
         {
-            if (userId != user.Id || !await IsUserAdminAsync())
+            if (userId != user.Id || !await IsUserAdminAsync() || !await IsUserAdminAsync(await _userService.GetAsync(userId)))
             {
                 return BadRequest();
             }
@@ -125,8 +125,10 @@ namespace CarMarket.Server.Controllers
         {
             var user = await GetCurrentUserAsync();
 
-            return await _userManager.IsInRoleAsync(user, "Admin");
+            return await IsUserAdminAsync(user);
         }
+
+        private async Task<bool> IsUserAdminAsync(UserModel user) => await _userManager.IsInRoleAsync(user, "Admin");
 
         private async Task<UserModel> GetCurrentUserAsync() => await HttpUserHelper.GetCurrentUserAsync(_userService, HttpContext);
     }

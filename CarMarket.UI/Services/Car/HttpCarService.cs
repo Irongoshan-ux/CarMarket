@@ -1,6 +1,5 @@
 ﻿using CarMarket.Core.Car.Domain;
 using CarMarket.Core.DataResult;
-using CarMarket.Core.User.Domain;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
