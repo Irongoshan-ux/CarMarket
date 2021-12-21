@@ -1,11 +1,8 @@
 ﻿@page "/cars/cardetail/{carId:long}"
-@page "/cars/cardetail"
-@page "/car"
 @using CarMarket.Core.Car.Domain
 @using CarMarket.BusinessLogic.Image.Service
-@using CarMarket.UI.Data
 @inject HttpClient Http
-
+@inject NavigationManager Navigation
 
 <h3>Car Detail</h3>
 <hr />
@@ -23,7 +20,7 @@
         <ul style="list-style-type: none; margin: 0; padding: 0; overflow: hidden;">
         @foreach(var image in CarDetails.CarImages)
         {
-            <img src="@ImageService.ConvertImageToDisplay(image)" style="float: left; display: block; padding: 16px; text-decoration: none; width: 250px"/>
+            <img src="@ImageService.ConvertImageToDisplay(image)" style="float: left; display: block; padding: 16px; text-decoration: none; width: 300px; height: 300px"/>
         }
         </ul>
 
@@ -32,9 +29,8 @@
         <br />Email: @CarDetails.Owner.Email
         <br />Phone number: @CarDetails.Owner.PhoneNumber</h6>
     }
-
 </div>
-@*<BreadCrumb BreadCrumbData="BreadCrumbData"></BreadCrumb>*@
+
 @code {
 
     [Parameter]
@@ -42,16 +38,15 @@
 
     public CarModel CarDetails { get; set; }
 
-    public BreadCrumbData BreadCrumbData { get; set; }
-
     protected async override Task OnInitializedAsync()
     {
-        CarDetails = await Http.GetFromJsonAsync<CarModel>("https://localhost:10001/api/Car/GetCar/" + CarId);
-
-        BreadCrumbData = new()
+        try
         {
-            Text = CarDetails.Name,
-            Url = $"/cars/cardetail/{CarDetails.Id}"
-        };
+            CarDetails = await Http.GetFromJsonAsync<CarModel>("https://localhost:10001/api/Car/GetCar/" + CarId);
+        }
+        catch
+        {
+            Navigation.NavigateTo("/");
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using CarMarket.Core.DataResult;
+﻿using CarMarket.Core.Car.Domain;
+using CarMarket.Core.DataResult;
 using CarMarket.Core.User.Domain;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -19,20 +20,6 @@ namespace CarMarket.UI.Services.User
             _httpAccessTokenSetter.HttpClient = _httpClient;
         }
 
-        public async Task AddPermissionAsync(string userId, params Permission[] permissions)
-        {
-            await _httpAccessTokenSetter.AddAccessTokenAsync();
-
-            await _httpClient.PostAsJsonAsync($"/api/User/ChangeUserPermission?userId={userId}", permissions);
-        }
-
-        public async Task ChangePermissionAsync(string userId, Permission replaceablePermission, Permission substitutePermission)
-        {
-            await _httpAccessTokenSetter.AddAccessTokenAsync();
-
-            await _httpClient.PostAsJsonAsync($"/api/User/ChangeUserPermission?userId={userId}&replaceablePermission={replaceablePermission}&substitutePermission={substitutePermission}", userId);
-        }
-
         public async Task<UserModel> CreateAsync(UserModel model)
         {
             await _httpAccessTokenSetter.AddAccessTokenAsync();
@@ -49,13 +36,6 @@ namespace CarMarket.UI.Services.User
             await _httpClient.DeleteAsync($"/api/User/DeleteUser/{id}");
         }
 
-        public async Task DeletePermissionAsync(string userId, Permission permission)
-        {
-            await _httpAccessTokenSetter.AddAccessTokenAsync();
-
-            await _httpClient.DeleteAsync($"/api/User/DeleteUserPermission/{userId}");
-        }
-
         public async Task<IEnumerable<UserModel>> GetAllAsync()
         {
             return await _httpClient.GetFromJsonAsync<IEnumerable<UserModel>>($"/api/User/GetUsers");
@@ -69,6 +49,18 @@ namespace CarMarket.UI.Services.User
         public async Task<UserModel> GetByEmailAsync(string email)
         {
             return await _httpClient.GetFromJsonAsync<UserModel>($"/api/User/GetByEmail?email={email}");
+        }
+
+        public async Task<IEnumerable<UserModel>> SearchAsync(string email)
+        {
+            try
+            {
+                return await _httpClient.GetFromJsonAsync<IEnumerable<UserModel>>($"/api/User/Search?email={email}");
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public async Task<DataResult<UserModel>> GetByPageAsync(int skip, int take)

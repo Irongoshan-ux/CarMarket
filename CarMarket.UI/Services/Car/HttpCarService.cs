@@ -67,7 +67,6 @@ namespace CarMarket.UI.Services.Car
             {
                 return null;
             }
-            
         }
 
         public async Task UpdateAsync(long carId, CarModel car)

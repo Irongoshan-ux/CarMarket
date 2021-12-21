@@ -1,0 +1,92 @@
+﻿@page "/admin/users/search"
+@using CarMarket.BusinessLogic.Image.Service
+@using CarMarket.Core.Image.Domain
+@using System.IO
+@using CarMarket.Core.User.Domain
+@using CarMarket.UI.Services.User
+
+<h1>Users Controller</h1>
+
+<input class="form-control" type="text"
+    placeholder="User email" 
+    @oninput ="SearchByEmail" />
+    
+<button class="btn btn-secondary" @onclick="ClearSearchParameters">Clear search parameters</button>
+
+
+@if (users == null)
+{
+    <p><em>Sorry, no results were found</em></p>
+}
+else
+{
+<table class="table">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Firstname</th>
+                <th>Lastname</th>
+                <th>Email</th>
+                <th>Phone number</th>
+                <th>Role</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in users)
+            {
+                <tr>
+                    <td>@user.UserName</td>
+                    <td>@user.FirstName</td>
+                    <td>@user.LastName</td>
+                    <td>@user.Email</td>
+                    <td>@user.PhoneNumber</td>
+                    <td>@user.Role.Name</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@code {
+    [Inject]
+    public IHttpUserService UserService { get; set; }
+
+    public class SearchParameters
+    {
+        public string UserEmail { get; set; }
+    }
+
+    private SearchParameters searchParameters = new();
+
+    public IEnumerable<UserModel> users;
+
+    protected override async Task OnInitializedAsync()
+    {
+        users = await UserService.GetAllAsync();
+    }
+
+    private async Task Search()
+    {
+        await GetCarsFromApiAsync();
+    }
+
+    private async void SearchByEmail(ChangeEventArgs e)
+    {
+        searchParameters.UserEmail = e.Value.ToString();
+
+        await Search();
+    }
+
+    private async Task ClearSearchParameters()
+    {
+        searchParameters.UserEmail = null;
+
+        await GetCarsFromApiAsync();
+    }
+
+    private async Task GetCarsFromApiAsync()
+    {
+        users = await UserService.SearchAsync(searchParameters.UserEmail);
+
+        StateHasChanged();
+    }
+}

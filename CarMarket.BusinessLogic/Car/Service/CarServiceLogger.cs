@@ -5,10 +5,7 @@ using CarMarket.Core.Car.Service;
 using CarMarket.Core.DataResult;
 using CarMarket.Core.User.Service;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace CarMarket.BusinessLogic.Car.Service
@@ -29,28 +26,31 @@ namespace CarMarket.BusinessLogic.Car.Service
         public async Task<CarModel> CreateAsync(CarModel carModel)
         {
             var owner = await _userService.GetByEmailAsync(carModel.Owner.Email);
-
             carModel.Owner = owner;
 
             _logger.LogInformation($"User with id='{owner.Id}' added new car with id='{carModel.Id}'");
+
             return await _carRepository.AddAsync(carModel);
         }
 
         public async Task<CarModel> GetAsync(long carId)
         {
             _logger.LogInformation($"Find car by id={carId}");
+
             return await _carRepository.FindByIdAsync(carId);
         }
 
         public async Task<IEnumerable<CarModel>> GetAllAsync()
         {
             _logger.LogInformation($"Returned list of all cars");
+
             return await _carRepository.FindAllAsync();
         }
 
-        public async Task<DataResult<CarModel>> GetByPageAsync(int skip = 0, int take = 5)
+        public async Task<DataResult<CarModel>> GetByPageAsync(int skip, int take)
         {
             _logger.LogInformation($"Returned list of cars from id='{skip}' to id='{take}'");
+
             return await _carRepository.FindByPageAsync(skip, take);
         }
 
@@ -64,6 +64,7 @@ namespace CarMarket.BusinessLogic.Car.Service
             }
 
             _logger.LogInformation($"Car with id='{carModel.Id}' has been removed");
+            
             await _carRepository.DeleteAsync(carModel.Id);
         }
 
@@ -84,12 +85,14 @@ namespace CarMarket.BusinessLogic.Car.Service
             else car.Owner = null;
 
             _logger.LogInformation($"Car with id='{car.Id}' has been updated");
+
             return await _carRepository.UpdateAsync(carId, car);
         }
 
         public async Task<IEnumerable<CarModel>> GetAllUserCarsAsync(string userId)
         {
             _logger.LogInformation($"Returned list of cars of user id='{userId}'");
+
             return await _carRepository.FindAllUserCarsAsync(userId);
         }
 

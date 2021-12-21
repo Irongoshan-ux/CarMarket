@@ -1,11 +1,10 @@
 ﻿@page "/"
 @using BlazorInputFile
-@using CarMarket.BusinessLogic.Image.Service
+@using BusinessLogic.Image.Service
 @using CarMarket.Core.Car.Domain
 @using CarMarket.Core.Image.Domain
 @using System.IO
 @using CarMarket.Core.User.Domain
-@using CarMarket.UI.Data
 @using CarMarket.UI.Services.Car
 @inject NavigationManager Navigation
 
@@ -13,11 +12,13 @@
 
 <AuthorizeView Roles="Admin,User">
 <button class="btn btn-success" @onclick="AddCar">Add Car</button>
+<br />
+<br />
 </AuthorizeView>
 
-<button class="btn-outline-primary" @onclick="SearchCars">Search</button>
-
-<p>All cars</p>
+<button type="button" class="btn btn-outline-primary" @onclick="SearchCars">Search</button>
+<br />
+<br />
     <GridView ItemType="car" ApiGetDataLink="https://localhost:10001/api/Car/GetCarsByPage" ReloadList="DataUpdated">
             <GridColumns>
                 <GridColumn ColumnTitle="Image"></GridColumn>
@@ -99,9 +100,6 @@
                         <input class="form-control" type="number"
                             placeholder="Price"
                             @bind="editedCar.Price" />
-                        <input class="form-control" type="email"
-                            placeholder="Owner Email"
-                            @bind="@CurrentUserEmail"/>
 
                         <select class="form-control"
                             @bind="@CurrentCarType">
@@ -143,7 +141,6 @@
     </Authorized>
 </AuthorizeView>
 
-<BreadCrumb BreadCrumbData="BreadCrumbData"></BreadCrumb>
 @code {
     [Inject]
     public IHttpCarService CarService { get; set; }
@@ -155,12 +152,6 @@
     }
 
     public bool DataUpdated { get; set; } = false;
-
-    public BreadCrumbData BreadCrumbData = new()
-    {
-        Text = "Cars",
-        Url = "/cars"
-    };
 
     private SearchParameters searchParameters = new();
     private CarModel car;

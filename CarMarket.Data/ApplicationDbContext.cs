@@ -11,7 +11,6 @@ namespace CarMarket.Data
     public class ApplicationDbContext : IdentityDbContext
     {
         public DbSet<CarEntity> Cars { get; set; }
-        public DbSet<Permission> Permissions { get; set; }
         public DbSet<ImageModel> Images { get; set; }
 
         public ApplicationDbContext()
@@ -28,7 +27,6 @@ namespace CarMarket.Data
         {
             modelBuilder.ApplyConfiguration(new RoleConfiguration());
             modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
-            modelBuilder.ApplyConfiguration(new PermissonConfiguration());
 
             InitializeUserTable(modelBuilder);
         }

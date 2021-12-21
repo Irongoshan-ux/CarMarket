@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Http;
 using System;
 using CarMarket.Server.Services;
 using Microsoft.AspNetCore.Identity;
+using CarMarket.Core.Car.Domain;
+using System.Linq;
 
 namespace CarMarket.Server.Controllers
 {
@@ -42,6 +44,27 @@ namespace CarMarket.Server.Controllers
         public async Task<UserModel> GetUserByEmail(string email)
         {
             return await _userService.GetByEmailAsync(email);
+        }
+
+        [HttpGet("Search")]
+        public async Task<IActionResult> Search(string email)
+        {
+            try
+            {
+                var result = await _userService.SearchAsync(email);
+
+                if (result.Any())
+                {
+                    return Ok(result);
+                }
+
+                return NotFound();
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "Error retrieving data from the database");
+            }
         }
 
         [HttpGet("GetUsersByPage")]

@@ -1,9 +1,9 @@
 ﻿@page "/admin/users"
 @using CarMarket.UI.Pages
 @using CarMarket.Core.User.Domain
-@using CarMarket.UI.Data
 @using CarMarket.UI.Services.User
 @using Microsoft.AspNetCore.Authorization
+@inject NavigationManager Navigation
 
 @attribute [Authorize(Roles = "Admin")]
 
@@ -12,6 +12,11 @@
 <h1>Users Controller</h1>
 
 <button class="btn btn-success" @onclick="AddUser">Add User</button>
+
+
+<button type="button" class="btn btn-outline-primary" @onclick="SearchUsers">Search</button>
+<br />
+<br />
 
 <p>All users</p>
 
@@ -113,15 +118,11 @@
 </Authorized>
 </AuthorizeView>
 
-<BreadCrumb BreadCrumbData="BreadCrumbData"></BreadCrumb>
-
 @code {
     [Inject]
     public IHttpUserService UserService { get; set; }
 
     public bool DataUpdated { get; set; } = false;
-
-    public BreadCrumbData BreadCrumbData { get; set; }
 
     private UserModel user;
     private UserModel newUser = new UserModel();
@@ -135,11 +136,11 @@
 
     protected override void OnInitialized()
     {
-        BreadCrumbData = new BreadCrumbData()
-        {
-            Text = "Users",
-            Url = "/admin/users"
-        };
+    }
+
+    private void SearchUsers()
+    {
+        Navigation.NavigateTo("/admin/users/search");
     }
 
     private void AddUser()
