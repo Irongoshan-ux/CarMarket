@@ -5,6 +5,7 @@
 @using CarMarket.UI.Services.Car
 @using Microsoft.AspNetCore.Authorization
 @using System.IO
+@inject IToastService toastService
 
 @attribute [Authorize(Roles = "Admin,User")]
 
@@ -39,7 +40,7 @@ else
                         }
                         else
                         {
-                            <img src="https://thumbs.dreamstime.com/z/no-image-available-icon-flat-vector-no-image-available-icon-flat-vector-illustration-132482953.jpg" height="150px" />
+                            <img src="https://consulsat-sd.com/wp-content/themes/consultix/images/no-image-found-360x250.png" height="150px" />
                         }
                         </NavLink>
                     </td>
@@ -206,7 +207,13 @@ else
         {
             ShowPopup = false;
 
-            await CarService.CreateAsync(editedCar);
+            var createdCar = await CarService.CreateAsync(editedCar);
+
+            if (createdCar != null)
+            {
+                toastService.ShowSuccess($"{createdCar.Name} was successfully created!");
+            }
+            else toastService.ShowError($"Error with creating a new car");
         }
     }
     
@@ -236,7 +243,11 @@ else
         {
             ShowPopup = false;
 
-            await CarService.UpdateAsync(editedCar.Id, editedCar);
+            if (await CarService.UpdateAsync(editedCar.Id, editedCar))
+            {
+                toastService.ShowSuccess($"{editedCar.Name} was successfully updated!");
+            }
+            else toastService.ShowError($"Error with updating {editedCar.Name}");
         }
     }
 
@@ -244,7 +255,11 @@ else
     {
         ShowPopup = false;
 
-        await CarService.DeleteAsync(car.Id);
+        if (await CarService.DeleteAsync(car.Id))
+        {
+            toastService.ShowSuccess($"{car.Name} was successfully deleted!");
+        }
+        else toastService.ShowError($"Error with deleting {car.Name}");
     }
 
     private void ClosePopup()

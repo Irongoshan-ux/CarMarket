@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
 using CarMarket.UI.Polly;
+using Blazored.Toast;
 
 namespace CarMarket.UI
 {
@@ -59,6 +60,8 @@ namespace CarMarket.UI
 
                 options.UserOptions.NameClaim = "sub";
             });
+
+            builder.Services.AddBlazoredToast();
 
             await builder.Build().RunAsync();
         }

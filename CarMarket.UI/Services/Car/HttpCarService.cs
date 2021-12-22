@@ -27,11 +27,13 @@ namespace CarMarket.UI.Services.Car
             return response.Content.ReadFromJsonAsync<CarModel>().Result;
         }
 
-        public async Task DeleteAsync(long carId)
+        public async Task<bool> DeleteAsync(long carId)
         {
             await _httpAccessTokenSetter.AddAccessTokenAsync();
 
-            await _httpClient.DeleteAsync("/api/Car/DeleteCar/" + carId);
+            var result = await _httpClient.DeleteAsync("/api/Car/DeleteCar/" + carId);
+
+            return result.IsSuccessStatusCode;
         }
 
 
@@ -69,11 +71,13 @@ namespace CarMarket.UI.Services.Car
             }
         }
 
-        public async Task UpdateAsync(long carId, CarModel car)
+        public async Task<bool> UpdateAsync(long carId, CarModel car)
         {
             await _httpAccessTokenSetter.AddAccessTokenAsync();
 
-            await _httpClient.PutAsJsonAsync("/api/Car/UpdateCar/" + carId, car);
+            var result = await _httpClient.PutAsJsonAsync("/api/Car/UpdateCar/" + carId, car);
+
+            return result.IsSuccessStatusCode;
         }
     }
 }

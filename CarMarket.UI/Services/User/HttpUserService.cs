@@ -1,5 +1,4 @@
-﻿using CarMarket.Core.Car.Domain;
-using CarMarket.Core.DataResult;
+﻿using CarMarket.Core.DataResult;
 using CarMarket.Core.User.Domain;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -29,11 +28,13 @@ namespace CarMarket.UI.Services.User
             return response.Content.ReadFromJsonAsync<UserModel>().Result;
         }
 
-        public async Task DeleteAsync(string id)
+        public async Task<bool> DeleteAsync(string id)
         {
             await _httpAccessTokenSetter.AddAccessTokenAsync();
 
-            await _httpClient.DeleteAsync($"/api/User/DeleteUser/{id}");
+            var result = await _httpClient.DeleteAsync($"/api/User/DeleteUser/{id}");
+
+            return result.IsSuccessStatusCode;
         }
 
         public async Task<IEnumerable<UserModel>> GetAllAsync()
@@ -68,11 +69,13 @@ namespace CarMarket.UI.Services.User
             return await _httpClient.GetFromJsonAsync<DataResult<UserModel>>($"/api/User/GetUsersByPage?skip={skip}&take={take}");
         }
 
-        public async Task UpdateAsync(string id, UserModel updatedModel)
+        public async Task<bool> UpdateAsync(string id, UserModel updatedModel)
         {
             await _httpAccessTokenSetter.AddAccessTokenAsync();
 
-            await _httpClient.PutAsJsonAsync("/api/User/UpdateUser/" + id, updatedModel);
+            var result = await _httpClient.PutAsJsonAsync("/api/User/UpdateUser/" + id, updatedModel);
+
+            return result.IsSuccessStatusCode;
         }
     }
 }

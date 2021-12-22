@@ -4,6 +4,7 @@
 @using CarMarket.UI.Services.User
 @using Microsoft.AspNetCore.Authorization
 @inject NavigationManager Navigation
+@inject IToastService toastService
 
 @attribute [Authorize(Roles = "Admin")]
 
@@ -169,12 +170,15 @@
         {
             ShowPopup = false;
 
-            await UserService.CreateAsync(editedUser);
+            var createdUser = await UserService.CreateAsync(editedUser);
+
+            if (createdUser != null) toastService.ShowSuccess($"{createdUser.Email} was successfully created!");
+            else toastService.ShowError($"Error with creating a new user");
 
             DataUpdated = true;
         }
     }
-    
+
     private void EditUser(UserModel updatedUser)
     {
         editedUser = new()
@@ -201,9 +205,13 @@
         {
             ShowPopup = false;
 
-            await UserService.UpdateAsync(editedUser.Id, editedUser);
+            if (await UserService.UpdateAsync(editedUser.Id, editedUser))
+            {
+                toastService.ShowSuccess($"{editedUser.Email} was successfully updated!");
 
-            DataUpdated = true;
+                DataUpdated = true;
+            }
+            else toastService.ShowError($"Error with updating {editedUser.Email}");
         }
     }
 
@@ -211,9 +219,13 @@
     {
         ShowPopup = false;
 
-        await UserService.DeleteAsync(user.Id);
+        if (await UserService.DeleteAsync(user.Id))
+        {
+            toastService.ShowSuccess($"{user.Email} was successfully deleted!");
 
-        DataUpdated = true;
+            DataUpdated = true;
+        }
+        else toastService.ShowError($"Error with deleting {user.Email}");
     }
 
     private void ClosePopup()

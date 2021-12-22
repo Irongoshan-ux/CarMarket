@@ -36,7 +36,6 @@ else
                 <th>Image</th>
                 <th>Title</th>
                 <th>Car type</th>
-                <th>Description</th>
                 <th>Price</th>
             </tr>
         </thead>
@@ -52,14 +51,13 @@ else
                         }
                         else
                         {
-                            <img src="https://thumbs.dreamstime.com/z/no-image-available-icon-flat-vector-no-image-available-icon-flat-vector-illustration-132482953.jpg" height="150px" />
+                            <img src="https://consulsat-sd.com/wp-content/themes/consultix/images/no-image-found-360x250.png" height="150px" />
                         }
                         </NavLink>
                     </td>
                     <td>@car.Name</td>
                     <td>@car.CarType</td>
-                    <td>@car.Description</td>
-                    <td>@car.Price</td>
+                    <td>$@car.Price</td>
                 </tr>
             }
         </tbody>

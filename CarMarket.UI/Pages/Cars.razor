@@ -7,6 +7,7 @@
 @using CarMarket.Core.User.Domain
 @using CarMarket.UI.Services.Car
 @inject NavigationManager Navigation
+@inject IToastService toastService
 
 <h1>Cars Controller</h1>
 
@@ -25,8 +26,6 @@
                 <GridColumn ColumnTitle="Id"></GridColumn>
                 <GridColumn ColumnTitle="Title"></GridColumn>
                 <GridColumn ColumnTitle="Car type"></GridColumn>
-                <GridColumn ColumnTitle="Description"></GridColumn>
-                <GridColumn ColumnTitle="Owner"></GridColumn>
                 <GridColumn ColumnTitle="Price"></GridColumn>
                 <AuthorizeView>
                     <Authorized>
@@ -44,16 +43,14 @@
                 }
                 else
                 {
-                    <img src="https://thumbs.dreamstime.com/z/no-image-available-icon-flat-vector-no-image-available-icon-flat-vector-illustration-132482953.jpg" height="150px" />
+                    <img src="https://consulsat-sd.com/wp-content/themes/consultix/images/no-image-found-360x250.png" height="150px" />
                 }
                 </NavLink>
             </td>
             <td>@car.Id</td>
             <td>@car.Name</td>
             <td>@car.CarType</td>
-            <td>@car.Description</td>
-            <td>@car.Owner.Email</td>
-            <td>@car.Price</td>
+            <td>$@car.Price</td>
             <AuthorizeView>
                 <Authorized>
                     @if (car.Owner.Email.Equals(context.User.Identity.Name) || context.User.IsInRole("Admin"))
@@ -220,25 +217,31 @@
     {
         strError = string.Empty;
 
-        if(!SetCarType(CurrentCarType)) return;
+        if (!SetCarType(CurrentCarType)) return;
         if (string.IsNullOrWhiteSpace(editedCar.Name)) strError += "\nEnter car title";
         if (editedCar.Price == 0) strError += "\nEnter price";
 
         editedCar.Owner = new()
-        {
-            Email = CurrentUserEmail
-        };
+            {
+                Email = CurrentUserEmail
+            };
 
         if (string.IsNullOrWhiteSpace(strError))
         {
             ShowPopup = false;
 
-            await CarService.CreateAsync(editedCar);
+            var createdCar = await CarService.CreateAsync(editedCar);
 
-            DataUpdated = true;
+            if (createdCar != null)
+            {
+                toastService.ShowSuccess($"{createdCar.Name} was successfully created!");
+
+                DataUpdated = true;
+            }
+            else toastService.ShowError($"Error with creating a new car");
         }
     }
-    
+
     private void EditCar(CarModel updatedCar)
     {
         TitleContext = "Edit car";
@@ -254,7 +257,11 @@
     {
         strError = string.Empty;
 
-        if(!SetCarType(CurrentCarType)) return;
+        if(!SetCarType(CurrentCarType)) 
+        {
+            toastService.ShowError(strError);
+            return;
+        }
 
         editedCar.Owner = new()
         {
@@ -265,9 +272,13 @@
         {
             ShowPopup = false;
 
-            await CarService.UpdateAsync(editedCar.Id, editedCar);
+            if (await CarService.UpdateAsync(editedCar.Id, editedCar))
+            {
+                toastService.ShowSuccess($"{editedCar.Name} was successfully updated!");
 
-            DataUpdated = true;
+                DataUpdated = true;
+            }
+            else toastService.ShowError($"Error with updating {editedCar.Name}");
         }
     }
 
@@ -275,9 +286,13 @@
     {
         ShowPopup = false;
 
-        await CarService.DeleteAsync(car.Id);
+        if (await CarService.DeleteAsync(car.Id))
+        {
+            toastService.ShowSuccess($"{car.Name} was successfully deleted!");
 
-        DataUpdated = true;
+            DataUpdated = true;
+        }
+        else toastService.ShowError($"Error with deleting {car.Name}");
     }
 
     private void ClosePopup()
