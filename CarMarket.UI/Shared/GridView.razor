@@ -1,39 +1,49 @@
 ﻿@using CarMarket.Core.DataResult
 @typeparam TItem
 
-<div class="col-12 row">
-    <table class="table table-bordered table-striped mb-0">
-        <thead class="bg-info">
-            <tr>
-                @GridColumns
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Items)
-            {
+@if (Items.Count > 0)
+{
+    <div class="col-12 row">
+        <table class="table table-bordered table-striped mb-0">
+            <thead class="bg-info">
                 <tr>
-                    @GridRow(item)
+                    @GridColumns
                 </tr>
-            }
-        </tbody>
-    </table>
-</div>
+            </thead>
+            <tbody>
+                @foreach (var item in Items)
+                {
+                    <tr>
+                        @GridRow(item)
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 
-<br />
-<div>
-    <button class="btn btn-secondary" @onclick="@(e => NavigateTo("first"))">@("<<")</button>
-    <button class="btn btn-secondary" @onclick="@(e => NavigateTo("prev"))">Prev</button>
-    @for (int i = 0; i < TotalPages; i++)
-    {
-        var pageNumber = i;
-        <button class="btn @(CurrentPage == pageNumber? "btn-dark":"btn-info")"
+    <br />
+
+    <div>
+        <button class="btn btn-secondary" @onclick="@(e => NavigateTo("first"))">@("<<")</button>
+        <button class="btn btn-secondary" @onclick="@(e => NavigateTo("prev"))">Prev</button>
+        @for (int i = 0; i < TotalPages; i++)
+        {
+            var pageNumber = i;
+            <button class="btn @(CurrentPage == pageNumber? "btn-dark":"btn-info")"
                 @onclick="@(e => UpdateList(pageNumber))">
-            @(i + 1)
-        </button>
-    }
-    <button class="btn btn-secondary" @onclick="@(e => NavigateTo("next"))">Next</button>
-    <button class="btn btn-secondary" @onclick="@(e => NavigateTo("last"))">@(">>")</button>
-</div>
+                @(i + 1)
+            </button>
+        }
+        <button class="btn btn-secondary" @onclick="@(e => NavigateTo("next"))">Next</button>
+        <button class="btn btn-secondary" @onclick="@(e => NavigateTo("last"))">@(">>")</button>
+    </div>
+}
+else
+{
+    <div style ="left:50%; right:50%; text-align:center;">
+        <h3>Nothing to display :(</h3>
+    </div>
+}
 
 @code {
     [Inject]

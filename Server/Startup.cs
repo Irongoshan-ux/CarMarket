@@ -91,7 +91,8 @@ namespace CarMarket.Server
 
             services.AddDbContext<ApplicationDbContext>(builder =>
             {
-                builder.UseSqlServer(Configuration.GetConnectionString("CarMarketDb"));
+                builder.UseSqlServer(Configuration.GetConnectionString("CarMarketDb"),
+                    b => b.MigrationsAssembly("CarMarket.Data"));
             });
 
             services.AddMediatR(typeof(Startup));

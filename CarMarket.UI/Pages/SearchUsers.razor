@@ -7,12 +7,18 @@
 
 <h1>Users Controller</h1>
 
+<div>
+
 <input class="form-control" type="text"
     placeholder="User email" 
-    @oninput ="SearchByEmail" />
+    @oninput ="SearchByEmail"
+    />
     
 <button class="btn btn-secondary" @onclick="ClearSearchParameters">Clear search parameters</button>
 
+</div>
+
+<br />
 
 @if (users == null)
 {
@@ -78,7 +84,7 @@ else
 
     private async Task ClearSearchParameters()
     {
-        searchParameters.UserEmail = null;
+        searchParameters.UserEmail = "";
 
         await GetCarsFromApiAsync();
     }

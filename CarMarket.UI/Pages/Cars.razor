@@ -11,13 +11,13 @@
 
 <h1>Cars Controller</h1>
 
+<div>
 <AuthorizeView Roles="Admin,User">
-<button class="btn btn-success" @onclick="AddCar">Add Car</button>
-<br />
-<br />
+<button style="float:left;" class="btn btn-success" @onclick="AddCar">Add Car</button>
 </AuthorizeView>
 
-<button type="button" class="btn btn-outline-primary" @onclick="SearchCars">Search</button>
+<button style="margin-left:10px" type="button" class="btn btn-outline-primary" @onclick="SearchCars">Search</button>
+</div>
 <br />
 <br />
     <GridView ItemType="car" ApiGetDataLink="https://localhost:10001/api/Car/GetCarsByPage" ReloadList="DataUpdated">

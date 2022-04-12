@@ -12,10 +12,13 @@
 <Authorized>
 <h1>Users Controller</h1>
 
-<button class="btn btn-success" @onclick="AddUser">Add User</button>
+<div>
 
+<button style="float:left;" class="btn btn-success" @onclick="AddUser">Add User</button>
 
-<button type="button" class="btn btn-outline-primary" @onclick="SearchUsers">Search</button>
+<button style="margin-left:10px;" type="button" class="btn btn-outline-primary" @onclick="SearchUsers">Search</button>
+
+</div>
 <br />
 <br />
 
@@ -28,6 +31,7 @@
             <GridColumn ColumnTitle="LastName"></GridColumn>
             <GridColumn ColumnTitle="Email"></GridColumn>
             <GridColumn ColumnTitle="Role"></GridColumn>
+            <GridColumn ColumnTitle="Actions" ></GridColumn>
         </GridColumns>
 
         <GridRow Context="user">

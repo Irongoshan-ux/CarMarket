@@ -8,6 +8,7 @@ services:
       dockerfile: Server/Dockerfile
     ports:
       - "10000:80"
+      - "10001:443"
 
 
   db:
