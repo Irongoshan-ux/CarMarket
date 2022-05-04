@@ -6,38 +6,48 @@
 
         <h1>Register</h1>
 
+        <form asp-action="Register" method="get">
+            <p>
+                Already have an account? <a href="https://localhost:10001/identification/login">Login</a>
+            </p>
+        </form>
+
+        <div class="img" style="position:center; align-content:center;">
+            <img src="../StaticImages/Cars-Logo.webp" width="100%" height="100%"/>
+        </div>
+
         <form asp-action="Register" method="post">
 
             <div asp-validation-summary="All"></div>
 
             <div class="form-group">
                 <label asp-for="Email">Enter Email</label>
-                <input class="form-control" type="text" asp-for="Email" />
+                <input class="form-control" type="text" asp-for="Email" placeholder="Email" />
             </div>
 
             <div class="form-group">
                 <label asp-for="FirstName">Enter your first name</label>
-                <input class="form-control" type="text" asp-for="FirstName" />
+                <input class="form-control" type="text" asp-for="FirstName" placeholder="First name" />
             </div>
 
             <div class="form-group">
                 <label asp-for="LastName">Enter your last name</label>
-                <input class="form-control" type="text" asp-for="LastName" />
+                <input class="form-control" type="text" asp-for="LastName" placeholder="Last name" />
             </div>
 
             <div class="form-group">
                 <label asp-for="PhoneNumber">Enter your phone number</label>
-                <input class="form-control" type="tel" asp-for="PhoneNumber" />
+                <input class="form-control" type="tel" asp-for="PhoneNumber" placeholder="Phone number" />
             </div>
 
             <div class="form-group">
                 <label asp-for="Password">Enter Password</label>
-                <input class="form-control" type="password" asp-for="Password" />
+                <input class="form-control" type="password" asp-for="Password" placeholder="Password" />
             </div>
 
             <div>
                 <label asp-for="ConfirmPassword">Confirm Password</label><br />
-                <input class="form-control" type="password" asp-for="ConfirmPassword" />
+                <input class="form-control" type="password" asp-for="ConfirmPassword" placeholder="Repeat your password" />
             </div>
 
             <br>
@@ -45,7 +55,6 @@
             <p>
                 <button class="btn btn-primary" type="submit">Register</button>
             </p>
-
         </form>
     </div>
 </div>

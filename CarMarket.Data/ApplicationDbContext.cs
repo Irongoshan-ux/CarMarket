@@ -39,8 +39,24 @@ namespace CarMarket.Data
             string userEmail = "user@gmail.com";
             string userPassword = "c54cd4083d0e3b7625cd3b8c652a2537"; // qwe
 
-            UserEntity admin = new() { Id = "qwe", Email = adminEmail, UserName = "adminUser", PasswordHash = adminPassword };
-            UserEntity user = new() { Id = "qwerty", Email = userEmail, UserName = "userUser", PasswordHash = userPassword };
+            UserEntity admin = new()
+            {
+                Id = "qwe",
+                Email = adminEmail,
+                UserName = "adminUser",
+                FirstName = "Admin",
+                LastName = "User",
+                PasswordHash = adminPassword
+            };
+            UserEntity user = new()
+            {
+                Id = "qwerty",
+                Email = userEmail,
+                UserName = "userUser",
+                FirstName = "Basic",
+                LastName = "User",
+                PasswordHash = userPassword
+            };
 
             modelBuilder.Entity<UserEntity>().HasData(new UserEntity[] { admin, user });
             base.OnModelCreating(modelBuilder);

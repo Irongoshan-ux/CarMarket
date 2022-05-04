@@ -35,11 +35,11 @@
             </GridColumns>
 
         <GridRow Context="car">
-            <td>
+            <td style="min-width:auto; max-width:300px">
                 <NavLink href=@string.Format("/cars/cardetail/{0}", car.Id)>
                 @if (car.CarImages.Count > 0)
                 {
-                    <img src="@ImageService.ConvertImageToDisplay(car.CarImages.FirstOrDefault())" height ="150px" />
+                    <img src="@ImageService.ConvertImageToDisplay(car.CarImages.FirstOrDefault())" style="max-height:100%; max-width:100%; object-fit:contain;"/>
                 }
                 else
                 {
@@ -73,7 +73,9 @@
     <Authorized>
     @if (ShowPopup)
 {
-        @SetUpUserEmail(context)
+        <div style="display:none;">
+            @SetUpUserEmail(context)
+        </div>
         <!-- This is the popup to create or edit a car -->
         <div class="modal" tabindex="-1" style="display:block" role="dialog">
             <div class="modal-dialog">
@@ -219,11 +221,11 @@
 
         if (!SetCarType(CurrentCarType)) return;
         if (string.IsNullOrWhiteSpace(editedCar.Name)) strError += "\nEnter car title";
-        if (editedCar.Price == 0) strError += "\nEnter price";
+        if (editedCar.Price < 500) strError += "\nEnter correct price";
 
         editedCar.Owner = new()
             {
-                Email = CurrentUserEmail
+                Email = context.User.Identity.Name
             };
 
         if (string.IsNullOrWhiteSpace(strError))

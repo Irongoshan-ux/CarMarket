@@ -86,8 +86,8 @@ namespace CarMarket.Data.Car.Repository
         {
             var carEntities = await _context.Cars
                 .AsNoTracking()
-                .Include(x => x.CarImages)
                 .Where(x => x.Owner.Id == userId)
+                .Include(x => x.CarImages)
                 .ToListAsync();
 
             var userCars = _mapper.Map<List<CarModel>>(carEntities);

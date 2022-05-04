@@ -55,6 +55,9 @@ namespace CarMarket.Server.Infrastructure
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }
 
+            if (user.UserName is not null)
+                claims.Add(new Claim("name", user.UserName));
+
             return claims;
         }
 

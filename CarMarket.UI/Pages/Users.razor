@@ -27,6 +27,7 @@
      <GridView ItemType="user" ApiGetDataLink="https://localhost:10001/api/User/GetUsersByPage" ReloadList="DataUpdated">
          <GridColumns>
             <GridColumn ColumnTitle="Id"></GridColumn>
+            <GridColumn ColumnTitle="Username"></GridColumn>
             <GridColumn ColumnTitle="FirstName"></GridColumn>
             <GridColumn ColumnTitle="LastName"></GridColumn>
             <GridColumn ColumnTitle="Email"></GridColumn>
@@ -44,6 +45,7 @@
                     {
                         <td>@user.Id</td>
                     }
+                    <td>@user.UserName</td>
                     <td>@user.FirstName</td>
                     <td>@user.LastName</td>
                     <td>@user.Email</td>

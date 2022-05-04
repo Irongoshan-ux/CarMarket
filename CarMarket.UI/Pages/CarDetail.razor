@@ -20,7 +20,7 @@
         <ul style="list-style-type: none; margin: 0; padding: 0; overflow: hidden;">
         @foreach(var image in CarDetails.CarImages)
         {
-            <img src="@ImageService.ConvertImageToDisplay(image)" style="float: left; display: block; padding: 16px; text-decoration: none; height: 150px"/>
+            <img src="@ImageService.ConvertImageToDisplay(image)" style="display: inline; padding: 16px; text-decoration: none; height: 150px"/>
         }
         </ul>
 

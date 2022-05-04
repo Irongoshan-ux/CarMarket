@@ -10,6 +10,22 @@
 		<DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
 	</PropertyGroup>
 
+	<ItemGroup>
+	  <None Remove="StaticImages\kindpng_2102307.ico" />
+	  <None Remove="StaticImages\kindpng_2102307.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="StaticImages\kindpng_2102307.ico">
+	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+	    <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+	  </Content>
+	  <Content Include="StaticImages\kindpng_2102307.png">
+	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+	    <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+	  </Content>
+	</ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
     <PackageReference Include="Blazored.LocalStorage" Version="4.1.2" />

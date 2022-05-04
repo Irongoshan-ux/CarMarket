@@ -25,6 +25,9 @@ using MediatR;
 using FluentValidation.AspNetCore;
 using FluentValidation;
 using CarMarket.Server.Infrastructure.Identification.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.FileProviders;
+using System.IO;
 
 namespace CarMarket.Server
 {
@@ -41,7 +44,13 @@ namespace CarMarket.Server
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors();
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder.WithOrigins("https://localhost:5001");
+                });
+            });
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                  .AddJwtBearer(options =>
@@ -133,7 +142,16 @@ namespace CarMarket.Server
             app.UseBlazorFrameworkFiles();
             app.UseStaticFiles();
 
+            app.UseStaticFiles(new StaticFileOptions()
+            {
+                FileProvider = new PhysicalFileProvider(
+                    Path.Combine(Directory.GetCurrentDirectory(), @"StaticImages")),
+                RequestPath = new PathString("/StaticImages")
+            });
+
             app.UseRouting();
+            
+            app.UseCors();
 
             app.UseAuthentication();
             app.UseAuthorization();
@@ -142,8 +160,13 @@ namespace CarMarket.Server
 
             app.Use(async (context, next) =>
             {
+                if (context.Request.Path.Value.ToLower().Contains("static"))
+                {
+                    await next.Invoke();
+                }
+
                 var user = await HttpUserHelper.GetCurrentUserAsync(userService, context);
-                if (user is null)
+                if (user is null && !context.Request.Path.Value.ToLower().Contains("static"))
                 {
                     context.Request.Path = "/Error";
                 }
