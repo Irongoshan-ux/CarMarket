@@ -2,14 +2,14 @@
 {
     public enum CarType
     {
-        Sedan,
-        Coupe,
-        SportCar,
-        StationWagon,
         Hatchback,
+        Minivan,
+        Pickup,
+        StationWagon,
+        Coupe,
+        Sedan,
         Convertible,
         SportUtilityVehicle,
-        Minivan,
-        Pickup
+        SportCar,
     }
 }

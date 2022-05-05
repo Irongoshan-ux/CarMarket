@@ -44,7 +44,7 @@ else
                         }
                         </NavLink>
                     </td>
-                    <td>@car.Name</td>
+                    <td>@car.Model.Name</td>
                     <td>@car.CarType</td>
                     <td>@car.Description</td>
                     <td>@car.Price</td>
@@ -82,7 +82,7 @@ else
                 <div class="modal-body">
                     <input class="form-control" type="text"
                                 placeholder="Name"
-                                @bind="editedCar.Name" />
+                                @bind="editedCar.Model.Name" />
                     <input class="form-control" type="text"
                             placeholder="Description"
                             @bind="editedCar.Description" />
@@ -195,7 +195,7 @@ else
         strError = string.Empty;
 
         if(!SetCarType(CurrentCarType)) return;
-        if (string.IsNullOrWhiteSpace(editedCar.Name)) strError += "\nEnter car title";
+        if (string.IsNullOrWhiteSpace(editedCar.Model.Name)) strError += "\nEnter car title";
         if (editedCar.Price == 0) strError += "\nEnter price";
 
         editedCar.Owner = new()
@@ -211,7 +211,7 @@ else
 
             if (createdCar != null)
             {
-                toastService.ShowSuccess($"{createdCar.Name} was successfully created!");
+                toastService.ShowSuccess($"{createdCar.Model.Name} was successfully created!");
             }
             else toastService.ShowError($"Error with creating a new car");
         }
@@ -245,9 +245,9 @@ else
 
             if (await CarService.UpdateAsync(editedCar.Id, editedCar))
             {
-                toastService.ShowSuccess($"{editedCar.Name} was successfully updated!");
+                toastService.ShowSuccess($"{editedCar.Model.Name} was successfully updated!");
             }
-            else toastService.ShowError($"Error with updating {editedCar.Name}");
+            else toastService.ShowError($"Error with updating {editedCar.Model.Name}");
         }
     }
 
@@ -257,9 +257,9 @@ else
 
         if (await CarService.DeleteAsync(car.Id))
         {
-            toastService.ShowSuccess($"{car.Name} was successfully deleted!");
+            toastService.ShowSuccess($"{car.Model.Name} was successfully deleted!");
         }
-        else toastService.ShowError($"Error with deleting {car.Name}");
+        else toastService.ShowError($"Error with deleting {car.Model.Name}");
     }
 
     private void ClosePopup()

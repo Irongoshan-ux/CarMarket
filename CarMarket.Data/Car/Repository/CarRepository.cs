@@ -104,12 +104,12 @@ namespace CarMarket.Data.Car.Repository
 
             if (!string.IsNullOrEmpty(carName))
             {
-                query = query.Where(c => c.Name.Contains(carName));
+                query = query.Where(c => c.Model.Name.Contains(carName));
             }
 
             if (carType != null)
             {
-                query = query.Where(c => c.CarType == carType);
+                query = query.Where(c => c.Model.Type == carType);
             }
 
             return _mapper.Map<IEnumerable<CarModel>>(await query.ToListAsync());
@@ -119,7 +119,7 @@ namespace CarMarket.Data.Car.Repository
         {
             var carEntities = await _context.Cars
                 .AsNoTracking()
-                .OrderBy(x => x.Name)
+                .OrderBy(x => x.Model.Name)
                 .Include(x => x.CarImages)
                 .Include(x => x.Owner)
                 .Skip(skip)

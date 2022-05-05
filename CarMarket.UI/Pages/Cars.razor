@@ -48,7 +48,7 @@
                 </NavLink>
             </td>
             <td>@car.Id</td>
-            <td>@car.Name</td>
+            <td>@car.Model.Name</td>
             <td>@car.CarType</td>
             <td>$@car.Price</td>
             <AuthorizeView>
@@ -92,7 +92,7 @@
                 <div class="modal-body">
                         <input class="form-control" type="text"
                                 placeholder="Name"
-                                @bind="editedCar.Name" />
+                                @bind="editedCar.Model.Name" />
                         <input class="form-control" type="text"
                             placeholder="Description"
                             @bind="editedCar.Description" />
@@ -100,6 +100,15 @@
                             placeholder="Price"
                             @bind="editedCar.Price" />
 
+                        <select class="form-control"
+                            @bind="@CurrentCarType">
+                            @foreach (var option in Options)
+                            {
+                                <option value="@option">
+                                    @option
+                                </option>
+                            }
+                        </select>
                         <select class="form-control"
                             @bind="@CurrentCarType">
                             @foreach (var option in Options)
@@ -156,6 +165,7 @@
     private CarModel car;
     private CarModel editedCar = new();
     private static List<string> Options = GetCarTypesSelection();
+    private static List<string> CarBrands;
 
     private string strError = "";
     private bool ShowPopup = false;
@@ -208,8 +218,11 @@
         editedCar = new()
         {
             Owner = new(),
-            CarImages = new List<ImageModel>()
+            CarImages = new List<ImageModel>(),
+            Model = new()
         };
+
+        CarBrands = 
 
         TitleContext = "Add new car";
         ShowPopup = true;
@@ -220,7 +233,7 @@
         strError = string.Empty;
 
         if (!SetCarType(CurrentCarType)) return;
-        if (string.IsNullOrWhiteSpace(editedCar.Name)) strError += "\nEnter car title";
+        if (string.IsNullOrWhiteSpace(editedCar.Model.Name)) strError += "\nEnter car title";
         if (editedCar.Price < 500) strError += "\nEnter correct price";
 
         editedCar.Owner = new()
@@ -236,7 +249,7 @@
 
             if (createdCar != null)
             {
-                toastService.ShowSuccess($"{createdCar.Name} was successfully created!");
+                toastService.ShowSuccess($"{createdCar.Model.Name} was successfully created!");
 
                 DataUpdated = true;
             }
@@ -276,11 +289,11 @@
 
             if (await CarService.UpdateAsync(editedCar.Id, editedCar))
             {
-                toastService.ShowSuccess($"{editedCar.Name} was successfully updated!");
+                toastService.ShowSuccess($"{editedCar.Model.Name} was successfully updated!");
 
                 DataUpdated = true;
             }
-            else toastService.ShowError($"Error with updating {editedCar.Name}");
+            else toastService.ShowError($"Error with updating {editedCar.Model.Name}");
         }
     }
 
@@ -290,11 +303,11 @@
 
         if (await CarService.DeleteAsync(car.Id))
         {
-            toastService.ShowSuccess($"{car.Name} was successfully deleted!");
+            toastService.ShowSuccess($"{car.Model.Name} was successfully deleted!");
 
             DataUpdated = true;
         }
-        else toastService.ShowError($"Error with deleting {car.Name}");
+        else toastService.ShowError($"Error with deleting {car.Model.Name}");
     }
 
     private void ClosePopup()

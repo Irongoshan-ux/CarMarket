@@ -8,16 +8,24 @@ namespace CarMarket.Core.Car.Domain
     public class CarModel
     {
         public long Id { get; set; }
-        [Required]
-        public string Name { get; set; }
-        [Required]
+
         public CarType CarType { get; set; }
+
         public ICollection<ImageModel> CarImages { get; set; }
+
         [Required]
         public UserModel Owner { get; set; }
+
         public string Description { get; set; }
+
         [Required]
-        [Range(25, 300000, ErrorMessage = "Unreliable price")]
+        [Range(25, int.MaxValue, ErrorMessage = "Unreliable price")]
         public int Price { get; set; }
+
+        [Required]
+        public Model Model { get; set; }
+
+        [Required]
+        public DataType Year { get; set; }
     }
 }

@@ -133,14 +133,8 @@ namespace CarMarket.Server
                 app.UseHsts();
             }
 
-            app.UseCors(builder =>
-            {
-                builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
-            });
-
             app.UseHttpsRedirection();
             app.UseBlazorFrameworkFiles();
-            app.UseStaticFiles();
 
             app.UseStaticFiles(new StaticFileOptions()
             {
@@ -150,8 +144,11 @@ namespace CarMarket.Server
             });
 
             app.UseRouting();
-            
-            app.UseCors();
+
+            app.UseCors(builder =>
+            {
+                builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
+            });
 
             app.UseAuthentication();
             app.UseAuthorization();

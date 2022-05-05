@@ -1,4 +1,5 @@
-﻿using CarMarket.Core.Image.Domain;
+﻿using CarMarket.Core.Car.Domain;
+using CarMarket.Core.Image.Domain;
 using CarMarket.Core.User.Domain;
 using CarMarket.Data.Car.Domain;
 using CarMarket.Data.Configuration;
@@ -11,6 +12,8 @@ namespace CarMarket.Data
     public class ApplicationDbContext : IdentityDbContext
     {
         public DbSet<CarEntity> Cars { get; set; }
+        public DbSet<Model> Models { get; set; }
+        public DbSet<Brand> Brands { get; set; }
         public DbSet<ImageModel> Images { get; set; }
 
         public ApplicationDbContext()
