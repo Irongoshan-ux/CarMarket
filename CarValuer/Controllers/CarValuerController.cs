@@ -19,7 +19,6 @@ namespace CarValuer.Controllers
         }
 
         [HttpGet("{carId}", Name = "GetMaintenanceCost")]
-        //[ActionName(nameof(GetMaintenanceCost))]
         public async Task<IActionResult> GetMaintenanceCost(long carId, CancellationToken token)
         {
             var cost = new MaintenanceCostViewModel();

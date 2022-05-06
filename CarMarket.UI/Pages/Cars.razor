@@ -25,8 +25,10 @@
                 <GridColumn ColumnTitle="Image"></GridColumn>
                 <GridColumn ColumnTitle="Id"></GridColumn>
                 <GridColumn ColumnTitle="Title"></GridColumn>
-                <GridColumn ColumnTitle="Car type"></GridColumn>
                 <GridColumn ColumnTitle="Price"></GridColumn>
+                <GridColumn ColumnTitle="Brand"></GridColumn>
+                <GridColumn ColumnTitle="Model"></GridColumn>
+                <GridColumn ColumnTitle="Car type"></GridColumn>
                 <AuthorizeView>
                     <Authorized>
                         <GridColumn ColumnTitle="Actions"></GridColumn>
@@ -49,8 +51,10 @@
             </td>
             <td>@car.Id</td>
             <td>@car.Model.Name</td>
-            <td>@car.CarType</td>
             <td>$@car.Price</td>
+            <td>@car.Model.Brand?.Name</td>
+            <td>@car.Model.Name</td>
+            <td>@car.Model.Type</td>
             <AuthorizeView>
                 <Authorized>
                     @if (car.Owner.Email.Equals(context.User.Identity.Name) || context.User.IsInRole("Admin"))
@@ -109,16 +113,19 @@
                                 </option>
                             }
                         </select>
-                        <select class="form-control"
-                            @bind="@CurrentCarType">
-                            @foreach (var option in Options)
+                            @if (createCar)
                             {
-                                <option value="@option">
-                                    @option
-                                </option>
+                                <select class="form-control"
+                            @bind="@CurrentCarBrand">
+                                    @foreach (var brand in CarBrands)
+                                    {
+                                        <option value="@brand">
+                                            @brand
+                                        </option>
+                                    }
+                                </select>
                             }
-                        </select>
-                        <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
+                            <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
                         <br>
                         <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
                         <br>
@@ -165,13 +172,31 @@
     private CarModel car;
     private CarModel editedCar = new();
     private static List<string> Options = GetCarTypesSelection();
-    private static List<string> CarBrands;
+    private List<string> CarBrands;
 
     private string strError = "";
     private bool ShowPopup = false;
+    private bool createCar = false;
     private string TitleContext { get; set; }
     private string CurrentCarType { get; set; } = Options.FirstOrDefault();
+    private string CurrentCarBrand { get; set; }
     private string CurrentUserEmail { get; set; }
+
+
+    protected async override Task OnInitializedAsync()
+    {
+        CarBrands = await GetCarBrandsSelection();
+
+        base.OnInitializedAsync();
+    }
+
+
+    private async Task<List<string>> GetCarBrandsSelection()
+    {
+        var brands = await CarService.GetCarBrandsAsync();
+
+        return brands.Select(x => x.Name).ToList();
+    }
 
     private void SearchCars()
     {
@@ -222,9 +247,8 @@
             Model = new()
         };
 
-        CarBrands = 
-
         TitleContext = "Add new car";
+        createCar = true;
         ShowPopup = true;
     }
 
@@ -259,11 +283,13 @@
 
     private void EditCar(CarModel updatedCar)
     {
+        createCar = false;
+
         TitleContext = "Edit car";
 
         editedCar = updatedCar;
 
-        CurrentCarType = editedCar.CarType.ToString();
+        CurrentCarType = editedCar.Model.Type.ToString();
 
         ShowPopup = true;
     }
@@ -282,6 +308,8 @@
         {
             Email = CurrentUserEmail
         };
+
+        editedCar.Model.Brand = null;
 
         if (string.IsNullOrWhiteSpace(strError))
         {
@@ -337,7 +365,7 @@
             return false;
         }
 
-        editedCar.CarType = (CarType)result;
+        editedCar.Model.Type = (CarType)result;
 
         return true;
     }

@@ -137,7 +137,7 @@ namespace CarMarket.Server.Controllers
 
         [HttpPost]
         [Route("CreateCar")]
-        public async Task<IActionResult> CreateCar([FromBody] CarModel carModel, [FromServices] HttpClient httpClient)
+        public async Task<IActionResult> CreateCar([FromBody] CarModel carModel)
         {
             var user = await GetCurrentUserAsync();
 

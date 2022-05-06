@@ -1,4 +1,5 @@
-﻿using CarMarket.Core.DataResult;
+﻿using CarMarket.Core.Car.Domain;
+using CarMarket.Core.DataResult;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

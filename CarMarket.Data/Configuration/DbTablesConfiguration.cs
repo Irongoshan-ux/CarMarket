@@ -1,4 +1,5 @@
-﻿using CarMarket.Core.Image.Domain;
+﻿using CarMarket.Core.Car.Domain;
+using CarMarket.Core.Image.Domain;
 using CarMarket.Data.Car.Domain;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,14 @@ namespace CarMarket.Data.Configuration
     public class CarConfiguration : IEntityTypeConfiguration<CarEntity>
     {
         public void Configure(EntityTypeBuilder<CarEntity> builder)
+        {
+            builder.ToTable("Cars").HasKey(p => p.Id);
+        }
+    }
+
+    public class ModelConfiguration : IEntityTypeConfiguration<Model>
+    {
+        public void Configure(EntityTypeBuilder<Model> builder)
         {
             builder.ToTable("Cars").HasKey(p => p.Id);
         }

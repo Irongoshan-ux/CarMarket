@@ -12,5 +12,6 @@ namespace CarMarket.Core.Car.Repository
         Task DeleteAsync(long carModelId);
         Task<Model> UpdateAsync(long carModelId, Model model);
         Task<IEnumerable<Model>> SearchByBrandAsync(string brandName);
+        Task<IEnumerable<Brand>> FindAllBrandsAsync();
     }
 }

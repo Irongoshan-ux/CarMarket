@@ -11,8 +11,27 @@ namespace CarMarket.Data.Car.Repository
     {
         private readonly ApplicationDbContext _context;
 
+        public CarModelRepository(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
         public async Task<Model> AddAsync(Model carModel)
         {
+            var brand = carModel.Brand;
+
+            if (_context.Brands.AsNoTracking().Where(x => x.Id == brand.Id).Any())
+            {
+                _context.Entry(carModel.Brand).State = EntityState.Unchanged;
+            }
+            else
+            {
+                brand.Id = default;
+
+                var result = await _context.Brands.AddAsync(carModel.Brand);
+                await _context.SaveChangesAsync();
+            }
+
             var added = await _context.Models.AddAsync(carModel);
 
             await _context.SaveChangesAsync();
@@ -37,6 +56,11 @@ namespace CarMarket.Data.Car.Repository
                  .AsNoTracking()
                  .Include(x => x.Brand)
                  .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Brand>> FindAllBrandsAsync()
+        {
+            return await _context.Brands.AsNoTracking().ToListAsync();
         }
 
         public Task<Model> FindByIdAsync(long id)

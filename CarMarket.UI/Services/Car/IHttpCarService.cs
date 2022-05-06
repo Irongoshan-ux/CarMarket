@@ -10,5 +10,6 @@ namespace CarMarket.UI.Services.Car
     {
         Task<IEnumerable<CarModel>> GetAllUserCarsByTokenAsync();
         Task<IEnumerable<CarModel>> SearchAsync(string carName, CarType? carType);
+        Task<IEnumerable<Brand>> GetCarBrandsAsync();
     }
 }

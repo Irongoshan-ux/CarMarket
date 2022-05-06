@@ -79,5 +79,12 @@ namespace CarMarket.UI.Services.Car
 
             return result.IsSuccessStatusCode;
         }
+
+        public async Task<IEnumerable<Brand>> GetCarBrandsAsync()
+        {
+            await _httpAccessTokenSetter.AddAccessTokenAsync();
+
+            return await _httpClient.GetFromJsonAsync<IEnumerable<Brand>>($"/api/Brand");
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using CarMarket.Core.Image.Domain;
 using CarMarket.Core.User.Domain;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -26,6 +27,6 @@ namespace CarMarket.Core.Car.Domain
         public Model Model { get; set; }
 
         [Required]
-        public DataType Year { get; set; }
+        public DateTime Year { get; set; }
     }
 }
