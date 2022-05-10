@@ -52,11 +52,11 @@
                 <NavLink href=@string.Format("/cars/cardetail/{0}", car.Id)>
                 @if (car.CarImages.Count > 0)
                 {
-                    <img src="@ImageService.ConvertImageToDisplay(car.CarImages.FirstOrDefault())" style="max-height:100%; max-width:100%; object-fit:contain;"/>
+                    <img src="@ImageService.ConvertImageToDisplay(car.CarImages.FirstOrDefault())" class="img-fluid img-thumbnail" style="vertical-align: middle; height: 150px"/>
                 }
                 else
                 {
-                    <img src="https://consulsat-sd.com/wp-content/themes/consultix/images/no-image-found-360x250.png" height="150px" />
+                    <img src="https://consulsat-sd.com/wp-content/themes/consultix/images/no-image-found-360x250.png" class="img-fluid img-thumbnail" style="vertical-align: middle; height: 150px" />
                 }
                 </NavLink>
             </td>
