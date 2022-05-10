@@ -64,8 +64,10 @@ else
 
 <AuthorizeView>
     @if (ShowPopup)
-{
-        @SetUpUserEmail(context);
+    {
+        <div style="display:none;">
+            @SetUpUserEmail(context)
+        </div>
     <!-- This is the popup to create or edit a car -->
     <div class="modal" tabindex="-1" style="display:block" role="dialog">
         <div class="modal-dialog">

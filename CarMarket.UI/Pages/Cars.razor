@@ -6,8 +6,18 @@
 @using System.IO
 @using CarMarket.Core.User.Domain
 @using CarMarket.UI.Services.Car
+@using CarMarket.UI.Services.CarValuer
 @inject NavigationManager Navigation
 @inject IToastService toastService
+@inject IHttpCarValuerService CarValuerService
+
+<style>
+    label {
+        margin-top: .33em;
+        display: block;
+        text-align: left;
+    }
+</style>
 
 <h1>Cars Controller</h1>
 
@@ -26,6 +36,7 @@
                 <GridColumn ColumnTitle="Id"></GridColumn>
                 <GridColumn ColumnTitle="Title"></GridColumn>
                 <GridColumn ColumnTitle="Price"></GridColumn>
+                <GridColumn ColumnTitle="Year"></GridColumn>
                 <GridColumn ColumnTitle="Brand"></GridColumn>
                 <GridColumn ColumnTitle="Model"></GridColumn>
                 <GridColumn ColumnTitle="Car type"></GridColumn>
@@ -52,6 +63,7 @@
             <td>@car.Id</td>
             <td>@car.Model.Name</td>
             <td>$@car.Price</td>
+            <td>@car.Year.Year</td>
             <td>@car.Model.Brand?.Name</td>
             <td>@car.Model.Name</td>
             <td>@car.Model.Type</td>
@@ -94,17 +106,24 @@
                     </div>
                     <!-- Edit form for the current car -->
                 <div class="modal-body">
-                        <input class="form-control" type="text"
+                   
+                    <label for="name">Car model name</label>
+                        <input id=name class="form-control" type="text"
                                 placeholder="Name"
                                 @bind="editedCar.Model.Name" />
-                        <input class="form-control" type="text"
+
+                                <label for="description">Description</label>
+                        <input id="description" class="form-control" type="text"
                             placeholder="Description"
                             @bind="editedCar.Description" />
-                        <input class="form-control" type="number"
+
+                            <label for="price">Price</label>
+                        <input id="price" class="form-control" type="number"
                             placeholder="Price"
                             @bind="editedCar.Price" />
 
-                        <select class="form-control"
+                            <label for="cartype">Car type</label>
+                        <select id="cartype" class="form-control"
                             @bind="@CurrentCarType">
                             @foreach (var option in Options)
                             {
@@ -113,9 +132,11 @@
                                 </option>
                             }
                         </select>
+
                             @if (createCar)
                             {
-                                <select class="form-control"
+                                <label for="brand">Brand</label>
+                                <select id="brand" class="form-control"
                             @bind="@CurrentCarBrand">
                                     @foreach (var brand in CarBrands)
                                     {
@@ -124,14 +145,28 @@
                                         </option>
                                     }
                                 </select>
+
+                                <label for="year">Year</label>
+                                <select id="year" class="form-control"
+                            @bind="CurrentYearSelection">
+                                    @foreach (var year in Years)
+                                    {
+                                        <option value="@year">
+                                            @year
+                                        </option>
+                                    }
+                                </select>
                             }
+                            <br>
+                            <p>Images</p>
                             <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
                         <br>
                         <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
                         <br>
                         <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
                         <br>
-                        <br /><br />
+                        <br />
+                        <br />
 
                         @if (editedCar.Id == 0)
                         {
@@ -173,6 +208,9 @@
     private CarModel editedCar = new();
     private static List<string> Options = GetCarTypesSelection();
     private List<string> CarBrands;
+
+    private int[] Years = Enumerable.Range(1970, DateTime.Now.Year - 1970).ToArray();
+    public int CurrentYearSelection = 2000;
 
     private string strError = "";
     private bool ShowPopup = false;
@@ -259,10 +297,18 @@
         if (!SetCarType(CurrentCarType)) return;
         if (string.IsNullOrWhiteSpace(editedCar.Model.Name)) strError += "\nEnter car title";
         if (editedCar.Price < 500) strError += "\nEnter correct price";
+        if (CurrentYearSelection == 0) strError += "\nSelect year";
+
+        editedCar.Year = ConvertYearsFromInt(CurrentYearSelection);
 
         editedCar.Owner = new()
             {
                 Email = context.User.Identity.Name
+            };
+
+        editedCar.Model.Brand = new Brand
+            {
+                Name = CurrentCarBrand
             };
 
         if (string.IsNullOrWhiteSpace(strError))
@@ -276,6 +322,13 @@
                 toastService.ShowSuccess($"{createdCar.Model.Name} was successfully created!");
 
                 DataUpdated = true;
+
+                var cost = await CarValuerService.AddAsync(new CarViewModel
+                    {
+                        Model = createdCar.Model,
+                        Year = createdCar.Year,
+                        Price = createdCar.Price
+                    }, System.Threading.CancellationToken.None);
             }
             else toastService.ShowError($"Error with creating a new car");
         }
@@ -341,6 +394,11 @@
     private void ClosePopup()
     {
         ShowPopup = false;
+    }
+
+    private DateTime ConvertYearsFromInt(int years)
+    {
+        return DateTime.ParseExact($"{years}0101", "yyyyMMdd", null);
     }
 
     private static List<string> GetCarTypesSelection()

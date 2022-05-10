@@ -158,12 +158,8 @@ namespace CarMarket.Server
 
             app.Use(async (context, next) =>
             {
-                if (context.Request.Path.Value.ToLower().Contains("static"))
-                {
-                    await next.Invoke();
-                }
-
                 var user = await HttpUserHelper.GetCurrentUserAsync(userService, context);
+
                 if (user is null && !context.Request.Path.Value.ToLower().Contains("static"))
                 {
                     context.Request.Path = "/Error";

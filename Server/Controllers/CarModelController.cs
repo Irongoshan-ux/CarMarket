@@ -39,8 +39,6 @@ namespace CarMarket.Server.Controllers
             return NotFound();
         }
 
-        
-
         [HttpPost]
         public async Task<IActionResult> CreateCarModel([FromBody] Model carModel)
         {

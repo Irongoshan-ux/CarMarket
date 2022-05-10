@@ -1,6 +1,8 @@
 ﻿@page "/cars/cardetail/{carId:long}"
 @using CarMarket.Core.Car.Domain
 @using CarMarket.BusinessLogic.Image.Service
+@using CarMarket.UI.Services.CarValuer
+@using System.Threading
 @inject HttpClient Http
 @inject NavigationManager Navigation
 
@@ -11,10 +13,27 @@
 
     @if (CarDetails != null)
     {
-        <h5 class="col-12 row" style="font-weight:bold">Title: @CarDetails.Model.Name
+        <h5 class="col-12 row" style="font-weight:bold">Title: @CarDetails.Model?.Name
             <br>Price: $@CarDetails.Price
+            <br>Year: @CarDetails.Year.Year
         </h5>
-        <h6 class="col-12 row">Type: @CarDetails.CarType</h6>
+
+        @if (CostPerYear != 0)
+        {
+            <h5>
+                Estimated Cost Per Year: $@CostPerYear
+            </h5>
+        }
+        else
+        {
+            <h5>
+                Sorry, we couldn't estimate cost per year for this car :(
+            </h5>
+        }
+
+        <h6 class="col-12 row">Brand: @CarDetails.Model?.Brand?.Name</h6>
+        <h6 class="col-12 row">Model: @CarDetails.Model?.Name</h6>
+        <h6 class="col-12 row">Type: @CarDetails.Model?.Type</h6>
         <h6 class="col-12 row">Description: @CarDetails.Description</h6>
 
         <ul style="list-style-type: none; margin: 0; padding: 0; overflow: hidden;">
@@ -32,17 +51,31 @@
 </div>
 
 @code {
+    [Inject]
+    public IHttpCarValuerService CarValuerService { get; set; }
 
     [Parameter]
     public long CarId { get; set; }
-
     public CarModel CarDetails { get; set; }
+    public int CostPerYear { get; set; }
 
     protected async override Task OnInitializedAsync()
     {
         try
         {
             CarDetails = await Http.GetFromJsonAsync<CarModel>("https://localhost:10001/api/Car/GetCar/" + CarId);
+
+            CostPerYearResult result;
+
+            try
+            {
+                result = await CarValuerService.GetAsync(CarId, CancellationToken.None);
+                CostPerYear = result.Cost;
+            }
+            catch
+            {
+                CostPerYear = 0;
+            }
         }
         catch
         {

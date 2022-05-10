@@ -30,8 +30,11 @@ namespace CarMarket.Data
         {
             modelBuilder.ApplyConfiguration(new RoleConfiguration());
             modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
+            modelBuilder.ApplyConfiguration(new BrandsConfiguration());
 
             InitializeUserTable(modelBuilder);
+
+            base.OnModelCreating(modelBuilder);
         }
 
         private void InitializeUserTable(ModelBuilder modelBuilder)
@@ -62,7 +65,6 @@ namespace CarMarket.Data
             };
 
             modelBuilder.Entity<UserEntity>().HasData(new UserEntity[] { admin, user });
-            base.OnModelCreating(modelBuilder);
         }
     }
 }

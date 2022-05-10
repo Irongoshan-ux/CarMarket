@@ -1,6 +1,6 @@
-﻿namespace CarValuer.Data
+﻿namespace CarMarket.UI.Services.CarValuer
 {
-    public class CarsMaintenanceCostsPerYear
+    public class CostPerYearResult
     {
         public long Id { get; set; }
         public long CarId { get; set; }

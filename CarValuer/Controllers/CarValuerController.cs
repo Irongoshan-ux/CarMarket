@@ -21,24 +21,14 @@ namespace CarValuer.Controllers
         [HttpGet("{carId}", Name = "GetMaintenanceCost")]
         public async Task<IActionResult> GetMaintenanceCost(long carId, CancellationToken token)
         {
-            var cost = new MaintenanceCostViewModel();
+            var listResult = await _context.CarsMaintenanceCostsPerYear
+                .Where(x => x.CarId == carId)
+                .ToListAsync(token);
 
-            try
-            {
-                var listResult = await _context.CarsMaintenanceCostsPerYear
-                    .Where(x => x.Car.Id == carId)
-                    .Include(x => x.Car)
-                    .ToListAsync(token);
+            if (listResult.Any())
+                return Ok(listResult.First());
 
-                cost.CarId = listResult.First().Car.Id;
-                cost.Cost = listResult.First().Cost;
-            }
-            catch
-            {
-                return NotFound();
-            }
-
-            return Ok(cost);
+            return NotFound();
         }
 
         [HttpPost]
@@ -49,7 +39,7 @@ namespace CarValuer.Controllers
 
             var result = new CarsMaintenanceCostsPerYear
             {
-                Car = carViewModel,
+                CarId = carViewModel.Model.Id,
                 Cost = cost
             };
 

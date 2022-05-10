@@ -8,12 +8,14 @@ using System;
 using System.Threading.Tasks;
 using CarMarket.UI.Polly;
 using Blazored.Toast;
+using CarMarket.UI.Services.CarValuer;
 
 namespace CarMarket.UI
 {
     public class Program
     {
         private static readonly string API_BASE_ADDRESS = "https://localhost:10001";
+        private static readonly string API_CAR_VALUER_BASE_ADDRESS = "https://localhost:11001";
 
         public static async Task Main(string[] args)
         {
@@ -30,6 +32,11 @@ namespace CarMarket.UI
             builder.Services.AddHttpClient<IHttpCarService, HttpCarService>(client =>
             {
                 client.BaseAddress = new Uri(API_BASE_ADDRESS);
+            });
+
+            builder.Services.AddHttpClient<IHttpCarValuerService, HttpCarValuerService>(client =>
+            {
+                client.BaseAddress = new Uri(API_CAR_VALUER_BASE_ADDRESS);
             });
 
             builder.Services.AddHttpClient<IHttpUserService, HttpUserService>(client =>

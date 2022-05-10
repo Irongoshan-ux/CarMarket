@@ -56,6 +56,10 @@ namespace CarMarket.Data.Car.Repository
                 _context.Entry(newCarEntity.Owner).State = EntityState.Unchanged;
             }
 
+            var brand = _context.Brands.FirstOrDefault(x => x.Name == carModel.Model.Brand.Name);
+
+            newCarEntity.Model.Brand = brand;
+
             if (_context.Models.AsNoTracking().Where(x => x.Id == newCarEntity.Model.Id).Any())
             {
                 _context.Entry(newCarEntity.Model).State = EntityState.Unchanged;
