@@ -123,7 +123,7 @@
                             @bind="editedCar.Price" />
 
                             <label for="cartype">Car type</label>
-                        <select id="cartype" class="form-control"
+                        <select id="cartype" class="form-control" aria-label=".form-control"
                             @bind="@CurrentCarType">
                             @foreach (var option in Options)
                             {
@@ -158,8 +158,8 @@
                                 </select>
                             }
                             <br>
-                            <p>Images</p>
-                            <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
+                        <p>Images</p>
+                        <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
                         <br>
                         <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
                         <br>
@@ -224,6 +224,8 @@
     protected async override Task OnInitializedAsync()
     {
         CarBrands = await GetCarBrandsSelection();
+
+        CurrentCarBrand = CarBrands.First();
 
         base.OnInitializedAsync();
     }
