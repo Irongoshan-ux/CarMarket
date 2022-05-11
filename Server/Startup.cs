@@ -49,6 +49,8 @@ namespace CarMarket.Server
                 options.AddDefaultPolicy(builder =>
                 {
                     builder.WithOrigins("https://localhost:5001");
+                    builder.AllowAnyHeader();
+                    builder.AllowAnyMethod();
                 });
             });
 

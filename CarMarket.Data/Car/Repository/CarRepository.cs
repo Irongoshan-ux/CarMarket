@@ -126,7 +126,7 @@ namespace CarMarket.Data.Car.Repository
             return userCars;
         }
 
-        public async Task<IEnumerable<CarModel>> SearchAsync(string carName, CarType? carType)
+        public async Task<IEnumerable<CarModel>> SearchAsync(string carName, CarType? carType, string? brand)
         {
             IQueryable<CarEntity> query = _context.Cars
                 .AsNoTracking()
@@ -143,6 +143,11 @@ namespace CarMarket.Data.Car.Repository
             if (carType != null)
             {
                 query = query.Where(c => c.Model.Type == carType);
+            }
+
+            if (brand is not null)
+            {
+                query = query.Where(c => c.Model.Brand.Name.Equals(brand));
             }
 
             return _mapper.Map<IEnumerable<CarModel>>(await query.ToListAsync());

@@ -21,6 +21,17 @@
         </option>
     }
 </select>
+
+<select class="form-control"
+    @onchange="SearchByBrand">
+    @foreach (var carBrand in CarBrands)
+    {
+        <option value="@carBrand">
+            @carBrand
+        </option>
+    }
+</select>
+
 <button class="btn btn-secondary" @onclick="ClearSearchParameters">Clear search parameters</button>
 
 
@@ -71,17 +82,28 @@ else
     {
         public string CarTitle { get; set; }
         public CarType? CarType { get; set; }
+        public string? Brand { get; set; }
     }
 
     private SearchParameters searchParameters = new();
     private static List<string> CarTypes = GetCarTypesSelection();
     private string CurrentCarType { get; set; } = "Select car type";
+    private static List<string> CarBrands { get; set; } = new List<string>();
 
     public IEnumerable<CarModel> cars;
 
     protected override async Task OnInitializedAsync()
     {
         cars = await CarService.GetAllAsync();
+        CarBrands.Add("All");
+        CarBrands.AddRange(await GetCarBrandsSelection());
+    }
+
+    private async Task<List<string>> GetCarBrandsSelection()
+    {
+        var brands = await CarService.GetCarBrandsAsync();
+
+        return brands.Select(x => x.Name).ToList();
     }
 
     private async Task Search()
@@ -89,6 +111,20 @@ else
         searchParameters.CarType = TryParseCarType(CurrentCarType, out object carType) ? (CarType)carType : null;
 
         await GetCarsFromApiAsync();
+    }
+
+    private async void SearchByBrand(ChangeEventArgs e)
+    {
+        if (e.Value.ToString().Equals("All"))
+        {
+            searchParameters.Brand = null;
+        }
+        else
+        {
+            searchParameters.Brand = e.Value.ToString();
+        }
+
+        await Search();
     }
 
     private async void SearchByTitle(ChangeEventArgs e)
@@ -107,16 +143,18 @@ else
 
     private async Task ClearSearchParameters()
     {
-        CurrentCarType = CarTypes.FirstOrDefault();
         searchParameters.CarTitle = null;
         searchParameters.CarType = null;
+        searchParameters.Brand = null;
+
+        CurrentCarType = "Select car type";
 
         await GetCarsFromApiAsync();
     }
 
     private async Task GetCarsFromApiAsync()
     {
-        cars = await CarService.SearchAsync(searchParameters.CarTitle, searchParameters.CarType);
+        cars = await CarService.SearchAsync(searchParameters.CarTitle, searchParameters.CarType, searchParameters.Brand);
 
         StateHasChanged();
     }

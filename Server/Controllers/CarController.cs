@@ -38,11 +38,11 @@ namespace CarMarket.Server.Controllers
         }
 
         [HttpGet("Search")]
-        public async Task<IActionResult> Search(string carName, CarType? carType)
+        public async Task<IActionResult> Search(string carName, CarType? carType, string? brand)
         {
             try
             {
-                var result = await _carService.SearchAsync(carName, carType);
+                var result = await _carService.SearchAsync(carName, carType, brand);
 
                 if (result.Any())
                 {

@@ -88,6 +88,7 @@ namespace CarMarket.Server.Controllers
                 user = new UserModel
                 {
                     Email = model.Email,
+                    UserName = model.Username,
                     FirstName = model.FirstName,
                     LastName = model.LastName,
                     PhoneNumber = model.PhoneNumber,

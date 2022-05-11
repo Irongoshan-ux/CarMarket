@@ -8,6 +8,9 @@ namespace CarMarket.Server.Infrastructure.Identification.Models
         [EmailAddress(ErrorMessage = "Invalid email")]
         public string Email { get; set; }
 
+        [Required(ErrorMessage = "No username provided")]
+        public string Username { get; set; }
+
         [Required(ErrorMessage ="No first name provided")]
         [DataType(DataType.Text)]
         public string FirstName { get; set; }

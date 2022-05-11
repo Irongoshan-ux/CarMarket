@@ -52,7 +52,7 @@
                 <NavLink href=@string.Format("/cars/cardetail/{0}", car.Id)>
                 @if (car.CarImages.Count > 0)
                 {
-                    <img src="@ImageService.ConvertImageToDisplay(car.CarImages.FirstOrDefault())" class="img-fluid img-thumbnail" style="vertical-align: middle; height: 150px"/>
+                    <img src="@ImageService.ConvertImageToDisplay(car.CarImages.FirstOrDefault())" class="img-fluid img-thumbnail" style="vertical-align: middle; height: 150px; width: fit-content"/>
                 }
                 else
                 {
@@ -250,7 +250,7 @@
             searchParameters.CarType = (CarType)carType;
         }
 
-        await CarService.SearchAsync(searchParameters.CarTitle, searchParameters.CarType);
+        await CarService.SearchAsync(searchParameters.CarTitle, searchParameters.CarType, null);
     }
 
     private object SetUpUserEmail(AuthenticationState context)

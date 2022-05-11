@@ -59,11 +59,11 @@ namespace CarMarket.UI.Services.Car
             return await _httpClient.GetFromJsonAsync<DataResult<CarModel>>($"/api/Car/GetCarsByPage?skip={skip}&take={take}");
         }
 
-        public async Task<IEnumerable<CarModel>> SearchAsync(string carName, CarType? carType)
+        public async Task<IEnumerable<CarModel>> SearchAsync(string carName, CarType? carType, string? brand)
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<IEnumerable<CarModel>>($"/api/Car/Search?carName={carName}&carType={carType}");
+                return await _httpClient.GetFromJsonAsync<IEnumerable<CarModel>>($"/api/Car/Search?carName={carName}&carType={carType}&brand={brand}");
             }
             catch
             {
