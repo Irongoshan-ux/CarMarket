@@ -58,11 +58,6 @@ namespace CarMarket.Data.Car.Repository
                  .ToListAsync();
         }
 
-        public async Task<IEnumerable<Brand>> FindAllBrandsAsync()
-        {
-            return await _context.Brands.AsNoTracking().ToListAsync();
-        }
-
         public Task<Model> FindByIdAsync(long id)
         {
             return _context.Models

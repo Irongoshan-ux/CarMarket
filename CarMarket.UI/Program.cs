@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using CarMarket.UI.Polly;
 using Blazored.Toast;
 using CarMarket.UI.Services.CarValuer;
+using CarMarket.UI.Services.CarBrand;
 
 namespace CarMarket.UI
 {
@@ -30,6 +31,13 @@ namespace CarMarket.UI
             });
 
             builder.Services.AddHttpClient<IHttpCarService, HttpCarService>(client =>
+            {
+                client.BaseAddress = new Uri(API_BASE_ADDRESS);
+            })
+                .SetHandlerLifetime(TimeSpan.FromSeconds(10))
+                .AddPolicyHandler(PollyConfigurator.GetRetryPolicy());
+
+            builder.Services.AddHttpClient<IHttpCarBrandService, HttpCarBrandService>(client =>
             {
                 client.BaseAddress = new Uri(API_BASE_ADDRESS);
             })

@@ -20,7 +20,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarMarket.BusinessLogic.Tes
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{502A0699-603B-41A3-B43A-618F595DD7DB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarValuer", "CarValuer\CarValuer.csproj", "{A576D877-0B13-47C9-AD51-6F09A64959D9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarValuer", "CarValuer\CarValuer.csproj", "{A576D877-0B13-47C9-AD51-6F09A64959D9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

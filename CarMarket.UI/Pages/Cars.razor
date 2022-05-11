@@ -207,7 +207,7 @@
     private CarModel car;
     private CarModel editedCar = new();
     private static List<string> Options = GetCarTypesSelection();
-    private List<string> CarBrands;
+    private List<string> CarBrands = new();
 
     private int[] Years = Enumerable.Range(1970, DateTime.Now.Year - 1970).ToArray();
     public int CurrentYearSelection = 2000;
@@ -224,7 +224,6 @@
     protected async override Task OnInitializedAsync()
     {
         CarBrands = await GetCarBrandsSelection();
-
         CurrentCarBrand = CarBrands.First();
 
         base.OnInitializedAsync();
@@ -336,7 +335,7 @@
         }
     }
 
-    private void EditCar(CarModel updatedCar)
+    private async void EditCar(CarModel updatedCar)
     {
         createCar = false;
 

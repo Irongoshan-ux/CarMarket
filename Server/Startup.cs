@@ -99,6 +99,7 @@ namespace CarMarket.Server
 
             services.AddScoped<ICarRepository, CarRepository>();
             services.AddScoped<ICarModelRepository, CarModelRepository>();
+            services.AddScoped<ICarBrandRepository, CarBrandRepository>();
             services.AddScoped<ICarService, CarServiceLogger>();
 
             services.AddDbContext<ApplicationDbContext>(builder =>
