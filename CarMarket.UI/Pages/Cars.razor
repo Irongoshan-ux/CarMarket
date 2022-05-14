@@ -7,6 +7,7 @@
 @using CarMarket.Core.User.Domain
 @using CarMarket.UI.Services.Car
 @using CarMarket.UI.Services.CarValuer
+@using CarMarket.UI.Services.HttpInterceptor
 @inject NavigationManager Navigation
 @inject IToastService toastService
 @inject IHttpCarValuerService CarValuerService
@@ -69,18 +70,24 @@
             <td>@car.Model.Type</td>
             <AuthorizeView>
                 <Authorized>
+                    <td>
                     @if (car.Owner.Email.Equals(context.User.Identity.Name) || context.User.IsInRole("Admin"))
                     {
                         <button class="btn btn-primary"
                             @onclick="() => EditCar(car)">
-                            Edit
+                            <span
+                            class="glyphicon glyphicon-pencil"></span>
+                            &nbsp; Edit
                         </button>
 
                         <button class="btn btn-danger"
                             @onclick="(() => DeleteCar(car))">
-                            Delete
+                            <span
+                            class="glyphicon glyphicon-trash"></span>
+                            &nbsp; Remove
                         </button>
                     }
+                    </td>
                 </Authorized>
             </AuthorizeView>
         </GridRow>
@@ -194,6 +201,11 @@
 @code {
     [Inject]
     public IHttpCarService CarService { get; set; }
+
+    [Inject]
+    public HttpInterceptorService Interceptor { get; set; }
+
+    public void Dispose() => Interceptor.DisposeEvent();
 
     public class SearchParameters
     {
@@ -324,12 +336,19 @@
 
                 DataUpdated = true;
 
-                var cost = await CarValuerService.AddAsync(new CarViewModel
+                try
+                {
+                    var cost = CarValuerService.AddAsync(new CarViewModel
                     {
                         Model = createdCar.Model,
                         Year = createdCar.Year,
                         Price = createdCar.Price
                     }, System.Threading.CancellationToken.None);
+                }
+                catch
+                {
+                    
+                }
             }
             else toastService.ShowError($"Error with creating a new car");
         }
@@ -394,6 +413,7 @@
 
     private void ClosePopup()
     {
+        strError = string.Empty;
         ShowPopup = false;
     }
 

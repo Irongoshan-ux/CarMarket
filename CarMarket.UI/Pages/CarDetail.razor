@@ -3,6 +3,7 @@
 @using CarMarket.BusinessLogic.Image.Service
 @using CarMarket.UI.Services.CarValuer
 @using System.Threading
+@using CarMarket.UI.Services.HttpInterceptor
 @inject HttpClient Http
 @inject NavigationManager Navigation
 
@@ -18,18 +19,18 @@
             <br>Year: @CarDetails.Year.Year
         </h5>
 
-        @if (CostPerYear != 0)
-        {
-            <h5>
-                Estimated Cost Per Year: $@CostPerYear
-            </h5>
-        }
-        else
-        {
-            <h5>
-                Sorry, we couldn't estimate cost per year for this car :(
-            </h5>
-        }
+        <div>
+            @if (_costLoaded) {
+                    <div>
+                        Estimated maintenance cost per year: @result?.Cost
+                    </div>
+              }
+              else {
+                  <div style="background-color: darkgray">
+                        Sorry, we couldn't load estimated maintenance cost per hour for this car :( 
+                    </div>
+                  
+              }</div>
 
         <h6 class="col-12 row">Brand: @CarDetails.Model?.Brand?.Name</h6>
         <h6 class="col-12 row">Model: @CarDetails.Model?.Name</h6>
@@ -54,10 +55,16 @@
     [Inject]
     public IHttpCarValuerService CarValuerService { get; set; }
 
+    [Inject]
+    public HttpInterceptorService Interceptor { get; set; }
+    public void Dispose() => Interceptor.DisposeEvent();
+
     [Parameter]
     public long CarId { get; set; }
     public CarModel CarDetails { get; set; }
     public int CostPerYear { get; set; }
+    bool _costLoaded = false;
+    CostPerYearResult result;
 
     protected async override Task OnInitializedAsync()
     {
@@ -65,16 +72,33 @@
         {
             CarDetails = await Http.GetFromJsonAsync<CarModel>("https://localhost:10001/api/Car/GetCar/" + CarId);
 
-            CostPerYearResult result;
-
             try
             {
-                result = await CarValuerService.GetAsync(CarId, CancellationToken.None);
-                CostPerYear = result.Cost;
+                var task = new Task(async () =>
+                {
+                    try
+                    {
+                        result = await CarValuerService.GetAsync(CarId, CancellationToken.None);
+
+                        CostPerYear = result.Cost;
+                        _costLoaded = true;
+
+                        StateHasChanged();
+                    }
+                    catch
+                    {
+                    }
+                });
+
+                task.Start();
             }
             catch
             {
-                CostPerYear = 0;
+                result = new()
+                    {
+                        Cost = 0
+                    };
+                _costLoaded = false;
             }
         }
         catch

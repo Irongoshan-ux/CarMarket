@@ -1,42 +1,51 @@
 ﻿@using CarMarket.Core.DataResult
+@using CarMarket.UI.Services.HttpInterceptor
 @typeparam TItem
-
-@if (Items.Count > 0)
+@if (_dataLoaded)
 {
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped">
-            <thead class="bg-primary">
-                <tr>
-                    @GridColumns
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Items)
-                {
+    @if (Items.Count > 0)
+    {
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead class="bg-primary">
                     <tr>
-                        @GridRow(item)
+                        @GridColumns
                     </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+                </thead>
+                <tbody>
+                    @foreach (var item in Items)
+                    {
+                        <tr>
+                            @GridRow(item)
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
 
-    <br />
+        <br />
 
-    <div style="left:50%; right:50%; text-align:center;">
-        <button class="btn btn-secondary" @onclick="@(e => NavigateTo("first"))">@("<<")</button>
-        <button class="btn btn-secondary" @onclick="@(e => NavigateTo("prev"))">Prev</button>
-        @for (int i = 0; i < TotalPages; i++)
-        {
-            var pageNumber = i;
-            <button class="btn @(CurrentPage == pageNumber? "btn-dark":"btn-info")"
+        <div style="left:50%; right:50%; text-align:center;">
+            <button class="btn btn-secondary" @onclick="@(e => NavigateTo("first"))">@("<<")</button>
+            <button class="btn btn-secondary" @onclick="@(e => NavigateTo("prev"))">Prev</button>
+            @for (int i = 0; i < TotalPages; i++)
+            {
+                var pageNumber = i;
+                <button class="btn @(CurrentPage == pageNumber? "btn-dark":"btn-info")"
                 @onclick="@(e => UpdateList(pageNumber))">
-                @(i + 1)
-            </button>
-        }
-        <button class="btn btn-secondary" @onclick="@(e => NavigateTo("next"))">Next</button>
-        <button class="btn btn-secondary" @onclick="@(e => NavigateTo("last"))">@(">>")</button>
-    </div>
+                    @(i + 1)
+                </button>
+            }
+            <button class="btn btn-secondary" @onclick="@(e => NavigateTo("next"))">Next</button>
+            <button class="btn btn-secondary" @onclick="@(e => NavigateTo("last"))">@(">>")</button>
+        </div>
+    }
+    else
+    {
+        <div style ="left:50%; right:50%; text-align:center;">
+            <h3>Nothing to display :(</h3>
+        </div>
+    }
 }
 else
 {
@@ -71,27 +80,54 @@ else
     [Parameter]
     public bool ReloadList { get; set; }
 
+    private bool _dataLoaded = false;
+
     protected async override Task OnInitializedAsync()
     {
         PageSize = 5;
         CurrentPage = 0;
+        try
+        {
+            var task = new Task(async () =>
+            {
+                try
+                {
+                    var result = await Http.GetFromJsonAsync<DataResult<TItem>>(ApiGetDataLink + "?skip=" + (CurrentPage * PageSize) + "&take=" + PageSize);
 
-        var result = await Http.GetFromJsonAsync<DataResult<TItem>>(ApiGetDataLink + "?skip=" + (CurrentPage * PageSize) + "&take=" + PageSize);
+                    Items = result.Data.ToList();
+                    TotalItems = result.Count;
 
-        Items = result.Data.ToList();
-        TotalItems = result.Count;
+                    TotalPages = CalculateTotalPages();
 
-        TotalPages = CalculateTotalPages();
+                    _dataLoaded = true;
+
+                    StateHasChanged();
+                }
+                catch
+                {
+                    _dataLoaded = false;
+                }
+            });
+
+            task.Start();
+        }
+        catch
+        {
+            _dataLoaded = false;
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender && ReloadList)
+        if (_dataLoaded)
         {
-            await UpdateList();
-            ReloadList = false;
+            if (!firstRender && ReloadList)
+            {
+                await UpdateList();
+                ReloadList = false;
 
-            StateHasChanged();
+                StateHasChanged();
+            }
         }
 
         base.OnAfterRender(firstRender);

@@ -35,11 +35,15 @@ namespace CarMarket.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<IdentityUserRole<string>> builder)
         {
-            builder.HasData(
+            builder.HasData(new IdentityUserRole<string>
+                {
+                    RoleId = "admin",
+                    UserId = "qwe"
+                },
                 new IdentityUserRole<string>
                 {
-                    RoleId = "qwe",
-                    UserId = "qwe"
+                    RoleId = "user",
+                    UserId = "qwerty"
                 });
         }
     }
@@ -56,12 +60,13 @@ namespace CarMarket.Data.Configuration
                 },
                 new IdentityRole
                 {
+                    Id = "user",
                     Name = "User",
                     NormalizedName = "USER"
                 },
                 new IdentityRole
                 {
-                    Id = "qwe",
+                    Id = "admin",
                     Name = "Admin",
                     NormalizedName = "ADMIN"
                 }

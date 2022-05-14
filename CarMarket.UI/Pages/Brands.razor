@@ -3,6 +3,7 @@
 @using CarMarket.UI.Pages
 @using CarMarket.Core.User.Domain
 @using CarMarket.UI.Services.CarBrand
+@using CarMarket.UI.Services.HttpInterceptor
 @using Microsoft.AspNetCore.Authorization
 @using System.Threading
 @inject NavigationManager Navigation
@@ -40,18 +41,22 @@
             @foreach (var brand in BrandList)
             {
                 <tr>
-                    <td>@brand.Id</td>
-                    <td>@brand.Name</td>
+                    <td>@brand?.Id</td>
+                    <td>@brand?.Name</td>
 
                     <AuthorizeView Roles="Admin">
                         <button class="btn btn-primary"
                             @onclick="() => EditBrand(brand)">
-                            Edit
+                             <span
+                            class="glyphicon glyphicon-pencil"></span>
+                            &nbsp; Edit
                         </button>
                     
                         <button class="btn btn-danger"
                             @onclick="(() => DeleteBrand(brand))">
-                            Delete
+                            <span
+                            class="glyphicon glyphicon-trash"></span>
+                            &nbsp; Remove
                         </button>
                     </AuthorizeView>
                 </tr>
@@ -107,6 +112,10 @@
     [Inject]
     public IHttpCarBrandService HttpCarBrandService { get; set; }
 
+    [Inject]
+    public HttpInterceptorService Interceptor { get; set; }
+    public void Dispose() => Interceptor.DisposeEvent();
+
     public bool DataUpdated { get; set; } = false;
 
     public List<Brand> BrandList { get; set; } = new();
@@ -120,11 +129,20 @@
     {
         BrandList = new();
 
-        BrandList = (await HttpCarBrandService.GetAllAsync(CancellationToken.None)).ToList();
+        try
+        {
+            BrandList = (await HttpCarBrandService.GetAllAsync(CancellationToken.None)).ToList();
+        }
+        catch
+        {
+
+        }
     }
 
     private void AddBrand()
     {
+        editedBrand = new();
+
         TitleContext = "Add new brand";
         ShowPopup = true;
     }
@@ -194,6 +212,7 @@
 
     private void ClosePopup()
     {
+        strError = string.Empty;
         ShowPopup = false;
     }
 }

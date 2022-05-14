@@ -97,7 +97,7 @@ namespace CarMarket.Server.Controllers
         [HttpPost("CreateUser")]
         public async Task<IActionResult> Create([FromBody] UserModel userModel)
         {
-            if (!await IsCurrentUserAdminAsync())
+            if (!await IsCurrentUserAdminAsync() || ((await _userService.GetByEmailAsync(userModel.Email)) is not null))
             {
                 return BadRequest();
             }

@@ -1,6 +1,7 @@
 ﻿@page "/admin/users"
 @using CarMarket.UI.Pages
 @using CarMarket.Core.User.Domain
+@using CarMarket.UI.Services.HttpInterceptor
 @using CarMarket.UI.Services.User
 @using Microsoft.AspNetCore.Authorization
 @inject NavigationManager Navigation
@@ -52,12 +53,19 @@
                     <td>@user.Role.Name</td>
                     <button class="btn btn-primary"
                         @onclick="() => EditUser(user)">
-                        Edit
+                         <span
+                            class="glyphicon glyphicon-pencil"></span>
+                            &nbsp; Edit
                     </button>
+                @if (!user.Email.Equals(auth.User.Identity.Name))
+                {
                     <button class="btn btn-danger"
                         @onclick="(() => DeleteUser(user))">
-                        Delete
+                        <span
+                            class="glyphicon glyphicon-trash"></span>
+                            &nbsp; Remove
                     </button>
+                    }
         </GridRow>
     </GridView>
 
@@ -129,6 +137,11 @@
     [Inject]
     public IHttpUserService UserService { get; set; }
 
+    [Inject]
+    public HttpInterceptorService Interceptor { get; set; }
+
+    public void Dispose() => Interceptor.DisposeEvent();
+
     public bool DataUpdated { get; set; } = false;
 
     private UserModel user;
@@ -178,7 +191,7 @@
 
             var createdUser = await UserService.CreateAsync(editedUser);
 
-            if (createdUser != null) toastService.ShowSuccess($"{createdUser.Email} was successfully created!");
+            if (createdUser != null && createdUser?.Email is not null) toastService.ShowSuccess($"{createdUser.Email} was successfully created!");
             else toastService.ShowError($"Error with creating a new user");
 
             DataUpdated = true;
@@ -236,6 +249,7 @@
 
     private void ClosePopup()
     {
+        strError = string.Empty;
         ShowPopup = false;
     }
 

@@ -3,6 +3,7 @@
 @using CarMarket.Core.Image.Domain
 @using System.IO
 @using CarMarket.Core.User.Domain
+@using CarMarket.UI.Services.HttpInterceptor
 @using CarMarket.UI.Services.User
 
 <h1>Users Controller</h1>
@@ -55,6 +56,10 @@ else
 @code {
     [Inject]
     public IHttpUserService UserService { get; set; }
+
+    [Inject]
+    public HttpInterceptorService Interceptor { get; set; }
+    public void Dispose() => Interceptor.DisposeEvent();
 
     public class SearchParameters
     {

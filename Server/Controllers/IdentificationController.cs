@@ -46,7 +46,7 @@ namespace CarMarket.Server.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> Login(LoginViewModel model)
+        public async Task<IActionResult> Login([FromForm] LoginViewModel model)
         {
             model.ReturnUrl ??= Url.Content("https://localhost:5001");
 
@@ -73,7 +73,7 @@ namespace CarMarket.Server.Controllers
 
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> Register(RegisterViewModel model)
+        public async Task<IActionResult> Register([FromForm] RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {

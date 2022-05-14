@@ -3,6 +3,7 @@
 @using CarMarket.Core.Car.Domain
 @using CarMarket.Core.Image.Domain
 @using CarMarket.UI.Services.Car
+@using CarMarket.UI.Services.HttpInterceptor
 @using Microsoft.AspNetCore.Authorization
 @using System.IO
 @inject IToastService toastService
@@ -33,8 +34,8 @@ else
             {
                 <tr>
                     <td>
-                    <NavLink href=@string.Format("/cars/cardetail/{0}", car.Id)>
-                        @if (car.CarImages.Count > 0)
+                    <NavLink href=@string.Format("/cars/cardetail/{0}", car?.Id)>
+                        @if (car?.CarImages.Count > 0)
                         {
                             <img src="@ImageService.ConvertImageToDisplay(car.CarImages.FirstOrDefault())" height ="150px" />
                         }
@@ -44,18 +45,22 @@ else
                         }
                         </NavLink>
                     </td>
-                    <td>@car.Model.Name</td>
-                    <td>@car.CarType</td>
-                    <td>@car.Description</td>
-                    <td>@car.Price</td>
+                    <td>@car?.Model.Name</td>
+                    <td>@car?.CarType</td>
+                    <td>@car?.Description</td>
+                    <td>@car?.Price</td>
                     <button class="btn btn-primary"
                         @onclick="() => EditCar(car)">
-                        Edit
+                         <span
+                            class="glyphicon glyphicon-pencil"></span>
+                            &nbsp; Edit
                     </button>
                     
                     <button class="btn btn-danger"
                         @onclick="(() => DeleteCar(car))">
-                        Delete
+                        <span
+                            class="glyphicon glyphicon-trash"></span>
+                            &nbsp; Remove
                     </button>
                 </tr>
             }
@@ -138,11 +143,22 @@ else
     [Inject]
     public IHttpCarService CarService { get; set; }
 
-    private List<CarModel> cars { get; set; }
+    [Inject]
+    public HttpInterceptorService Interceptor { get; set; }
+    public void Dispose() => Interceptor.DisposeEvent();
+
+    private List<CarModel> cars { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
-        cars = (await CarService.GetAllUserCarsByTokenAsync()).ToList();
+        try
+        {
+            cars = (await CarService.GetAllUserCarsByTokenAsync()).ToList();
+        }
+        catch
+        {
+            cars = null;
+        }
     }
 
     private CarModel car;
