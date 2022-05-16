@@ -9,11 +9,11 @@
 
 <h1>Cars Controller</h1>
 
-<input class="form-control" type="text"
+<input value="@searchParameters.CarTitle" class="form-control" type="text"
     placeholder="Car title" 
     @oninput ="SearchByTitle" />
     
-<select class="form-control"
+<select value="@CurrentCarType" class="form-control"
     @onchange="SearchByType">
     @foreach (var carType in CarTypes)
     {
@@ -23,7 +23,7 @@
     }
 </select>
 
-<select class="form-control"
+<select value="@searchParameters.Brand" class="form-control"
     @onchange="SearchByBrand">
     @foreach (var carBrand in CarBrands)
     {
@@ -57,7 +57,7 @@ else
                 <tr>
                     <td>
                     <NavLink href=@string.Format("/cars/cardetail/{0}", car.Id)>
-                        @if (car.CarImages.Count > 0)
+                        @if (car.CarImages.FirstOrDefault() is not null)
                         {
                             <img src="@ImageService.ConvertImageToDisplay(car.CarImages.FirstOrDefault())" height ="150px" />
                         }
@@ -89,6 +89,8 @@ else
         public CarType? CarType { get; set; }
         public string? Brand { get; set; }
     }
+
+    string SearchTitle { get; set; }
 
     private SearchParameters searchParameters = new();
     private static List<string> CarTypes = GetCarTypesSelection();

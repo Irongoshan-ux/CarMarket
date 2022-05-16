@@ -860,3 +860,8 @@ a, .btn-link {
 .glyphicon-wrench:before {
     content: "\1f527";
 }
+
+.modal {
+    max-height: 100%;
+    overflow-y: auto;
+}

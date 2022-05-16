@@ -25,7 +25,10 @@ namespace CarMarket.UI.Services.CarBrand
 
             var response = await _httpClient.PostAsJsonAsync("/api/Brand", brand, token);
 
-            return response.Content.ReadFromJsonAsync<Brand>().Result;
+            if(response.IsSuccessStatusCode)
+                return response.Content.ReadFromJsonAsync<Brand>().Result;
+
+            return null;
         }
 
         public async Task<bool> DeleteAsync(long brandId, CancellationToken token)

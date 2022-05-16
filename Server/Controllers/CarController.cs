@@ -3,7 +3,6 @@ using CarMarket.Core.Car.Exceptions;
 using CarMarket.Core.Car.Service;
 using CarMarket.Core.User.Domain;
 using CarMarket.Core.User.Service;
-using CarMarket.Server.Helpers;
 using CarMarket.Server.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -12,7 +11,6 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace CarMarket.Server.Controllers

@@ -12,6 +12,61 @@ namespace CarMarket.Data.Configuration
         public void Configure(EntityTypeBuilder<CarEntity> builder)
         {
             builder.ToTable("Cars").HasKey(p => p.Id);
+            //    .HasData(new CarEntity()
+            //{
+            //    Id = 1,
+            //    Description = "The coolest Tesla Model S!",
+            //    Price = 36500,
+            //    Owner = new User.Domain.UserEntity { Id = "qwe"},
+            //    Model = new Model { Id = 1 },
+            //    Year = System.DateTime.Parse("2015-01-01")
+            //},
+            //new CarEntity()
+            //{
+            //    Id = 2,
+            //    Description = "The coolest Tesla Model S!",
+            //    Price = 43500,
+            //    Owner = new User.Domain.UserEntity { Id = "qwerty" },
+            //    Model = new Model { Id = 2 },
+            //    Year = System.DateTime.Parse("2020-01-01 00:00:00.0000000")
+            //},
+            //new CarEntity()
+            //{
+            //    Id = 3,
+            //    Description = "The coolest Tesla Model S!",
+            //    Price = 59500,
+            //    Owner = new User.Domain.UserEntity { Id = "4a083075-5fe6-4bb3-b9d5-0d3cde2bec30" },
+            //    Model = new Model { Id = 3 },
+            //    Year = System.DateTime.Parse("2000-01-01 00:00:00.0000000")
+            //},
+            //new CarEntity()
+            //{
+            //    Id = 4,
+            //    Description = "The coolest Tesla Model S!",
+            //    Price = 305739,
+            //    Owner = new User.Domain.UserEntity { Id = "4a083075-5fe6-4bb3-b9d5-0d3cde2bec30" },
+            //    Model = new Model { Id = 4 },
+            //    Year = System.DateTime.Parse("2012-01-01 00:00:00.0000000")
+            //},
+            //new CarEntity()
+            //{
+            //    Id = 5,
+            //    Description = "The coolest Tesla Model S!",
+            //    Price = 17400,
+            //    Owner = new User.Domain.UserEntity { Id = "qwe" },
+            //    Model = new Model { Id = 5 },
+            //    Year = System.DateTime.Parse("2016-01-01 00:00:00.0000000")
+            //},
+            //new CarEntity()
+            //{
+            //    Id = 6,
+            //    Description = "The coolest Tesla Model S!",
+            //    Price = 30000,
+            //    Owner = new User.Domain.UserEntity { Id = "qwe" },
+            //    Model = new Model { Id = 6 },
+            //    Year = System.DateTime.Parse("2019-01-01 00:00:00.0000000")
+            //}
+            //);
         }
     }
 
@@ -19,7 +74,7 @@ namespace CarMarket.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<Model> builder)
         {
-            builder.ToTable("Cars").HasKey(p => p.Id);
+            builder.ToTable("Models").HasKey(p => p.Id);
         }
     }
 

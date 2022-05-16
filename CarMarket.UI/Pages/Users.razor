@@ -32,12 +32,12 @@
             <GridColumn ColumnTitle="FirstName"></GridColumn>
             <GridColumn ColumnTitle="LastName"></GridColumn>
             <GridColumn ColumnTitle="Email"></GridColumn>
+            <GridColumn ColumnTitle="Phone number"></GridColumn>
             <GridColumn ColumnTitle="Role"></GridColumn>
             <GridColumn ColumnTitle="Actions" ></GridColumn>
         </GridColumns>
 
         <GridRow Context="user">
-                    
                     @if (user.Id.Length > 20) 
                     {
                         <td>@(user.Id.Remove(20) + "...")</td>
@@ -50,6 +50,7 @@
                     <td>@user.FirstName</td>
                     <td>@user.LastName</td>
                     <td>@user.Email</td>
+                    <td>@user.PhoneNumber</td>
                     <td>@user.Role.Name</td>
                     <button class="btn btn-primary"
                         @onclick="() => EditUser(user)">

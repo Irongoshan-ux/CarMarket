@@ -2,6 +2,7 @@
 using CarMarket.Core.Car.Domain;
 using CarMarket.Core.Car.Repository;
 using CarMarket.Core.DataResult;
+using CarMarket.Core.Image.Domain;
 using CarMarket.Data.Car.Domain;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -43,6 +44,13 @@ namespace CarMarket.Data.Car.Repository
                 .Include(x => x.Model)
                 .Include(x => x.Model.Brand)
                 .ToListAsync();
+
+            carEntities.ForEach(x =>
+            {
+                var images = x.CarImages;
+
+                x.CarImages = new List<ImageModel> { images.FirstOrDefault() };
+            });
 
             return _mapper.Map<List<CarModel>>(carEntities);
         }
@@ -121,6 +129,13 @@ namespace CarMarket.Data.Car.Repository
                 .Include(x => x.Model.Brand)
                 .ToListAsync();
 
+            carEntities.ForEach(x =>
+            {
+                var images = x.CarImages;
+
+                x.CarImages = new List<ImageModel> { images.FirstOrDefault() };
+            });
+
             var userCars = _mapper.Map<List<CarModel>>(carEntities);
 
             return userCars;
@@ -165,6 +180,13 @@ namespace CarMarket.Data.Car.Repository
                 .Skip(skip)
                 .Take(take)
                 .ToListAsync();
+
+            carEntities.ForEach(x =>
+            {
+                var images = x.CarImages;
+
+                x.CarImages = new List<ImageModel> { images.FirstOrDefault() };
+            });
 
             var result = new DataResult<CarModel>
             {

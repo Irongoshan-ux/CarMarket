@@ -3,6 +3,7 @@ using CarMarket.Core.Car.Exceptions;
 using CarMarket.Core.Car.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -47,7 +48,7 @@ namespace CarMarket.Server.Controllers
             {
                 createdBrand = await _carBrandRepository.AddAsync(brand);
             }
-            catch(CarBrandExistsException e)
+            catch(Exception e)
             {
                 return BadRequest("Brand already exists");
             }

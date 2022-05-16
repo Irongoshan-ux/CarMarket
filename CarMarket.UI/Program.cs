@@ -12,6 +12,7 @@ using CarMarket.UI.Services.CarValuer;
 using CarMarket.UI.Services.CarBrand;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 using CarMarket.UI.Services.HttpInterceptor;
+using MudBlazor.Services;
 
 namespace CarMarket.UI
 {
@@ -92,6 +93,8 @@ namespace CarMarket.UI
             });
 
             builder.Services.AddBlazoredToast();
+
+            builder.Services.AddMudServices();
 
             await builder.Build().RunAsync();
         }
