@@ -24,7 +24,7 @@
                             class="glyphicon glyphicon-pencil"></span>
                             &nbsp; Edit
                     </button>
-
+                     <span>&nbsp;|&nbsp;</span>
                     <button class="btn btn-danger"
                             @onclick="(() => DeleteCar(CarDetails))">
                             <span
@@ -42,28 +42,35 @@
 
     @if (CarDetails != null)
     {
-        <h5 class="col-12 row" style="font-weight:bold">Title: @CarDetails.Model?.Brand?.Name @CarDetails.Model?.Name
+        <h5 style="font-weight:bold; float: left; /*margin-left: auto;*/ margin-right: auto;">Title: @CarDetails.Model?.Brand?.Name @CarDetails.Model?.Name
             <br>Price: $@CarDetails.Price
             <br>Year: @CarDetails.Year.Year
         </h5>
 
-        <div>
-            @if (_costLoaded) {
-                    <div>
-                        Estimated maintenance cost per year: @result?.Cost
-                    </div>
-              }
-              else {
-                  <div style="background-color: darkgray">
-                        Sorry, we couldn't load estimated maintenance cost per hour for this car :( 
-                    </div>
-                  
-              }</div>
+        <h5 style="font-weight:bold; float: right; margin-left: auto; /*margin-right: auto;*/">
+            Car owner contacts <br>
+            Owner: @($"{CarDetails.Owner.FirstName} {CarDetails.Owner.LastName}") <br>
+            Email: @CarDetails.Owner.Email <br>
+            Phone number: @CarDetails.Owner.PhoneNumber
+        </h5>
 
         <h6 class="col-12 row">Brand: @CarDetails.Model?.Brand?.Name</h6>
         <h6 class="col-12 row">Model: @CarDetails.Model?.Name</h6>
         <h6 class="col-12 row">Type: @CarDetails.Model?.Type</h6>
         <h6 class="col-12 row">Description: @CarDetails.Description</h6>
+
+        <div style="width: 100%">
+            @if (_costLoaded) {
+                <h5>
+                        Estimated maintenance cost per year: $@result?.Cost
+                </h5>
+              }
+              else {
+                  <h5 style="background-color: darkgray">
+                        Sorry, we couldn't load estimated maintenance cost per year for this car :( 
+                  </h5>
+              }
+        </div>
 
         <ul style="list-style-type: none; margin: 0; padding: 0; overflow: hidden;">
         @foreach(var image in CarDetails.CarImages)
@@ -72,10 +79,7 @@
         }
         </ul>
 
-        <h5 class="col-12 row" style="font-weight:bold">Car owner contacts</h5>
-        <h6 class="col-12 row">Owner: @($"{CarDetails.Owner.FirstName} {CarDetails.Owner.LastName}")
-        <br />Email: @CarDetails.Owner.Email
-        <br />Phone number: @CarDetails.Owner.PhoneNumber</h6>
+        
     }
 </div>
 <AuthorizeView>

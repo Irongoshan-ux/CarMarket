@@ -77,7 +77,7 @@
                             class="glyphicon glyphicon-pencil"></span>
                             &nbsp; Edit
                         </button>
-
+                         <span>&nbsp;|&nbsp;</span>
                         <button class="btn btn-danger"
                             @onclick="(() => DeleteCar(car))">
                             <span
@@ -148,7 +148,8 @@
                                 Color="Color.Info"
                                 Icon="@Icons.Filled.Image"
                                 Label="Load picture"
-                                for="fileInput" />
+                                for="fileInput"
+                                />
 
                         @if (editedCar.CarImages.FirstOrDefault() is not null)
                             {
@@ -460,7 +461,6 @@
 
         else return null;
     }
-    
 
     private bool SetCarType(string carTypeName)
     {

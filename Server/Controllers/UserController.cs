@@ -124,6 +124,8 @@ namespace CarMarket.Server.Controllers
                 return BadRequest();
             }
 
+            user.PasswordHash = EncryptPassword(user.PasswordHash);
+
             await _userService.UpdateUserAsync(userId, user);
 
             var updatedUser = await _userService.GetAsync(userId);

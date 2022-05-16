@@ -4,6 +4,7 @@
 @using CarMarket.UI.Services.HttpInterceptor
 @using CarMarket.UI.Services.User
 @using Microsoft.AspNetCore.Authorization
+@using System.ComponentModel.DataAnnotations
 @inject NavigationManager Navigation
 @inject IToastService toastService
 
@@ -52,6 +53,7 @@
                     <td>@user.Email</td>
                     <td>@user.PhoneNumber</td>
                     <td>@user.Role.Name</td>
+                    <td>
                     <button class="btn btn-primary"
                         @onclick="() => EditUser(user)">
                          <span
@@ -60,6 +62,7 @@
                     </button>
                 @if (!user.Email.Equals(auth.User.Identity.Name))
                 {
+                     <span>&nbsp;|&nbsp;</span>
                     <button class="btn btn-danger"
                         @onclick="(() => DeleteUser(user))">
                         <span
@@ -67,6 +70,7 @@
                             &nbsp; Remove
                     </button>
                     }
+                    </td>
         </GridRow>
     </GridView>
 
@@ -86,46 +90,35 @@
                 </div>
                 <!-- Edit form for the current user -->
                 <div class="modal-body">
-                        <input class="form-control" type="text"
-                                placeholder="Firstname"
-                                @bind="editedUser.FirstName" />
-                    <input class="form-control" type="text"
-                            placeholder="Lastname"
-                            @bind="editedUser.LastName" />
-                    <input class="form-control" type="email"
-                            placeholder="Email"
-                            @bind="editedUser.Email" />
-                            <input class="form-control" type="password"
-                            placeholder="Password"
-                            @bind="editedUser.PasswordHash" />
+                    <MudTextField @bind-Value="editedUser.FirstName" Required=true Label="Firstname" RequiredError="User name is required!" Variant="Variant.Text" AutoFocus=true Validation="@(new Func<string,string>(ValidateUserFirstName))"></MudTextField>
 
-                    <select class="form-control"
-                            @bind="@CurrentUserRole">
-                        @foreach (var role in UserRoles)
-                        {
-                            <option value="@role">
-                                @role
-                            </option>
-                        }
-                    </select>
-                    <br /><br />
+                        <MudTextField @bind-Value="@editedUser.LastName" Required=true RequiredError="User lastname is required!" Label="Lastname" Variant="Variant.Text" Validation="@(new Func<string,string>(ValidateUserLastName))"></MudTextField>
+
+                        <MudTextField @bind-Value="@editedUser.Email" Required=true RequiredError="Email is required!" Label="Email" Variant="Variant.Text" Validation="@(new EmailAddressAttribute() {ErrorMessage = "The email address is invalid"})"></MudTextField>
+
+                         <MudTextField T="string" Label="Password" HelperText="Choose a strong password" @bind-Value="@editedUser.PasswordHash"
+                                  InputType="InputType.Password"
+                                  Required="true"
+                                  RequiredError="Password is required!"/>
+
+                            <MudSelect Variant="Variant.Text"  T="string" @bind-Value="CurrentUserRole" Label="User role" AnchorOrigin="Origin.BottomCenter" Validation="@(new Func<string,string>(ValidateUserRole))">
+                                @foreach (var role in UserRoles)
+                                {
+                                    <MudSelectItem Value="@role" />
+                                }
+                            </MudSelect>
+                            <br>
+                        
+                    <br />
                    
-                    @if (string.IsNullOrWhiteSpace(editedUser.Id))
-                    {
-                            <button class="btn btn-primary"
-                            @onclick="CreateUser">
-                                Save
-                            </button>
+                     @if (string.IsNullOrWhiteSpace(editedUser.Id))
+                        {
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" @onclick="() => CreateUser()">Save</MudButton>
                         }
                         else
                         {
-                            <button class="btn btn-secondary"
-                            @onclick="() => UpdateUser()">
-                                Update
-                            </button>
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" @onclick="() => UpdateUser()">Update</MudButton>
                         }
-                    <br />
-                    <span style="color:red">@strError</span>
                 </div>
             </div>
         </div>
@@ -155,6 +148,11 @@
     bool ShowPopup = false;
     string TitleContext { get; set; }
 
+    string firstNameError = "Enter user firstname";
+    string lastNameError = "Enter user lastname";
+    string emailError = "Enter user email";
+    string userRoleError = "Choose a user role";
+
     protected override void OnInitialized()
     {
     }
@@ -174,6 +172,27 @@
 
         TitleContext = "Add new user";
         ShowPopup = true;
+    }
+
+    private string ValidateUserFirstName(string firstName){
+        if (string.IsNullOrWhiteSpace(firstName))
+            return firstNameError;
+
+        else return null;
+    }
+
+    private string ValidateUserLastName(string lastName){
+        if (string.IsNullOrWhiteSpace(lastName))
+            return lastNameError;
+
+        else return null;
+    }
+
+    private string ValidateUserEmail(string email){
+        if (string.IsNullOrWhiteSpace(email))
+            return emailError;
+
+        else return null;
     }
 
     private async Task CreateUser()
@@ -266,6 +285,14 @@
         userRoles.AddRange(names.Split(',').ToList());
 
         return userRoles;
+    }
+
+    private string ValidateUserRole(string userRole)
+    {
+        if (!SetUserRole(userRole))
+            return userRoleError;
+
+        else return null;
     }
 
     private bool SetUserRole(string userRoleName)

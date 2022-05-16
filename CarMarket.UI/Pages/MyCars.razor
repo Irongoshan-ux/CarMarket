@@ -22,7 +22,8 @@ else
         <thead>
             <tr>
                 <th>Image</th>
-                <th>Title</th>
+                <th>Brand</th>
+                <th>Model</th>
                 <th>Car type</th>
                 <th>Description</th>
                 <th>Price</th>
@@ -45,6 +46,7 @@ else
                         }
                         </NavLink>
                     </td>
+                    <td>@car?.Model.Brand.Name</td>
                     <td>@car?.Model.Name</td>
                     <td>@car?.CarType</td>
                     <td>@car?.Description</td>
@@ -55,7 +57,7 @@ else
                             class="glyphicon glyphicon-pencil"></span>
                             &nbsp; Edit
                     </button>
-                    
+                        <span>&nbsp;|&nbsp;</span>
                     <button class="btn btn-danger"
                         @onclick="(() => DeleteCar(car))">
                         <span
@@ -265,7 +267,7 @@ else
             else toastService.ShowError($"Error with creating a new car");
         }
     }
-    
+
     private void EditCar(CarModel updatedCar)
     {
         TitleContext = "Edit car";
@@ -307,6 +309,10 @@ else
         if (await CarService.DeleteAsync(car.Id))
         {
             toastService.ShowSuccess($"{car.Model.Name} was successfully deleted!");
+
+            cars.Remove(car);
+
+            StateHasChanged();
         }
         else toastService.ShowError($"Error with deleting {car.Model.Name}");
     }

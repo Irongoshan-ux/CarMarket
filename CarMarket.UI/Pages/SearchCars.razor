@@ -46,8 +46,10 @@ else
         <thead>
             <tr>
                 <th>Image</th>
-                <th>Title</th>
+                <th>Brand</th>
+                <th>Model</th>
                 <th>Car type</th>
+                <th>Year</th>
                 <th>Price</th>
             </tr>
         </thead>
@@ -67,8 +69,10 @@ else
                         }
                         </NavLink>
                     </td>
+                    <td>@car.Model.Brand.Name</td>
                     <td>@car.Model.Name</td>
                     <td>@car.Model.Type</td>
+                    <td>@car.Year.Year</td>
                     <td>$@car.Price</td>
                 </tr>
             }
