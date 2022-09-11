@@ -1,4 +1,17 @@
-﻿@inherits LayoutComponentBase
+﻿@using Blazored.Toast.Configuration
+@inherits LayoutComponentBase
+
+<BlazoredToasts Position="ToastPosition.BottomRight"
+                Timeout="3"
+                IconType="IconType.FontAwesome"
+                ShowProgressBar="true"
+                SuccessClass="success-toast-override"
+                ErrorIcon="fa fa-bug" 
+                SuccessIcon="fa fa-thumbs-up" />
+
+<MudThemeProvider/>
+<MudDialogProvider/>
+<MudSnackbarProvider/>
 
 <div class="page">
     <div class="sidebar">
@@ -12,6 +25,10 @@
 
         <div class="content px-4">
             @Body
+        </div>
+        
+        <div class="back-img" style="margin:auto; width:50%; position:center; align-content:center; align-items:center; text-align:center;">
+            <img src=https://localhost:10001/StaticImages/Cars-Logo.webp alt="" width: 100%/>
         </div>
     </div>
 </div>

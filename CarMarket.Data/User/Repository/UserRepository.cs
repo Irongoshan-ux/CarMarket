@@ -2,6 +2,7 @@
 using CarMarket.Core.DataResult;
 using CarMarket.Core.User.Domain;
 using CarMarket.Core.User.Repository;
+using CarMarket.Data.Car.Domain;
 using CarMarket.Data.User.Domain;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -78,6 +79,20 @@ namespace CarMarket.Data.User.Repository
             return _mapper.Map<UserModel>(userEntity);
         }
 
+        public async Task<IEnumerable<UserModel>> SearchByEmailAsync(string email)
+        {
+            IList<IdentityUser> users;
+
+            if (!string.IsNullOrEmpty(email))
+            {
+                users = await _context.Users
+                    .AsNoTracking().Where(x => x.Email.Contains(email)).ToListAsync();
+            }
+            else users = await _context.Users.AsNoTracking().ToListAsync();
+
+            return _mapper.Map<IEnumerable<UserModel>>(users);
+        }
+        
         public async Task<IdentityRole> FindRoleAsync(string roleName)
         {
             return await _context.Roles.FirstOrDefaultAsync(x => x.Name == roleName);

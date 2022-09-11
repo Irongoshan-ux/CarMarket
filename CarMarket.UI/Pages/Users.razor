@@ -1,32 +1,44 @@
 ﻿@page "/admin/users"
 @using CarMarket.UI.Pages
 @using CarMarket.Core.User.Domain
-@using CarMarket.UI.Data
+@using CarMarket.UI.Services.HttpInterceptor
 @using CarMarket.UI.Services.User
 @using Microsoft.AspNetCore.Authorization
+@using System.ComponentModel.DataAnnotations
+@inject NavigationManager Navigation
+@inject IToastService toastService
 
 @attribute [Authorize(Roles = "Admin")]
 
 <AuthorizeView Context="auth" Roles = "Admin">
 <Authorized>
-
 <h1>Users Controller</h1>
 
-<button class="btn btn-success" @onclick="AddUser">Add User</button>
+<div>
+
+<button style="float:left;" class="btn btn-success" @onclick="AddUser">Add User</button>
+
+<button style="margin-left:10px;" type="button" class="btn btn-outline-primary" @onclick="SearchUsers">Search</button>
+
+</div>
+<br />
+<br />
 
 <p>All users</p>
 
      <GridView ItemType="user" ApiGetDataLink="https://localhost:10001/api/User/GetUsersByPage" ReloadList="DataUpdated">
          <GridColumns>
             <GridColumn ColumnTitle="Id"></GridColumn>
+            <GridColumn ColumnTitle="Username"></GridColumn>
             <GridColumn ColumnTitle="FirstName"></GridColumn>
             <GridColumn ColumnTitle="LastName"></GridColumn>
             <GridColumn ColumnTitle="Email"></GridColumn>
+            <GridColumn ColumnTitle="Phone number"></GridColumn>
             <GridColumn ColumnTitle="Role"></GridColumn>
+            <GridColumn ColumnTitle="Actions" ></GridColumn>
         </GridColumns>
 
         <GridRow Context="user">
-                    
                     @if (user.Id.Length > 20) 
                     {
                         <td>@(user.Id.Remove(20) + "...")</td>
@@ -35,18 +47,30 @@
                     {
                         <td>@user.Id</td>
                     }
+                    <td>@user.UserName</td>
                     <td>@user.FirstName</td>
                     <td>@user.LastName</td>
                     <td>@user.Email</td>
+                    <td>@user.PhoneNumber</td>
                     <td>@user.Role.Name</td>
+                    <td>
                     <button class="btn btn-primary"
                         @onclick="() => EditUser(user)">
-                        Edit
+                         <span
+                            class="glyphicon glyphicon-pencil"></span>
+                            &nbsp; Edit
                     </button>
+                @if (!user.Email.Equals(auth.User.Identity.Name))
+                {
+                     <span>&nbsp;|&nbsp;</span>
                     <button class="btn btn-danger"
                         @onclick="(() => DeleteUser(user))">
-                        Delete
+                        <span
+                            class="glyphicon glyphicon-trash"></span>
+                            &nbsp; Remove
                     </button>
+                    }
+                    </td>
         </GridRow>
     </GridView>
 
@@ -66,46 +90,35 @@
                 </div>
                 <!-- Edit form for the current user -->
                 <div class="modal-body">
-                        <input class="form-control" type="text"
-                                placeholder="Firstname"
-                                @bind="editedUser.FirstName" />
-                    <input class="form-control" type="text"
-                            placeholder="Lastname"
-                            @bind="editedUser.LastName" />
-                    <input class="form-control" type="email"
-                            placeholder="Email"
-                            @bind="editedUser.Email" />
-                            <input class="form-control" type="password"
-                            placeholder="Password"
-                            @bind="editedUser.PasswordHash" />
+                    <MudTextField @bind-Value="editedUser.FirstName" Required=true Label="Firstname" RequiredError="User name is required!" Variant="Variant.Text" AutoFocus=true Validation="@(new Func<string,string>(ValidateUserFirstName))"></MudTextField>
 
-                    <select class="form-control"
-                            @bind="@CurrentUserRole">
-                        @foreach (var role in UserRoles)
-                        {
-                            <option value="@role">
-                                @role
-                            </option>
-                        }
-                    </select>
-                    <br /><br />
+                        <MudTextField @bind-Value="@editedUser.LastName" Required=true RequiredError="User lastname is required!" Label="Lastname" Variant="Variant.Text" Validation="@(new Func<string,string>(ValidateUserLastName))"></MudTextField>
+
+                        <MudTextField @bind-Value="@editedUser.Email" Required=true RequiredError="Email is required!" Label="Email" Variant="Variant.Text" Validation="@(new EmailAddressAttribute() {ErrorMessage = "The email address is invalid"})"></MudTextField>
+
+                         <MudTextField T="string" Label="Password" HelperText="Choose a strong password" @bind-Value="@editedUser.PasswordHash"
+                                  InputType="InputType.Password"
+                                  Required="true"
+                                  RequiredError="Password is required!"/>
+
+                            <MudSelect Variant="Variant.Text"  T="string" @bind-Value="CurrentUserRole" Label="User role" AnchorOrigin="Origin.BottomCenter" Validation="@(new Func<string,string>(ValidateUserRole))">
+                                @foreach (var role in UserRoles)
+                                {
+                                    <MudSelectItem Value="@role" />
+                                }
+                            </MudSelect>
+                            <br>
+                        
+                    <br />
                    
-                    @if (string.IsNullOrWhiteSpace(editedUser.Id))
-                    {
-                            <button class="btn btn-primary"
-                            @onclick="CreateUser">
-                                Save
-                            </button>
+                     @if (string.IsNullOrWhiteSpace(editedUser.Id))
+                        {
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" @onclick="() => CreateUser()">Save</MudButton>
                         }
                         else
                         {
-                            <button class="btn btn-secondary"
-                            @onclick="() => UpdateUser()">
-                                Update
-                            </button>
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" @onclick="() => UpdateUser()">Update</MudButton>
                         }
-                    <br />
-                    <span style="color:red">@strError</span>
                 </div>
             </div>
         </div>
@@ -114,15 +127,16 @@
 </Authorized>
 </AuthorizeView>
 
-<BreadCrumb BreadCrumbData="BreadCrumbData"></BreadCrumb>
-
 @code {
     [Inject]
     public IHttpUserService UserService { get; set; }
 
-    public bool DataUpdated { get; set; } = false;
+    [Inject]
+    public HttpInterceptorService Interceptor { get; set; }
 
-    public BreadCrumbData BreadCrumbData { get; set; }
+    public void Dispose() => Interceptor.DisposeEvent();
+
+    public bool DataUpdated { get; set; } = false;
 
     private UserModel user;
     private UserModel newUser = new UserModel();
@@ -134,13 +148,18 @@
     bool ShowPopup = false;
     string TitleContext { get; set; }
 
+    string firstNameError = "Enter user firstname";
+    string lastNameError = "Enter user lastname";
+    string emailError = "Enter user email";
+    string userRoleError = "Choose a user role";
+
     protected override void OnInitialized()
     {
-        BreadCrumbData = new BreadCrumbData()
-        {
-            Text = "Users",
-            Url = "/admin/users"
-        };
+    }
+
+    private void SearchUsers()
+    {
+        Navigation.NavigateTo("/admin/users/search");
     }
 
     private void AddUser()
@@ -153,6 +172,27 @@
 
         TitleContext = "Add new user";
         ShowPopup = true;
+    }
+
+    private string ValidateUserFirstName(string firstName){
+        if (string.IsNullOrWhiteSpace(firstName))
+            return firstNameError;
+
+        else return null;
+    }
+
+    private string ValidateUserLastName(string lastName){
+        if (string.IsNullOrWhiteSpace(lastName))
+            return lastNameError;
+
+        else return null;
+    }
+
+    private string ValidateUserEmail(string email){
+        if (string.IsNullOrWhiteSpace(email))
+            return emailError;
+
+        else return null;
     }
 
     private async Task CreateUser()
@@ -169,12 +209,15 @@
         {
             ShowPopup = false;
 
-            await UserService.CreateAsync(editedUser);
+            var createdUser = await UserService.CreateAsync(editedUser);
+
+            if (createdUser != null && createdUser?.Email is not null) toastService.ShowSuccess($"{createdUser.Email} was successfully created!");
+            else toastService.ShowError($"Error with creating a new user");
 
             DataUpdated = true;
         }
     }
-    
+
     private void EditUser(UserModel updatedUser)
     {
         editedUser = new()
@@ -201,9 +244,13 @@
         {
             ShowPopup = false;
 
-            await UserService.UpdateAsync(editedUser.Id, editedUser);
+            if (await UserService.UpdateAsync(editedUser.Id, editedUser))
+            {
+                toastService.ShowSuccess($"{editedUser.Email} was successfully updated!");
 
-            DataUpdated = true;
+                DataUpdated = true;
+            }
+            else toastService.ShowError($"Error with updating {editedUser.Email}");
         }
     }
 
@@ -211,13 +258,18 @@
     {
         ShowPopup = false;
 
-        await UserService.DeleteAsync(user.Id);
+        if (await UserService.DeleteAsync(user.Id))
+        {
+            toastService.ShowSuccess($"{user.Email} was successfully deleted!");
 
-        DataUpdated = true;
+            DataUpdated = true;
+        }
+        else toastService.ShowError($"Error with deleting {user.Email}");
     }
 
     private void ClosePopup()
     {
+        strError = string.Empty;
         ShowPopup = false;
     }
 
@@ -233,6 +285,14 @@
         userRoles.AddRange(names.Split(',').ToList());
 
         return userRoles;
+    }
+
+    private string ValidateUserRole(string userRole)
+    {
+        if (!SetUserRole(userRole))
+            return userRoleError;
+
+        else return null;
     }
 
     private bool SetUserRole(string userRoleName)

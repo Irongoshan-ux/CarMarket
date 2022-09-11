@@ -17,13 +17,15 @@ namespace CarMarket.Server.Services
         {
             context.Request.Headers.TryGetValue("Authorization", out StringValues values);
 
+            if (values.Count <= 0) return string.Empty;
+            
             var token = values.FirstOrDefault().Replace("Bearer ", "");
 
             var handler = new JwtSecurityTokenHandler();
             var jsonToken = handler.ReadToken(token);
             var tokenS = jsonToken as JwtSecurityToken;
 
-            var userEmail = tokenS.Claims.First(claim => claim.Type == "sub").Value;
+            var userEmail = tokenS.Claims.First(claim => claim.Type.Equals("sub")).Value;
 
             return userEmail;
         }

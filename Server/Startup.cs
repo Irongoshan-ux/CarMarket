@@ -20,6 +20,14 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Identity;
 using CarMarket.Core.User.Domain;
+using CarMarket.Server.Services;
+using MediatR;
+using FluentValidation.AspNetCore;
+using FluentValidation;
+using CarMarket.Server.Infrastructure.Identification.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.FileProviders;
+using System.IO;
 
 namespace CarMarket.Server
 {
@@ -36,7 +44,15 @@ namespace CarMarket.Server
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors();
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder.WithOrigins("https://localhost:5001");
+                    builder.AllowAnyHeader();
+                    builder.AllowAnyMethod();
+                });
+            });
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                  .AddJwtBearer(options =>
@@ -67,7 +83,8 @@ namespace CarMarket.Server
                 .AddInMemoryApiScopes(IdentityServerConfiguration.GetScopes())
                 .AddDeveloperSigningCredential();
 
-            services.AddControllersWithViews();
+            services.AddControllers();
+
             services.AddRazorPages();
 
             services.AddSwaggerGen(c =>
@@ -81,21 +98,30 @@ namespace CarMarket.Server
             services.AddScoped<IUserService, UserService>();
 
             services.AddScoped<ICarRepository, CarRepository>();
-            services.AddScoped<ICarService, CarService>();
+            services.AddScoped<ICarModelRepository, CarModelRepository>();
+            services.AddScoped<ICarBrandRepository, CarBrandRepository>();
+            services.AddScoped<ICarService, CarServiceLogger>();
 
             services.AddDbContext<ApplicationDbContext>(builder =>
             {
-                builder.UseSqlServer(Configuration.GetConnectionString("CarMarketDb"));
+                builder.UseSqlServer(Configuration.GetConnectionString("CarMarketDb"),
+                    b => b.MigrationsAssembly("CarMarket.Data"));
             });
+
+            services.AddMediatR(typeof(Startup));
 
             services.AddAutoMapper(cfg =>
             {
                 cfg.AddProfile<EntityToModelMappingProfile>();
             });
+
+            services.AddFluentValidation();
+
+            services.AddTransient<IValidator<LoginViewModel>, LoginViewModelValidator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IUserService userService)
         {
             if (env.IsDevelopment())
             {
@@ -111,21 +137,39 @@ namespace CarMarket.Server
                 app.UseHsts();
             }
 
+            app.UseHttpsRedirection();
+            app.UseBlazorFrameworkFiles();
+
+            app.UseStaticFiles(new StaticFileOptions()
+            {
+                FileProvider = new PhysicalFileProvider(
+                    Path.Combine(Directory.GetCurrentDirectory(), @"StaticImages")),
+                RequestPath = new PathString("/StaticImages")
+            });
+
+            app.UseRouting();
+
             app.UseCors(builder =>
             {
                 builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
             });
 
-            app.UseHttpsRedirection();
-            app.UseBlazorFrameworkFiles();
-            app.UseStaticFiles();
-
-            app.UseRouting();
-
             app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseIdentityServer();
+
+            app.Use(async (context, next) =>
+            {
+                var user = await HttpUserHelper.GetCurrentUserAsync(userService, context);
+
+                if (user is null && !context.Request.Path.Value.ToLower().Contains("static"))
+                {
+                    context.Request.Path = "/Error";
+                }
+                await next.Invoke();
+            }
+            );
 
             app.UseEndpoints(endpoints =>
             {

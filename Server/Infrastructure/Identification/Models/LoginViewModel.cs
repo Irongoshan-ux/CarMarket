@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using FluentValidation;
+using System.ComponentModel.DataAnnotations;
 
 namespace CarMarket.Server.Infrastructure.Identification.Models
 {
@@ -10,7 +11,15 @@ namespace CarMarket.Server.Infrastructure.Identification.Models
         [Required]
         public string Password { get; set; }
 
-        [Required]
         public string ReturnUrl { get; set; }
+    }
+
+    public class LoginViewModelValidator : AbstractValidator<LoginViewModel>
+    {
+        public LoginViewModelValidator()
+        {
+            RuleFor(x => x.Email).EmailAddress();
+            RuleFor(x=> x.Password).NotEmpty();
+        }
     }
 }

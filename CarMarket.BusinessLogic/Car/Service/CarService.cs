@@ -80,9 +80,9 @@ namespace CarMarket.BusinessLogic.Car.Service
             return await _carRepository.FindAllUserCarsAsync(userId);
         }
 
-        public async Task<IEnumerable<CarModel>> SearchAsync(string carName, CarType? carType)
+        public async Task<IEnumerable<CarModel>> SearchAsync(string carName, CarType? carType, string? brand)
         {
-            return await _carRepository.SearchAsync(carName, carType);
+            return await _carRepository.SearchAsync(carName, carType, brand);
         }
     }
 }

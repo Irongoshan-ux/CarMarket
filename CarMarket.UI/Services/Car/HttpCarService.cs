@@ -1,6 +1,5 @@
 ﻿using CarMarket.Core.Car.Domain;
 using CarMarket.Core.DataResult;
-using CarMarket.Core.User.Domain;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -28,11 +27,13 @@ namespace CarMarket.UI.Services.Car
             return response.Content.ReadFromJsonAsync<CarModel>().Result;
         }
 
-        public async Task DeleteAsync(long carId)
+        public async Task<bool> DeleteAsync(long carId)
         {
             await _httpAccessTokenSetter.AddAccessTokenAsync();
 
-            await _httpClient.DeleteAsync("/api/Car/DeleteCar/" + carId);
+            var result = await _httpClient.DeleteAsync("/api/Car/DeleteCar/" + carId);
+
+            return result.IsSuccessStatusCode;
         }
 
 
@@ -58,24 +59,32 @@ namespace CarMarket.UI.Services.Car
             return await _httpClient.GetFromJsonAsync<DataResult<CarModel>>($"/api/Car/GetCarsByPage?skip={skip}&take={take}");
         }
 
-        public async Task<IEnumerable<CarModel>> SearchAsync(string carName, CarType? carType)
+        public async Task<IEnumerable<CarModel>> SearchAsync(string carName, CarType? carType, string? brand)
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<IEnumerable<CarModel>>($"/api/Car/Search?carName={carName}&carType={carType}");
+                return await _httpClient.GetFromJsonAsync<IEnumerable<CarModel>>($"/api/Car/Search?carName={carName}&carType={carType}&brand={brand}");
             }
             catch
             {
                 return null;
             }
-            
         }
 
-        public async Task UpdateAsync(long carId, CarModel car)
+        public async Task<bool> UpdateAsync(long carId, CarModel car)
         {
             await _httpAccessTokenSetter.AddAccessTokenAsync();
 
-            await _httpClient.PutAsJsonAsync("/api/Car/UpdateCar/" + carId, car);
+            var result = await _httpClient.PutAsJsonAsync("/api/Car/UpdateCar/" + carId, car);
+
+            return result.IsSuccessStatusCode;
+        }
+
+        public async Task<IEnumerable<Brand>> GetCarBrandsAsync()
+        {
+            await _httpAccessTokenSetter.AddAccessTokenAsync();
+
+            return await _httpClient.GetFromJsonAsync<IEnumerable<Brand>>($"/api/Brand");
         }
     }
 }

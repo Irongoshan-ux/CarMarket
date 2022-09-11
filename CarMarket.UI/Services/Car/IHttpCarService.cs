@@ -9,6 +9,7 @@ namespace CarMarket.UI.Services.Car
     public interface IHttpCarService : IHttpService<CarModel, long>
     {
         Task<IEnumerable<CarModel>> GetAllUserCarsByTokenAsync();
-        Task<IEnumerable<CarModel>> SearchAsync(string carName, CarType? carType);
+        Task<IEnumerable<CarModel>> SearchAsync(string carName, CarType? carType, string? brand);
+        Task<IEnumerable<Brand>> GetCarBrandsAsync();
     }
 }

@@ -2,6 +2,7 @@
 using CarMarket.Core.Car.Domain;
 using CarMarket.Core.Car.Repository;
 using CarMarket.Core.DataResult;
+using CarMarket.Core.Image.Domain;
 using CarMarket.Data.Car.Domain;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -27,6 +28,8 @@ namespace CarMarket.Data.Car.Repository
                 .AsNoTracking()
                 .Include(x => x.CarImages)
                 .Include(x => x.Owner)
+                .Include(x => x.Model)
+                .Include(x => x.Model.Brand)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             return _mapper.Map<CarModel>(carEntity);
@@ -38,7 +41,16 @@ namespace CarMarket.Data.Car.Repository
                 .AsNoTracking()
                 .Include(x => x.CarImages)
                 .Include(x => x.Owner)
+                .Include(x => x.Model)
+                .Include(x => x.Model.Brand)
                 .ToListAsync();
+
+            carEntities.ForEach(x =>
+            {
+                var images = x.CarImages;
+
+                x.CarImages = new List<ImageModel> { images.FirstOrDefault() };
+            });
 
             return _mapper.Map<List<CarModel>>(carEntities);
         }
@@ -50,6 +62,15 @@ namespace CarMarket.Data.Car.Repository
             if (newCarEntity.Owner != null)
             {
                 _context.Entry(newCarEntity.Owner).State = EntityState.Unchanged;
+            }
+
+            var brand = _context.Brands.FirstOrDefault(x => x.Name == carModel.Model.Brand.Name);
+
+            newCarEntity.Model.Brand = brand;
+
+            if (_context.Models.AsNoTracking().Where(x => x.Id == newCarEntity.Model.Id).Any())
+            {
+                _context.Entry(newCarEntity.Model).State = EntityState.Unchanged;
             }
 
             var added = await _context.Cars.AddAsync(newCarEntity);
@@ -75,6 +96,22 @@ namespace CarMarket.Data.Car.Repository
         {
             var carEntity = _mapper.Map<CarEntity>(car);
 
+            //var currentCar = await _context.Cars.FindAsync(carId);
+
+            //var existedBrand = await _context.Brands.Where(x => x.Name.Equals(currentCar.Model.Brand.Name)).ToListAsync();
+
+            //if (existedBrand.Count > 0)
+            //{
+            //    if (existedBrand.First().Name.Equals(car.Model.Brand.Name))
+            //    {
+            //        _context.Entry(carEntity.Model).State = EntityState.Unchanged;
+            //    }
+            //    else
+            //    {
+            //        carEntity.Model.Brand = _context.Brands.Where(x => x.Name.Equals(car.Model.Brand.Name)).First();
+            //    }
+            //}
+
             _context.Update(carEntity);
 
             await _context.SaveChangesAsync();
@@ -86,30 +123,46 @@ namespace CarMarket.Data.Car.Repository
         {
             var carEntities = await _context.Cars
                 .AsNoTracking()
-                .Include(x => x.CarImages)
                 .Where(x => x.Owner.Id == userId)
+                .Include(x => x.CarImages)
+                .Include(x => x.Model)
+                .Include(x => x.Model.Brand)
                 .ToListAsync();
+
+            carEntities.ForEach(x =>
+            {
+                var images = x.CarImages;
+
+                x.CarImages = new List<ImageModel> { images.FirstOrDefault() };
+            });
 
             var userCars = _mapper.Map<List<CarModel>>(carEntities);
 
             return userCars;
         }
 
-        public async Task<IEnumerable<CarModel>> SearchAsync(string carName, CarType? carType)
+        public async Task<IEnumerable<CarModel>> SearchAsync(string carName, CarType? carType, string? brand)
         {
             IQueryable<CarEntity> query = _context.Cars
                 .AsNoTracking()
                 .Include(x => x.CarImages)
-                .Include(x => x.Owner);
+                .Include(x => x.Owner)
+                .Include(x => x.Model)
+                .Include(x => x.Model.Brand);
 
             if (!string.IsNullOrEmpty(carName))
             {
-                query = query.Where(c => c.Name.Contains(carName));
+                query = query.Where(c => c.Model.Name.Contains(carName));
             }
 
             if (carType != null)
             {
-                query = query.Where(c => c.CarType == carType);
+                query = query.Where(c => c.Model.Type == carType);
+            }
+
+            if (brand is not null)
+            {
+                query = query.Where(c => c.Model.Brand.Name.Equals(brand));
             }
 
             return _mapper.Map<IEnumerable<CarModel>>(await query.ToListAsync());
@@ -119,12 +172,21 @@ namespace CarMarket.Data.Car.Repository
         {
             var carEntities = await _context.Cars
                 .AsNoTracking()
-                .OrderBy(x => x.Name)
+                .OrderBy(x => x.Model.Name)
                 .Include(x => x.CarImages)
                 .Include(x => x.Owner)
+                .Include(x => x.Model)
+                .Include(x => x.Model.Brand)
                 .Skip(skip)
                 .Take(take)
                 .ToListAsync();
+
+            carEntities.ForEach(x =>
+            {
+                var images = x.CarImages;
+
+                x.CarImages = new List<ImageModel> { images.FirstOrDefault() };
+            });
 
             var result = new DataResult<CarModel>
             {

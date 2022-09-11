@@ -1,0 +1,218 @@
+﻿@page "/brands"
+@using CarMarket.Core.Car.Domain
+@using CarMarket.UI.Pages
+@using CarMarket.Core.User.Domain
+@using CarMarket.UI.Services.CarBrand
+@using CarMarket.UI.Services.HttpInterceptor
+@using Microsoft.AspNetCore.Authorization
+@using System.Threading
+@inject NavigationManager Navigation
+@inject IToastService toastService
+
+@attribute [Authorize(Roles = "Admin, User")]
+
+<AuthorizeView Context="auth" Roles = "Admin, User">
+<Authorized>
+<h1>Brands</h1>
+
+<AuthorizeView Roles="Admin">
+<div>
+
+<button style="float:left;" class="btn btn-success" @onclick="AddBrand">Add Brand</button>
+
+</div>
+<br />
+<br />
+</AuthorizeView>
+
+<p>All brands</p>
+
+<table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <AuthorizeView Roles="Admin">
+                    <th>Actions</th>
+                </AuthorizeView>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var brand in BrandList)
+            {
+                <tr>
+                    <td>@brand?.Id</td>
+                    <td>@brand?.Name</td>
+
+                    <AuthorizeView Roles="Admin">
+                        <button class="btn btn-primary"
+                            @onclick="() => EditBrand(brand)">
+                             <span
+                            class="glyphicon glyphicon-pencil"></span>
+                            &nbsp; Edit
+                        </button>
+                     <span>&nbsp;|&nbsp;</span>
+                        <button class="btn btn-danger"
+                            @onclick="(() => DeleteBrand(brand))">
+                            <span
+                            class="glyphicon glyphicon-trash"></span>
+                            &nbsp; Remove
+                        </button>
+                    </AuthorizeView>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+@if (ShowPopup)
+        {
+            <!-- This is the popup to create or edit a user -->
+            <div class="modal" tabindex="-1" style="display:block" role="dialog">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title">@TitleContext</h3>
+                            <!-- Button to close the popup -->
+                    <button type="button" class="close"
+                            @onclick="ClosePopup">
+                                <span aria-hidden="true">X</span>
+                            </button>
+                        </div>
+                        <!-- Edit form for the current user -->
+                <div class="modal-body">
+                            <input class="form-control" type="text"
+                                placeholder="Brand name"
+                                @bind="editedBrand.Name" />
+
+                            @if (editedBrand.Id == 0)
+                            {
+                                <button class="btn btn-primary"
+                            @onclick="CreateBrand">
+                                    Save
+                                </button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-secondary"
+                            @onclick="() => UpdateBrand()">
+                                    Update
+                                </button>
+                            }
+                            <br />
+                            <span style="color:red">@strError</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    [Inject]
+    public IHttpCarBrandService HttpCarBrandService { get; set; }
+
+    [Inject]
+    public HttpInterceptorService Interceptor { get; set; }
+    public void Dispose() => Interceptor.DisposeEvent();
+
+    public bool DataUpdated { get; set; } = false;
+
+    public List<Brand> BrandList { get; set; } = new();
+    Brand editedBrand = new();
+
+    string strError = "";
+    bool ShowPopup = false;
+    string TitleContext { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        BrandList = new();
+
+        try
+        {
+            BrandList = (await HttpCarBrandService.GetAllAsync(CancellationToken.None)).ToList();
+        }
+        catch
+        {
+
+        }
+    }
+
+    private void AddBrand()
+    {
+        editedBrand = new();
+
+        TitleContext = "Add new brand";
+        ShowPopup = true;
+    }
+
+    private async Task CreateBrand()
+    {
+        strError = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(editedBrand.Name)) strError += "\nEnter brand name, please";
+
+        if (string.IsNullOrWhiteSpace(strError))
+        {
+            ShowPopup = false;
+
+            var createdBrand = await HttpCarBrandService.AddAsync(editedBrand, CancellationToken.None);
+
+            if (createdBrand != null)
+            {
+                toastService.ShowSuccess($"{createdBrand.Name} was successfully created!");
+
+                BrandList.Add(createdBrand);
+            }
+            else toastService.ShowError($"Error with creating a new brand");
+        }
+    }
+
+    private void EditBrand(Brand updatedBrand)
+    {
+        editedBrand = new();
+
+        TitleContext = "Edit brand";
+
+        editedBrand = updatedBrand;
+
+        ShowPopup = true;
+    }
+
+    private async Task UpdateBrand()
+    {
+        strError = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(strError))
+        {
+            ShowPopup = false;
+
+            if (await HttpCarBrandService.UpdateAsync(editedBrand.Id, editedBrand, CancellationToken.None))
+            {
+                toastService.ShowSuccess($"{editedBrand.Name} was successfully updated!");
+
+                DataUpdated = true;
+            }
+            else toastService.ShowError($"Error with updating {editedBrand.Name}");
+        }
+    }
+
+    private async Task DeleteBrand(Brand brand)
+    {
+        ShowPopup = false;
+
+        if (await HttpCarBrandService.DeleteAsync(brand.Id, CancellationToken.None))
+        {
+            BrandList.Remove(brand);
+            toastService.ShowSuccess($"{brand.Name} was successfully deleted!");
+        }
+        else toastService.ShowError($"Error with deleting {brand.Name}");
+    }
+
+    private void ClosePopup()
+    {
+        strError = string.Empty;
+        ShowPopup = false;
+    }
+}

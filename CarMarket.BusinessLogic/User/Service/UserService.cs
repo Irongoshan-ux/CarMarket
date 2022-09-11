@@ -45,7 +45,11 @@ namespace CarMarket.BusinessLogic.User.Service
 
         public async Task<List<UserModel>> GetAllAsync()
         {
-            return await _userRepository.FindAllAsync();
+            var users = await _userRepository.FindAllAsync();
+
+            await GetUserRoleAsync(users);
+
+            return users;
         }
 
         public async Task DeleteAsync(string userId)
@@ -75,6 +79,15 @@ namespace CarMarket.BusinessLogic.User.Service
             return user;
         }
 
+        public async Task<IEnumerable<UserModel>> SearchAsync(string email)
+        {
+            var users = await _userRepository.SearchByEmailAsync(email);
+
+            await GetUserRoleAsync(users);
+
+            return users;
+        }
+
         public async Task<IdentityRole> GetRoleAsync(string roleName)
         {
             return await _userRepository.FindRoleAsync(roleName);
@@ -89,13 +102,7 @@ namespace CarMarket.BusinessLogic.User.Service
         {
             var users = await _userRepository.FindByPageAsync(skip, take);
 
-            foreach (var user in users.Data)
-            {
-                user.Role = new()
-                {
-                    Name = (await _userManager.GetRolesAsync(user)).FirstOrDefault()
-                };
-            }
+            await GetUserRoleAsync(users.Data);
 
             return users;
         }
@@ -111,6 +118,17 @@ namespace CarMarket.BusinessLogic.User.Service
             var role = await _userRepository.FindRoleAsync(roleName);
 
             await _userRepository.AddUserToRoleAsync(user, role);
+        }
+
+        private async Task GetUserRoleAsync(IEnumerable<UserModel> users)
+        {
+            foreach (var user in users)
+            {
+                user.Role = new()
+                {
+                    Name = (await _userManager.GetRolesAsync(user)).FirstOrDefault()
+                };
+            }
         }
     }
 }

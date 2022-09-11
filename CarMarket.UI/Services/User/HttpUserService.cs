@@ -19,20 +19,6 @@ namespace CarMarket.UI.Services.User
             _httpAccessTokenSetter.HttpClient = _httpClient;
         }
 
-        public async Task AddPermissionAsync(string userId, params Permission[] permissions)
-        {
-            await _httpAccessTokenSetter.AddAccessTokenAsync();
-
-            await _httpClient.PostAsJsonAsync($"/api/User/ChangeUserPermission?userId={userId}", permissions);
-        }
-
-        public async Task ChangePermissionAsync(string userId, Permission replaceablePermission, Permission substitutePermission)
-        {
-            await _httpAccessTokenSetter.AddAccessTokenAsync();
-
-            await _httpClient.PostAsJsonAsync($"/api/User/ChangeUserPermission?userId={userId}&replaceablePermission={replaceablePermission}&substitutePermission={substitutePermission}", userId);
-        }
-
         public async Task<UserModel> CreateAsync(UserModel model)
         {
             await _httpAccessTokenSetter.AddAccessTokenAsync();
@@ -42,18 +28,13 @@ namespace CarMarket.UI.Services.User
             return response.Content.ReadFromJsonAsync<UserModel>().Result;
         }
 
-        public async Task DeleteAsync(string id)
+        public async Task<bool> DeleteAsync(string id)
         {
             await _httpAccessTokenSetter.AddAccessTokenAsync();
 
-            await _httpClient.DeleteAsync($"/api/User/DeleteUser/{id}");
-        }
+            var result = await _httpClient.DeleteAsync($"/api/User/DeleteUser/{id}");
 
-        public async Task DeletePermissionAsync(string userId, Permission permission)
-        {
-            await _httpAccessTokenSetter.AddAccessTokenAsync();
-
-            await _httpClient.DeleteAsync($"/api/User/DeleteUserPermission/{userId}");
+            return result.IsSuccessStatusCode;
         }
 
         public async Task<IEnumerable<UserModel>> GetAllAsync()
@@ -71,16 +52,30 @@ namespace CarMarket.UI.Services.User
             return await _httpClient.GetFromJsonAsync<UserModel>($"/api/User/GetByEmail?email={email}");
         }
 
+        public async Task<IEnumerable<UserModel>> SearchAsync(string email)
+        {
+            try
+            {
+                return await _httpClient.GetFromJsonAsync<IEnumerable<UserModel>>($"/api/User/Search?email={email}");
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         public async Task<DataResult<UserModel>> GetByPageAsync(int skip, int take)
         {
             return await _httpClient.GetFromJsonAsync<DataResult<UserModel>>($"/api/User/GetUsersByPage?skip={skip}&take={take}");
         }
 
-        public async Task UpdateAsync(string id, UserModel updatedModel)
+        public async Task<bool> UpdateAsync(string id, UserModel updatedModel)
         {
             await _httpAccessTokenSetter.AddAccessTokenAsync();
 
-            await _httpClient.PutAsJsonAsync("/api/User/UpdateUser/" + id, updatedModel);
+            var result = await _httpClient.PutAsJsonAsync("/api/User/UpdateUser/" + id, updatedModel);
+
+            return result.IsSuccessStatusCode;
         }
     }
 }

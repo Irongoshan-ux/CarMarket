@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Http;
 using System;
 using CarMarket.Server.Services;
 using Microsoft.AspNetCore.Identity;
+using CarMarket.Core.Car.Domain;
+using System.Linq;
 
 namespace CarMarket.Server.Controllers
 {
@@ -44,6 +46,27 @@ namespace CarMarket.Server.Controllers
             return await _userService.GetByEmailAsync(email);
         }
 
+        [HttpGet("Search")]
+        public async Task<IActionResult> Search(string email)
+        {
+            try
+            {
+                var result = await _userService.SearchAsync(email);
+
+                if (result.Any())
+                {
+                    return Ok(result);
+                }
+
+                return NotFound();
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "Error retrieving data from the database");
+            }
+        }
+
         [HttpGet("GetUsersByPage")]
         public async Task<IActionResult> GetUsersByPage(int skip = 0, int take = 5)
         {
@@ -61,7 +84,7 @@ namespace CarMarket.Server.Controllers
         [HttpDelete("DeleteUser/{userId}")]
         public async Task<IActionResult> DeleteUser(string userId)
         {
-            if (!await IsUserAdminAsync())
+            if (!await IsCurrentUserAdminAsync())
             {
                 return BadRequest();
             }
@@ -74,7 +97,7 @@ namespace CarMarket.Server.Controllers
         [HttpPost("CreateUser")]
         public async Task<IActionResult> Create([FromBody] UserModel userModel)
         {
-            if (!await IsUserAdminAsync())
+            if (!await IsCurrentUserAdminAsync() || ((await _userService.GetByEmailAsync(userModel.Email)) is not null))
             {
                 return BadRequest();
             }
@@ -96,10 +119,12 @@ namespace CarMarket.Server.Controllers
         [HttpPut("UpdateUser/{userId}")]
         public async Task<IActionResult> UpdateUser(string userId, UserModel user)
         {
-            if (userId != user.Id || !await IsUserAdminAsync())
+            if (userId != user.Id || !await IsCurrentUserAdminAsync() || await IsUserAdminAsync(user))
             {
                 return BadRequest();
             }
+
+            user.PasswordHash = EncryptPassword(user.PasswordHash);
 
             await _userService.UpdateUserAsync(userId, user);
 
@@ -121,12 +146,14 @@ namespace CarMarket.Server.Controllers
 
         private string EncryptPassword(string password) => Utility.Encrypt(password);
 
-        private async Task<bool> IsUserAdminAsync()
+        private async Task<bool> IsCurrentUserAdminAsync()
         {
             var user = await GetCurrentUserAsync();
 
-            return await _userManager.IsInRoleAsync(user, "Admin");
+            return await IsUserAdminAsync(user);
         }
+
+        private async Task<bool> IsUserAdminAsync(UserModel user) => await _userManager.IsInRoleAsync(user, "Admin");
 
         private async Task<UserModel> GetCurrentUserAsync() => await HttpUserHelper.GetCurrentUserAsync(_userService, HttpContext);
     }

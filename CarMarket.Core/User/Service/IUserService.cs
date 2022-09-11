@@ -11,6 +11,7 @@ namespace CarMarket.Core.User.Service
         Task<string> CreateAsync(UserModel userModel);
         Task<UserModel> GetAsync(string userId);
         Task<UserModel> GetByEmailAsync(string email);
+        Task<IEnumerable<UserModel>> SearchAsync(string email);
         Task<DataResult<UserModel>> GetByPageAsync(int skip = 0, int take = 5);
         Task<List<UserModel>> GetAllAsync();
         Task DeleteAsync(string userId);

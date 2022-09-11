@@ -1,4 +1,5 @@
-﻿using CarMarket.Core.DataResult;
+﻿using CarMarket.Core.Car.Domain;
+using CarMarket.Core.DataResult;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -10,7 +11,7 @@ namespace CarMarket.UI.Services
         Task<IEnumerable<TModel>> GetAllAsync();
         Task<DataResult<TModel>> GetByPageAsync(int skip, int take);
         Task<TModel> CreateAsync(TModel model);
-        Task UpdateAsync(TKey id, TModel updatedModel);
-        Task DeleteAsync(TKey Id);
+        Task<bool> UpdateAsync(TKey id, TModel updatedModel);
+        Task<bool> DeleteAsync(TKey Id);
     }
 }

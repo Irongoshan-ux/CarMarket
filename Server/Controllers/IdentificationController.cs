@@ -24,7 +24,6 @@ namespace CarMarket.Server.Controllers
         public IdentificationController(
             IIdentityServerInteractionService interaction,
             IUserService userService,
-            UserManager<UserModel> userManager,
             ILogger<CarController> logger)
         {
             _interaction = interaction;
@@ -33,20 +32,24 @@ namespace CarMarket.Server.Controllers
         }
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> Login(string returnUrl)
+        public IActionResult Login(string returnUrl)
         {
+            _logger.LogInformation($"Opened login page with returnUrl={returnUrl}");
+            _logger.LogDebug("This is debug message");
             return View();
         }
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> Register(string returnUrl)
+        public IActionResult Register()
         {
             return View();
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> Login(LoginViewModel model)
+        public async Task<IActionResult> Login([FromForm] LoginViewModel model)
         {
+            model.ReturnUrl ??= Url.Content("https://localhost:5001");
+
             if (ModelState.IsValid)
             {
                 var user = await _userService.AuthenticateAsync(model.Email, Utility.Encrypt(model.Password));
@@ -55,17 +58,22 @@ namespace CarMarket.Server.Controllers
                 {
                     await AuthorizeAsync(user);
 
+                    _logger.LogInformation($"User {user.Email} has succesfully logged in.");
+
                     return Redirect(model.ReturnUrl);
                 }
 
                 ModelState.AddModelError("", "Invalid email or password");
             }
 
+            _logger.LogInformation($"User {model.Email} failed to log in.");
+
             return View(model);
         }
 
+
         [HttpPost("[action]")]
-        public async Task<IActionResult> Register(RegisterViewModel model)
+        public async Task<IActionResult> Register([FromForm] RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -80,6 +88,7 @@ namespace CarMarket.Server.Controllers
                 user = new UserModel
                 {
                     Email = model.Email,
+                    UserName = model.Username,
                     FirstName = model.FirstName,
                     LastName = model.LastName,
                     PhoneNumber = model.PhoneNumber,
@@ -115,7 +124,7 @@ namespace CarMarket.Server.Controllers
         private async Task AuthorizeAsync(UserModel user)
         {
             user.PasswordHash = Utility.Encrypt(user.PasswordHash);
-           
+
             await HttpContext.SignInAsync(new IdentityServerUser(user.Email));
         }
     }

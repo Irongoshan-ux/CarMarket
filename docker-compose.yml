@@ -1,0 +1,48 @@
+version: '3.4'
+
+services:
+  carmarket.server:
+    image: ${DOCKER_REGISTRY-}carmarketserver
+    build:
+      context: .
+      dockerfile: Server/Dockerfile
+    ports:
+      - "10000:80"
+      - "10001:443"
+    depends_on:
+      - db
+
+  carvaluer:
+    image: ${DOCKER_REGISTRY-}carvaluer
+    build:
+      context: .
+      dockerfile: CarValuer/Dockerfile
+    ports:
+      - "11000:80"
+      - "11001:443"
+    depends_on:
+      - carvaluerdb
+
+  db:
+    image: "mcr.microsoft.com/mssql/server"
+    environment:
+      SA_PASSWORD: "somepassword.01"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "3306:3306"
+
+  carvaluerdb:
+    image: "mcr.microsoft.com/mssql/server"
+    environment:
+      SA_PASSWORD: "somepassword.01"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "4406:3306"
+
+networks:
+  vpcbr:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 10.5.0.0/16
+         gateway: 10.5.0.1

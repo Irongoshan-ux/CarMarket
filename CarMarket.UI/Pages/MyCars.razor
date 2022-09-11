@@ -3,12 +3,14 @@
 @using CarMarket.Core.Car.Domain
 @using CarMarket.Core.Image.Domain
 @using CarMarket.UI.Services.Car
+@using CarMarket.UI.Services.HttpInterceptor
 @using Microsoft.AspNetCore.Authorization
 @using System.IO
+@inject IToastService toastService
 
 @attribute [Authorize(Roles = "Admin,User")]
 
-<p>My cars</p>
+<h1>My cars</h1>
 
 @if (cars == null)
 {
@@ -20,7 +22,8 @@ else
         <thead>
             <tr>
                 <th>Image</th>
-                <th>Title</th>
+                <th>Brand</th>
+                <th>Model</th>
                 <th>Car type</th>
                 <th>Description</th>
                 <th>Price</th>
@@ -32,29 +35,34 @@ else
             {
                 <tr>
                     <td>
-                    <NavLink href=@string.Format("/cars/cardetail/{0}", car.Id)>
-                        @if (car.CarImages.Count > 0)
+                    <NavLink href=@string.Format("/cars/cardetail/{0}", car?.Id)>
+                        @if (car.CarImages.FirstOrDefault() is not null)
                         {
                             <img src="@ImageService.ConvertImageToDisplay(car.CarImages.FirstOrDefault())" height ="150px" />
                         }
                         else
                         {
-                            <img src="https://thumbs.dreamstime.com/z/no-image-available-icon-flat-vector-no-image-available-icon-flat-vector-illustration-132482953.jpg" height="150px" />
+                            <img src="https://consulsat-sd.com/wp-content/themes/consultix/images/no-image-found-360x250.png" height="150px" />
                         }
                         </NavLink>
                     </td>
-                    <td>@car.Name</td>
-                    <td>@car.CarType</td>
-                    <td>@car.Description</td>
-                    <td>@car.Price</td>
+                    <td>@car?.Model.Brand.Name</td>
+                    <td>@car?.Model.Name</td>
+                    <td>@car?.CarType</td>
+                    <td>@car?.Description</td>
+                    <td>$@car?.Price</td>
                     <button class="btn btn-primary"
                         @onclick="() => EditCar(car)">
-                        Edit
+                         <span
+                            class="glyphicon glyphicon-pencil"></span>
+                            &nbsp; Edit
                     </button>
-                    
+                        <span>&nbsp;|&nbsp;</span>
                     <button class="btn btn-danger"
                         @onclick="(() => DeleteCar(car))">
-                        Delete
+                        <span
+                            class="glyphicon glyphicon-trash"></span>
+                            &nbsp; Remove
                     </button>
                 </tr>
             }
@@ -63,8 +71,10 @@ else
 
 <AuthorizeView>
     @if (ShowPopup)
-{
-        @SetUpUserEmail(context);
+    {
+        <div style="display:none;">
+            @SetUpUserEmail(context)
+        </div>
     <!-- This is the popup to create or edit a car -->
     <div class="modal" tabindex="-1" style="display:block" role="dialog">
         <div class="modal-dialog">
@@ -79,51 +89,52 @@ else
                 </div>
                 <!-- Edit form for the current car -->
                 <div class="modal-body">
-                    <input class="form-control" type="text"
-                                placeholder="Name"
-                                @bind="editedCar.Name" />
-                    <input class="form-control" type="text"
-                            placeholder="Description"
-                            @bind="editedCar.Description" />
-                    <input class="form-control" type="number"
-                            placeholder="Price"
-                            @bind="editedCar.Price" />
-                    <input class="form-control" type="email"
-                            placeholder="Owner Email"
-                            @bind="@CurrentUserEmail"/>
+                    <MudTextField @bind-Value="editedCar.Model.Name" Label="Car model name" Variant="Variant.Outlined" AutoFocus=true Validation="@(new Func<string,string>(ValidateModelName))"></MudTextField>
 
-                    <select class="form-control"
-                            @bind="@CurrentCarType">
-                        @foreach (var option in Options)
-                        {
-                            <option value="@option">
-                                @option
-                            </option>
-                        }
-                    </select>
-                    <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
-                    <br>
-                    <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
-                    <br>
-                    <BlazorInputFile.InputFile OnChange="HandleFilesSelected"></BlazorInputFile.InputFile>
-                    <br>
-                    <br /><br />
+                        <MudTextField Lines=5 @bind-Value="@editedCar.Description" Label="Description" Variant="Variant.Outlined"  ></MudTextField>
 
-                        @if (editedCar.Id == 0)
-                        {
-                            <button class="btn btn-primary"
-                            @onclick="() => CreateCar(context)">
-                                Save
-                            </button>
-                        }
-                        else
-                        {
-                            <button class="btn btn-secondary"
-                            @onclick="() => UpdateCar()">
-                                Update
-                            </button>
-                        }
-                    <span style="color:red">@strError</span>
+                            <MudTextField @bind-Value="editedCar.Price" Label="Price" Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" AdornmentColor="Color.Info" Error=@priceError ErrorText="@priceErrorText" />
+
+                            <MudSelect Variant="Variant.Outlined"  T="string" @bind-Value="CurrentCarType" Label="Car type" AnchorOrigin="Origin.BottomCenter" Validation="@(new Func<string,string>(ValidateCarType))">
+                                @foreach (var option in Options)
+                                {
+                                    <MudSelectItem Value="@option" />
+                                }
+                            </MudSelect>
+
+                            <br>
+
+                        <Microsoft.AspNetCore.Components.Forms.InputFile id="fileInput" OnChange="HandleFilesSelected" hidden multiple accept=".jpg, .jpeg, .png"/>
+
+                        <MudFab HtmlTag="label"
+                                Color="Color.Info"
+                                Icon="@Icons.Filled.Image"
+                                Label="Load picture"
+                                for="fileInput" />
+
+                        @if (editedCar.CarImages.FirstOrDefault() is not null)
+                            {
+                                <MudText Typo="@Typo.h6">@editedCar.CarImages.Count() File@(editedCar.CarImages.Count() == 1 ? "" : "s"):</MudText>
+                                <MudList>
+                                    @foreach (var file in editedCar.CarImages)
+                                    {
+                                        <MudListItem Icon="@Icons.Filled.AttachFile" @key="@file">
+                                            @if (file.ImageTitle.Length > 30)
+                                            {
+                                                @(file.ImageTitle.Remove(30) + "...") 
+                                            }
+                                            else @file.ImageTitle 
+                                            &nbsp;
+                                            <code>@file.ImageData.Length bytes</code>
+                                        </MudListItem>
+                                    }
+                                </MudList>
+                            }
+
+                            <br>
+                            <br>
+
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" @onclick="() => UpdateCar()">Update</MudButton>
                 </div>
             </div>
         </div>
@@ -135,11 +146,22 @@ else
     [Inject]
     public IHttpCarService CarService { get; set; }
 
-    private List<CarModel> cars { get; set; }
+    [Inject]
+    public HttpInterceptorService Interceptor { get; set; }
+    public void Dispose() => Interceptor.DisposeEvent();
+
+    private List<CarModel> cars { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
-        cars = (await CarService.GetAllUserCarsByTokenAsync()).ToList();
+        try
+        {
+            cars = (await CarService.GetAllUserCarsByTokenAsync()).ToList();
+        }
+        catch
+        {
+            cars = null;
+        }
     }
 
     private CarModel car;
@@ -152,6 +174,12 @@ else
     private string CurrentCarType { get; set; } = Options.FirstOrDefault();
     private string CurrentUserEmail { get; set; }
 
+    private string modelErrorText = "Enter car model";
+
+    private bool priceError;
+    private string priceErrorText = "Price should be minimum $500";
+    private string carTypeError = "Select car type";
+
     private object SetUpUserEmail(AuthenticationState context)
     {
         CurrentUserEmail = context.User.Identity.Name;
@@ -159,22 +187,46 @@ else
         return CurrentUserEmail;
     }
 
-    private async Task HandleFilesSelected(IFileListEntry[] files)
+    private string ValidateModelName(string modelName)
     {
-        var file = files.FirstOrDefault();
+        if (string.IsNullOrWhiteSpace(modelName))
+            return modelErrorText;
+        else return null;
+    }
 
-        if ((file != null) && (ImageService.IsImage(file.Name)))
+    private string ValidateCarType(string carTypeName)
+    {
+        if (!SetCarType(carTypeName))
+            return carTypeError;
+
+        else return null;
+    }
+
+    private async Task HandleFilesSelected(InputFileChangeEventArgs e)
+    {
+        foreach (var file in e.GetMultipleFiles())
         {
-            var ms = new MemoryStream();
-            await file.Data.CopyToAsync(ms);
-
-            editedCar.CarImages.Add(new ImageModel
+            if ((file != null) && (ImageService.IsImage(file.Name)))
             {
-                ImageData = ms.ToArray(),
-                ImageTitle = file.Name
-            });
+                var ms = new byte[file.Size];
+
+                await file.OpenReadStream().ReadAsync(ms);
+
+                editedCar.CarImages.Add(new ImageModel
+                    {
+                        ImageData = ms,
+                        ImageTitle = file.Name
+                    });
+
+                toastService.ShowInfo("Successfull uploading");
+            }
+
+            else
+            {
+                strError += $"\nFile {file.Name} is not supported.\n";
+                toastService.ShowError(strError);
+            }
         }
-        else strError += $"\nFile {file.Name} is not supported.\n";
     }
 
     private void AddCar()
@@ -194,7 +246,7 @@ else
         strError = string.Empty;
 
         if(!SetCarType(CurrentCarType)) return;
-        if (string.IsNullOrWhiteSpace(editedCar.Name)) strError += "\nEnter car title";
+        if (string.IsNullOrWhiteSpace(editedCar.Model.Name)) strError += "\nEnter car title";
         if (editedCar.Price == 0) strError += "\nEnter price";
 
         editedCar.Owner = new()
@@ -206,10 +258,16 @@ else
         {
             ShowPopup = false;
 
-            await CarService.CreateAsync(editedCar);
+            var createdCar = await CarService.CreateAsync(editedCar);
+
+            if (createdCar != null)
+            {
+                toastService.ShowSuccess($"{createdCar.Model.Name} was successfully created!");
+            }
+            else toastService.ShowError($"Error with creating a new car");
         }
     }
-    
+
     private void EditCar(CarModel updatedCar)
     {
         TitleContext = "Edit car";
@@ -236,7 +294,11 @@ else
         {
             ShowPopup = false;
 
-            await CarService.UpdateAsync(editedCar.Id, editedCar);
+            if (await CarService.UpdateAsync(editedCar.Id, editedCar))
+            {
+                toastService.ShowSuccess($"{editedCar.Model.Name} was successfully updated!");
+            }
+            else toastService.ShowError($"Error with updating {editedCar.Model.Name}");
         }
     }
 
@@ -244,7 +306,15 @@ else
     {
         ShowPopup = false;
 
-        await CarService.DeleteAsync(car.Id);
+        if (await CarService.DeleteAsync(car.Id))
+        {
+            toastService.ShowSuccess($"{car.Model.Name} was successfully deleted!");
+
+            cars.Remove(car);
+
+            StateHasChanged();
+        }
+        else toastService.ShowError($"Error with deleting {car.Model.Name}");
     }
 
     private void ClosePopup()
